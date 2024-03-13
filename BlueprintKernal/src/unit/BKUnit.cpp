@@ -10,3 +10,8 @@ BKUnit::~BKUnit()
 {
     qDebug() << "Unit self delete";
 }
+
+void BKUnit::resized()
+{
+
+}

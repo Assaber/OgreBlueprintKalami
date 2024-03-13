@@ -10,6 +10,9 @@ public:
         : QGraphicsItemGroup()
         , mpHandle(handle)
     {
+        // 支持让子组件可以处理自己的事件，比如combobox
+        setHandlesChildEvents(false);
+
         if (type & BKAnchor::AnchorType::Input)
             mAnchorArray[0] = new BKAnchor(BKAnchor::AnchorType::Input, mpHandle);
 
@@ -178,7 +181,11 @@ void BKCell::Impl::updateActualSize(const QSizeF& aim)
 
     begin -= mnSpacing;
     for (auto& item : mUnits)
+    {
         update_unit_x(item, mnSpacing, begin);
+        item->resized();
+    }
+        
 
     if (mAnchorArray[1])
     {

@@ -21,6 +21,7 @@ public:
 
 protected:
     virtual QGraphicsItem* getGraphicsItem() = 0;
+    virtual void resized();
 
 protected:
     friend class BKCell;

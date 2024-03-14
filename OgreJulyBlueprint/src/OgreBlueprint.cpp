@@ -16,6 +16,7 @@ public:
         BKCell* title2 = new BKCell();
         BKCell* title3 = new BKCell();
         BKCell* combText = new BKCell(BKAnchor::AnchorType::Output);
+        BKCell* combText2 = new BKCell(BKAnchor::AnchorType::Input);
 
         BKUnitCreator creator;
         auto* label = creator.create<BKLabel>();
@@ -38,10 +39,17 @@ public:
             ->setDefaultIndex(1);
         combText->append(comb);
 
+        auto* comb2 = creator.create<BKComboBox>();
+        comb2->setItems(QStringList() << "青丝白发一瞬间" << "年华老去像谁言" << "春风犹有怜花意" << "可否许我再少年")
+            ->setDefaultIndex(1);
+        combText2->append(comb2);
+
         pack({ 
+            
             title1, 
             title2,
             title3,
+            combText2,
             combText,
             });
     }

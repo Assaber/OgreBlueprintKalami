@@ -24,12 +24,12 @@ public:
     ~Impl()
     {
         qDebug() << "锚点释放";
-        for (auto item : mRegistRecord)
+        while (mRegistRecord.size())
         {
-            // 不用担心移除注册的事，连接线会Do it
-            // removeRegist(item.first);
+            auto item = mRegistRecord.begin();
+            auto otherAnchor = item->first;
 
-            BKConnectingLine* line = item.second;
+            BKConnectingLine* line = item->second;
             StandAloneUnit* u = dynamic_cast<StandAloneUnit*>(line);
             auto view = getInnerView(u->getBindItem()->scene());
             if (view)
@@ -38,9 +38,8 @@ public:
                 view->destroyUnit(line);
             }
 
-            item.first->update();
-        }
-           
+            otherAnchor->update();
+        }           
     }
 
 

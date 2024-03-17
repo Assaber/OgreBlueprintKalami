@@ -27,10 +27,7 @@ public:
             if (static_cast<StandAloneUnit::Type>(unitType) == StandAloneUnit::Type::Card)
                 delete unit.second;
             else if (unit.second == mpReadyLine)
-            {
-                mpScene->removeItem(unit.first);
                 delete unit.second;
-            }
         }
 
         mpView->mUnitsRecord.clear();

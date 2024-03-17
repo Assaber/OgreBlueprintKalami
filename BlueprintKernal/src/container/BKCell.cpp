@@ -49,10 +49,12 @@ public:
     void destroyAnchorBall() {
         for (auto& anchor : mAnchorArray)
         {
-            if (anchor)
-                removeFromGroup(anchor->getGraphicsItem());
+            if (!anchor)
+                continue;
 
-            delete anchor;          //没事 delete nulllptr 可以的
+            removeFromGroup(anchor->getGraphicsItem());
+
+            delete anchor;
             anchor = nullptr;
         }
     }

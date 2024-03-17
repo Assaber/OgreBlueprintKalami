@@ -10,6 +10,9 @@ option(BUILD_SHARED "Build shared library" ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 超帅的，解决了vs中不将target_include_directories头文件路径添加到“附加包含目录”中的问题
+set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
+
 # 如果无法正常找到Qt5就开启下面的注释，并将路径更新
 if(NOT DEFINED ENV{QT5_DIR})
     set(QT5_DIR "C:/Qt/Qt5.12.8/5.12.8/msvc2017_64")

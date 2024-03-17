@@ -3,6 +3,7 @@
 #include <QWheelEvent>
 #include <QDebug>
 #include "container/BKConnectingLine.h"
+#include "BKEvent.h"
 
 class BlueprintLoader::Impl
 {
@@ -41,6 +42,7 @@ public:
     bool PreConnectLineEvent(PreConnLineEvent* event);
     void deleteSelectedBKObject();
     void destroyUnit(QGraphicsItem* item);
+    void updateTopmostCardItem(QGraphicsItem* card);
 
 private:
     void initScene();
@@ -60,6 +62,8 @@ public:
     float mnScaleRatio = 1.0f;
     // 连接线前身
     BKConnectingLine* mpReadyLine = nullptr;
+    // 最后一个活跃的卡片
+    QGraphicsItem* mpLastActiveCard = nullptr;
 };
 
 void BlueprintLoader::Impl::init()
@@ -213,6 +217,8 @@ void BlueprintLoader::Impl::deleteSelectedBKObject()
 void BlueprintLoader::Impl::destroyUnit(QGraphicsItem* item)
 {
     mpScene->removeItem(item);
+    if (item == mpLastActiveCard)
+        mpLastActiveCard = nullptr;
 
     auto itor = mpView->mUnitsRecord.find(item);
     if (itor == mpView->mUnitsRecord.end())
@@ -221,6 +227,23 @@ void BlueprintLoader::Impl::destroyUnit(QGraphicsItem* item)
     mpView->mUnitsRecord.erase(itor);
 
     delete unit;
+}
+
+void BlueprintLoader::Impl::updateTopmostCardItem(QGraphicsItem* card)
+{
+    if (card == mpLastActiveCard)
+        return;
+
+    card->setZValue(1.5f);
+    card->update();
+
+    if (mpLastActiveCard)        // 回归初心
+    {
+        mpLastActiveCard->setZValue(0);
+        card->update();
+    }
+
+    mpLastActiveCard = card;
 }
 
 void BlueprintLoader::destroyUnit(StandAloneUnit* unit)
@@ -241,10 +264,37 @@ BlueprintLoader::~BlueprintLoader()
     delete mpImpl;
 }
 
+bool BlueprintLoader::eventFilter(QObject* obj, QEvent* event)
+{
+    if (event->type() == UpdateTopmostCardEvent)
+    {
+        mpImpl->updateTopmostCardItem(dynamic_cast<TopmostCardEvent*>(event)->mpCard);
+        return true;
+    }
+
+    return QGraphicsView::eventFilter(obj, event);
+}
+
 void BlueprintLoader::wheelEvent(QWheelEvent* event)
 {
     mpImpl->scale(event);
     event->accept();
+}
+
+void BlueprintLoader::mousePressEvent(QMouseEvent* event)
+{
+    L_IMPL(BlueprintLoader)
+    QGraphicsView::mousePressEvent(event);
+
+    for (auto item : mScene.selectedItems())
+    {
+        auto itor = mUnitsRecord.find(item);
+        if (itor != mUnitsRecord.end() 
+            && itor->second->getUnitType() == StandAloneUnit::Type::Card)
+        {
+            l->updateTopmostCardItem(itor->first);
+        }
+    }
 }
 
 void BlueprintLoader::mouseReleaseEvent(QMouseEvent* event)
@@ -269,42 +319,6 @@ bool BlueprintLoader::event(QEvent* event)
 {
     if (event->type() == AnchorMouseEvent)
         return mpImpl->PreConnectLineEvent(dynamic_cast<PreConnLineEvent*>(event));
-
+        
     return QGraphicsView::event(event);
-}
-
-PreConnLineEvent::PreConnLineEvent()
-    : QEvent(static_cast<QEvent::Type>(AnchorMouseEvent))
-{
-
-}
-
-PreConnLineEvent& PreConnLineEvent::setType(EventType type)
-{
-    this->type = type;
-    return *this;
-}
-
-PreConnLineEvent& PreConnLineEvent::setColorPtr(QColor* color)
-{
-    this->color = color;
-    return *this;
-}
-
-PreConnLineEvent& PreConnLineEvent::setBeginPoint(const QPointF& begin)
-{
-    this->begin = begin;
-    return *this;
-}
-
-PreConnLineEvent& PreConnLineEvent::setEndPoint(const QPointF& end)
-{
-    this->end = end;
-    return *this;
-}
-
-PreConnLineEvent& PreConnLineEvent::setSender(BKAnchor* sender)
-{
-    this->sender = sender;
-    return *this;
 }

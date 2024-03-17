@@ -4,6 +4,7 @@
 #include <QSize>
 
 class BKUnitCreator;
+class BKCard;
 // 组元
 class _BlueprintKernalExport BKUnit
 {
@@ -19,6 +20,9 @@ public:
     explicit BKUnit();
     virtual ~BKUnit();
 
+public:
+    BKCard* getBindCard() const;
+
 protected:
     virtual QGraphicsItem* getGraphicsItem() = 0;
     virtual void resized();
@@ -31,6 +35,8 @@ protected:
     QSizeF mMinSize = { 0, 0 };
     // 组元大小策略，整体调整大小时会根据此策略进行判定
     SizePolicy mSizePolicy = SizePolicy::Adaptive;
+    // 绑定的卡片
+    BKCard* mpBindCard = nullptr;
 };
 
 template<typename T>

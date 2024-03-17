@@ -211,10 +211,25 @@ void BKCell::setAnchorOffset(qreal offset)
 
 bool BKCell::hasAnchor(BKAnchor* anchor)
 {
-    return  mpImpl->mAnchorArray[0] == anchor || mpImpl->mAnchorArray[1] == anchor;
+    L_IMPL(BKCell)
+    return  l->mAnchorArray[0] == anchor || l->mAnchorArray[1] == anchor;
 }
 
 void BKCell::dispatchPositionChanged() { return mpImpl->dispatchPositionChanged(); }
+
+void BKCell::bindCard(BKCard* card)
+{
+    L_IMPL(BKCell)
+    for (auto anchor : l->mAnchorArray)
+    {
+        if (anchor)
+            anchor->mpBindCard = card;
+    }
+
+    for (auto unit : l->mUnits)
+        unit->mpBindCard = card;
+}
+
 void BKCell::Impl::dispatchPositionChanged()
 {
     for (const auto& anchor : mAnchorArray)

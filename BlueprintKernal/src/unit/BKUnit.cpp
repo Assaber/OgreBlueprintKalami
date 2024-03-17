@@ -11,7 +11,9 @@ BKUnit::~BKUnit()
     qDebug() << "Unit self delete";
 }
 
-void BKUnit::resized()
+BKCard* BKUnit::getBindCard() const
 {
-
+    return mpBindCard;
 }
+
+void BKUnit::resized() {}

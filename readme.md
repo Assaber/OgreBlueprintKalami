@@ -33,5 +33,11 @@
             <td>首次进行git提交</td>
             <td><p>1. 已初步完成基础的卡片创建、删除<br>2. 已初步完成连接线的增删<br>3. 已具备Label控件</p></td>
         </tr>
+        <tr>
+            <td>1</td>
+            <td>2024-03-17</td>
+            <td>丰富支持的控件</td>
+            <td><p>1. 支持下拉框（ComboBox）<br>2. 支持按钮（Button）<br><font color="#FF8000">PS:尝试使用QGraphicsProxyWidget梭哈，但是好像有点卡..<br>然后就能画的就画，不能画的就嘿嘿</font></p></td>
+        </tr>
     </tbody>
 </table>

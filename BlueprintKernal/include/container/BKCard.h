@@ -12,11 +12,11 @@ public:
 
 public:
     void setTitle(const QString& title);
+    virtual QGraphicsItem* getBindItem() override;
 
 protected:
     void pack(std::initializer_list<BKCell*> cells);
-    virtual QGraphicsItem* getBindItem() override;
-
+   
 private:
     class Impl;
     Impl* mpImpl = nullptr;

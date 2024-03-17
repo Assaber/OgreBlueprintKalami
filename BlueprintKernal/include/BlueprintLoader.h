@@ -7,40 +7,8 @@
 #include "global_blueprint_kernal.h"
 
 class BKAnchor;
-class _BlueprintKernalExport PreConnLineEvent : public QEvent
-{
-public:
-    enum class EventType : uint8_t
-    {
-        Pressed = QEvent::GraphicsSceneMousePress,
-        Move = QEvent::GraphicsSceneMouseMove,
-        Released = QEvent::GraphicsSceneMouseRelease,
-    };
-
-public:
-    explicit PreConnLineEvent();
-
-public:
-    PreConnLineEvent& setType(EventType type);
-    PreConnLineEvent& setColorPtr(QColor* color);
-    PreConnLineEvent& setBeginPoint(const QPointF& begin);
-    PreConnLineEvent& setEndPoint(const QPointF& end);
-    PreConnLineEvent& setSender(BKAnchor* sender);
-
-public:
-    // 事件类型
-    EventType type = EventType::Pressed;
-    // 绘制起始点
-    QPointF begin = {};
-    // 绘制终止点
-    QPointF end = {};
-    // 绘制颜色
-    QColor* color = nullptr;
-    // 发送者
-    BKAnchor* sender = nullptr;
-};
-
 class BKCard;
+
 class _BlueprintKernalExport BlueprintLoader : public QGraphicsView
 {
 public:
@@ -63,9 +31,11 @@ public:
 
 protected:
     virtual bool event(QEvent* event) override;
+    virtual bool eventFilter(QObject*, QEvent*) override;
 
 protected:
     virtual void wheelEvent(QWheelEvent* event) override;
+    virtual void mousePressEvent(QMouseEvent* event) override;
     virtual void mouseReleaseEvent(QMouseEvent* event) override;
     virtual void keyPressEvent(QKeyEvent* event) override;
 

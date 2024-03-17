@@ -4,6 +4,7 @@
 #include <QGraphicsObject>
 #include <QSize>
 
+class BKComboBoxItemView;
 class _BlueprintKernalExport BKComboBox : public BKUnitBasic<BKComboBox>
 {
 public:
@@ -12,11 +13,11 @@ public:
     ~BKComboBox();
 
 public:
-    BKComboBox* setDefaultIndex(int index);
-
+    BKComboBox* setCurrentIndex(int index, bool notify = true);
     BKComboBox* setItems(const QStringList& items);
     
 private:
+    friend class BKComboBoxItemView;
     class Impl;
     Impl* mpImpl = nullptr;
 

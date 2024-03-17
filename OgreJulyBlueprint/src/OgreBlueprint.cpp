@@ -3,6 +3,9 @@
 #include "unit/BKUnitCreator.h"
 #include "unit/BKLabel.h"
 #include "unit/BKComboBox.h"
+#include "unit/BKPushButton.h"
+
+#include <QGraphicsObject>
 
 #include <QDebug>
 #include <QKeyEvent>
@@ -17,6 +20,7 @@ public:
         BKCell* title3 = new BKCell();
         BKCell* combText = new BKCell(BKAnchor::AnchorType::Output);
         BKCell* combText2 = new BKCell(BKAnchor::AnchorType::Input);
+        BKCell* button = new BKCell(BKAnchor::AnchorType::Input);
 
         BKUnitCreator creator;
         auto* label = creator.create<BKLabel>();
@@ -36,21 +40,25 @@ public:
 
         auto* comb = creator.create<BKComboBox>();
         comb->setItems(QStringList() << "青丝白发一瞬间" << "年华老去像谁言" << "春风犹有怜花意" << "可否许我再少年")
-            ->setDefaultIndex(1);
+            ->setCurrentIndex(1, false);
         combText->append(comb);
-
+        
         auto* comb2 = creator.create<BKComboBox>();
         comb2->setItems(QStringList() << "青丝白发一瞬间" << "年华老去像谁言" << "春风犹有怜花意" << "可否许我再少年")
-            ->setDefaultIndex(1);
+            ->setCurrentIndex(1, false);
         combText2->append(comb2);
 
+        auto* btn = creator.create<BKPushButton>();
+        btn->setText("ooook", true);
+        button->append(btn);
+
         pack({ 
-            
             title1, 
             title2,
             title3,
             combText2,
             combText,
+            button,
             });
     }
 

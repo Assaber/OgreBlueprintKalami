@@ -1,86 +1,257 @@
 ﻿#include "unit/BKComboBox.h"
+#include <QGraphicsItem>
+#include <QPainter>
+#include <QTextOption>
+#include <QGraphicsSceneMouseEvent>
 #include <QGraphicsProxyWidget>
-#include <QComboBox>
-#include <QPainterPath>
-#include <QListView>
-#include <QStringListModel>
-#include <QDebug>
-#include <QGraphicsItemGroup>
+#include <QListWidget>
+#include <QGraphicsScene>
+#include "container/BKCard.h"
+#include <QCoreApplication>
+#include "BKEvent.h"
 
-class BKComboBoxInnerListView : public QListView
-{
-public:
-    BKComboBoxInnerListView(QWidget* parent, QGraphicsProxyWidget* graphicsItem)
-        : QListView(parent)
-        , mpBindItem(graphicsItem)
-    {
-        // setStyleSheet("background-color:blue;");
-    }
-
-protected:
-    /*
-        这里好坑呀： 在demo里是一个group里挂着两个普通item，测试没问题；然后在这个工程里就一直错（现象是弹出的菜单一直在下面）。
-        感觉是Z的问题，最后最后才想起来整体结构不一样
-        在工程里是card包裹多个cell，每个cell再包裹unit，而不是所有unit在一个cell
-        所以Z比较就不一样了，这里将每个comboBox的上升group进行Z提升再进行比较就对了！
-        焯！
-    */
-
-    void hideEvent(QHideEvent* event) override
-    {
-        QListView::hideEvent(event);
-        auto cell = mpBindItem->group();
-        if(cell)
-            cell->setZValue(0);
-    }
-
-    void showEvent(QShowEvent* e) override
-    {
-        QListView::showEvent(e);
-        auto cell = mpBindItem->group();
-        if (cell)
-            cell->setZValue(1.0f);
-    }
-
-private:
-    QGraphicsProxyWidget* mpBindItem = nullptr;
-};
-
-class BKComboBoxWidget : public QComboBox
-{
-public:
-    using super = QComboBox;
-    using super::super;
-
-public:
-    void setGraphicsThingBind(QGraphicsProxyWidget* graphicsItem)
-    {
-        setModel(new QStringListModel());
-        setView(new BKComboBoxInnerListView(this, graphicsItem));
-    }
-};
-
-class BKComboBox::Impl : public QGraphicsProxyWidget
+class BKComboBox::Impl : public QGraphicsItem
 {
 public:
     Impl(BKComboBox* handle)
-        : QGraphicsProxyWidget()
+        : QGraphicsItem()
         , mpHandle(handle)
     {
-        mpWidget = new BKComboBoxWidget();
-        setWidget(mpWidget);
-        mpWidget->setGraphicsThingBind(this);
+        mOption.setWrapMode(QTextOption::NoWrap);
+        mOption.setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     }
 
     ~Impl()
     {
-        //父类会在析构时释放窗体
     }
+
+public:
+    virtual QRectF boundingRect() const override
+    {
+        return mBoundingRect;
+    }
+
+    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override
+    {
+        // 绘制边框
+        painter->save();
+        {
+            painter->setPen(QColor(255, 128, 64));
+            painter->setBrush(Qt::NoBrush);
+            painter->drawRoundedRect(mCtrlArea, 1.0f, 1.0f);
+            painter->restore();
+        }
+
+        // 绘制文字
+        if (mCurrentIndex > -1)
+        {
+            painter->save();
+            {
+                painter->setPen(Qt::black);
+                painter->setBrush(Qt::NoBrush);
+                painter->drawText(mTextArea, mItems[mCurrentIndex], mOption);
+                painter->restore();
+            }
+        }
+
+        // 绘制按钮
+        painter->save();
+        {
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(QColor(255, 128, 64));
+            if(mbPressed)
+                painter->drawRoundedRect(mButtonArea - QMargins(2, 2, 0, 0), 1.0f, 1.0f);
+            else
+                painter->drawRoundedRect(mButtonArea - QMargins(1, 1, 1, 1), 1.0f, 1.0f);
+            painter->restore();
+        }
+    }
+
+protected:
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
+    {
+        if (event->button() == Qt::LeftButton)
+        {
+            if (mButtonArea.contains(event->pos().toPoint()))
+            {
+                mbPressed = true;
+
+                // 在按下的时候就发，早处理早省心
+                // 很快的
+                TopmostCardEvent e(mpHandle->mpBindCard->getBindItem());
+                qApp->sendEvent(scene(), &e);
+
+                update();
+            }
+        }
+        event->accept();
+    }
+
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+
+
 public:
     BKComboBox* mpHandle = nullptr;
-    // 窗体控件
-    BKComboBoxWidget* mpWidget = nullptr;
+    // 固定上下边距
+    static constexpr int mFixedMargin = 2;
+    // 下拉列表
+    QStringList mItems;
+    // 当前索引
+    int32_t mCurrentIndex = -1;
+    // 包围盒
+    QRectF mBoundingRect;
+    // 控件区域
+    QRect mCtrlArea;
+    // 按钮区域
+    QRect mButtonArea;
+    // 文字区域
+    QRect mTextArea;
+    // 是否为按下状态
+    bool mbPressed = false;
+    // 文字绘制选项
+    QTextOption mOption;
+    // 展开窗体
+    static BKComboBoxItemView* mpPublicView;
 };
+
+BKComboBoxItemView* BKComboBox::Impl::mpPublicView = nullptr;
+
+
+class BKComboBoxItemView : public QGraphicsProxyWidget
+{
+public:
+    using super = QGraphicsProxyWidget;
+    BKComboBoxItemView()
+        : super()
+    {
+        mpView = new QListWidget();
+        mpView->setFrameShape(QFrame::NoFrame);
+        mpView->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+        mpView->setStyleSheet("QListWidget{" \
+            "	padding: 0px;" \
+            "	margin: 0px;" \
+            "	outline: 0px;" \
+            "}" \
+            "" \
+            "QListView::item:selected {" \
+            "	background: rgb(255, 128, 0);" \
+            "	outline: 0px;" \
+            "}" \
+            "" \
+            "QListView::item:hover {" \
+            "	background: rgba(255, 128, 64, 120);" \
+            "}" \
+            "" \
+            "QListWidget QScrollBar::vertical {" \
+            "	background-color: rgba(0, 0, 0, 64);" \
+            "	width: 8px;" \
+            "	border-radius: 4px;" \
+            "}" \
+            "" \
+            "QListWidget QScrollBar::handle:vertical {" \
+            "	background-color:rgb(255, 128, 64);" \
+            "	width: 8px;" \
+            "	border-radius: 4px;" \
+            "}" \
+            "" \
+            "QListWidget QScrollBar::add-line:vertical," \
+            "QListWidget QScrollBar::sub-line:vertical," \
+            "QListWidget QScrollBar::add-page:vertical," \
+            "QListWidget QScrollBar::sub-page:vertical {" \
+            "	background:none;" \
+            "	border:none;" \
+            "}");
+        mpView->style()->polish(mpView);
+        setWidget(mpView);
+
+        QObject::connect(mpView, &QListWidget::itemClicked, this, [this]() {
+            if (mpBindItem)
+                mpBindItem->mpHandle->setCurrentIndex(mpView->currentIndex().row());
+            resetBind();
+            });
+
+        setZValue(2.0f);
+    }
+
+public:
+    void setExpand(BKComboBox::Impl* parent)
+    {
+        mpView->clear();
+        mpView->addItems(parent->mItems);
+
+        mpBindItem = parent;
+        if (auto card = mpBindItem->mpHandle->getBindCard())
+        {
+            auto cardItem = card->getBindItem();
+            mBindOriginZ = cardItem->zValue();
+            cardItem->setZValue(2.0f);
+        }
+
+        const QRectF& pr = mpBindItem->boundingRect();
+        this->setPos(mpBindItem->mapToScene(pr.bottomLeft()));
+
+        QSizeF size( pr.width(), 110 );
+        mpView->setFixedSize(size.toSize());
+        this->setMinimumSize(size);
+        this->setMaximumSize(size);
+
+        mpScene = mpBindItem->scene();
+
+        mpScene->addItem(this);
+        this->setFocus();
+    }
+
+protected:
+    void focusOutEvent(QFocusEvent* event) override
+    {
+        super::focusOutEvent(event);
+        resetBind();
+    }
+
+private:
+    void resetBind()
+    {
+        if (mpBindItem)
+        {
+            if (auto card = mpBindItem->mpHandle->getBindCard())
+            {
+                auto cardItem = card->getBindItem();
+                cardItem->setZValue(mBindOriginZ);
+            }
+        }
+
+        mpBindItem = nullptr;
+        mpScene->setFocusItem(mpBindItem);
+        mpScene->removeItem(this);
+    }
+
+private:
+    QListWidget* mpView = nullptr;
+    QGraphicsScene* mpScene = nullptr;
+    BKComboBox::Impl* mpBindItem = nullptr;
+    qreal mBindOriginZ = 0;
+};
+
+
+void BKComboBox::Impl::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        if (mButtonArea.contains(event->pos().toPoint()))
+        {
+            // 展开菜单
+            if (!mpPublicView)
+                mpPublicView = new BKComboBoxItemView();
+
+            mpPublicView->setExpand(this);
+        }
+
+        mbPressed = false;
+        update();
+    }
+
+    event->accept();
+}
 
 BKComboBox::BKComboBox()
     : super()
@@ -95,21 +266,25 @@ BKComboBox::~BKComboBox()
     mpImpl = nullptr;
 }
 
-BKComboBox* BKComboBox::setDefaultIndex(int index)
+BKComboBox* BKComboBox::setCurrentIndex(int index, bool notify /*= true*/)
 {
-    BKComboBoxWidget* comb = mpImpl->mpWidget;
+    L_IMPL(BKComboBox)
+    if (index > -1 && index < l->mItems.size())
+        l->mCurrentIndex = index;
+    else
+        l->mCurrentIndex = -1;
 
-    if (index < comb->count())
-        comb->setCurrentIndex(index);
-   
+    mpImpl->update();
     return this;
 }
 
+
 BKComboBox* BKComboBox::setItems(const QStringList& items)
 {
-    BKComboBoxWidget* comb = mpImpl->mpWidget;
-    dynamic_cast<QStringListModel*>(comb->model())->setStringList(items);
+    mpImpl->mItems = items;
+    mpImpl->mCurrentIndex = items.size() > 0 ? 0 : -1;
 
+    mpImpl->update();
     return this;
 }
 
@@ -120,5 +295,12 @@ QGraphicsItem* BKComboBox::getGraphicsItem()
 
 void BKComboBox::resized()
 {
-    mpImpl->mpWidget->setFixedSize(mSize.width(), mSize.height());
+    L_IMPL(BKComboBox)
+
+    l->mBoundingRect = { 0, 0, mSize.width(), mSize.height() };
+    l->mCtrlArea = { 0, l->mFixedMargin, static_cast<int>(l->mBoundingRect.width()), static_cast<int>(l->mBoundingRect.height() - 2 * l->mFixedMargin) };
+
+    int split = l->mCtrlArea.width() - l->mCtrlArea.height();
+    l->mButtonArea = { split, l->mFixedMargin, l->mCtrlArea.height(), l->mCtrlArea.height() };
+    l->mTextArea = { 0, l->mFixedMargin, split, l->mCtrlArea.height() };
 }

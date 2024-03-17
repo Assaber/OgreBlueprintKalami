@@ -8,6 +8,7 @@
 #include "BlueprintLoader.h"
 #include "container/BKConnectingLine.h"
 #include <QApplication>
+#include "BKEvent.h"
 
 class BKAnchor::Impl
 {

@@ -151,20 +151,11 @@ void BKCard::pack(std::initializer_list<BKCell*> cells)
         heights.push_back(size.height());
     }
 
-    // qreal delta = 0;
     for (int i = 0; i < mpImpl->mItems.size(); ++i)
     {
         BKCell* cell = mpImpl->mItems[i];
         cell->updateActualSize({ width, heights[i] });
-
-        // if(i == 0)
-        //     cell->setAnchorOffset(delta);
-        // else
-        // {
-        //     delta += heights[i] / 2;
-        //     cell->setAnchorOffset(delta);
-        // }
-        // delta += heights[i] / 2;
+        cell->bindCard(this);
 
         QGraphicsItem* pItem = reinterpret_cast<QGraphicsItem*>(cell->mpImpl);
         pItem->setY(height);

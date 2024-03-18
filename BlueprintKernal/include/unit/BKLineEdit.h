@@ -1,0 +1,23 @@
+﻿#pragma once
+#include "global_blueprint_kernal.h"
+#include "BKUnit.h"
+
+class _BlueprintKernalExport BKLineEdit : public BKUnitBasic<BKLineEdit>
+{
+public:
+    using super = BKUnitBasic<BKLineEdit>;
+    BKLineEdit();
+    ~BKLineEdit();
+
+public:
+    BKLineEdit* setText(const QString& text);
+    
+private:
+    friend class BKLineEditor;
+    class Impl;
+    Impl* mpImpl = nullptr;
+
+protected:
+    virtual QGraphicsItem* getGraphicsItem() override;
+    virtual void resized() override;
+};

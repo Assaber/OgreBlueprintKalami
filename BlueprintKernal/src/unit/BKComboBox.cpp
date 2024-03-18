@@ -218,11 +218,12 @@ private:
                 auto cardItem = card->getBindItem();
                 cardItem->setZValue(mBindOriginZ);
             }
+
+            mpScene->setFocusItem(mpBindItem);
         }
 
-        mpBindItem = nullptr;
-        mpScene->setFocusItem(mpBindItem);
         mpScene->removeItem(this);
+        mpBindItem = nullptr;
     }
 
 private:

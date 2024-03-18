@@ -4,6 +4,7 @@
 #include "unit/BKLabel.h"
 #include "unit/BKComboBox.h"
 #include "unit/BKPushButton.h"
+#include "unit/BKLineEdit.h"
 
 #include <QGraphicsObject>
 
@@ -21,6 +22,7 @@ public:
         BKCell* combText = new BKCell(BKAnchor::AnchorType::Output);
         BKCell* combText2 = new BKCell(BKAnchor::AnchorType::Input);
         BKCell* button = new BKCell(BKAnchor::AnchorType::Input);
+        BKCell* lineEdit = new BKCell();
 
         BKUnitCreator creator;
         auto* label = creator.create<BKLabel>();
@@ -52,13 +54,20 @@ public:
         btn->setText("ooook", true);
         button->append(btn);
 
-        pack({ 
-            title1, 
+        auto* le = creator.create<BKLineEdit>();
+        le->setText("Snow");
+        lineEdit->append(le);
+
+
+
+        pack({
+            title1,
             title2,
             title3,
             combText2,
             combText,
             button,
+            lineEdit,
             });
     }
 

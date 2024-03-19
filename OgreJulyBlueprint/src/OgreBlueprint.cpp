@@ -5,6 +5,7 @@
 #include "unit/BKComboBox.h"
 #include "unit/BKPushButton.h"
 #include "unit/BKLineEdit.h"
+#include "unit/BKSliderBar.h"
 
 #include <QGraphicsObject>
 
@@ -23,6 +24,7 @@ public:
         BKCell* combText2 = new BKCell(BKAnchor::AnchorType::Input);
         BKCell* button = new BKCell(BKAnchor::AnchorType::Input);
         BKCell* lineEdit = new BKCell();
+        BKCell* sliderBar = new BKCell();
 
         BKUnitCreator creator;
         auto* label = creator.create<BKLabel>();
@@ -58,6 +60,12 @@ public:
         le->setText("Snow");
         lineEdit->append(le);
 
+        auto* sl = creator.create<BKSliderBar>(BKSliderBar::DateType::Int);
+        sl->setMinimum(15)
+            ->setMaximum(60)
+            ->setCurrentValue(30);
+        sliderBar->append(sl);
+
 
 
         pack({
@@ -68,6 +76,7 @@ public:
             combText,
             button,
             lineEdit,
+            sliderBar,
             });
     }
 

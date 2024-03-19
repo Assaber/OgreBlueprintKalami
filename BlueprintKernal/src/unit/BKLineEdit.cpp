@@ -128,7 +128,7 @@ public:
 
         mpScene = mpBindItem->scene();
         mpScene->addItem(this);
-        this->setFocus();
+        mpLineEdit->setFocus();
     }
 
 protected:
@@ -196,7 +196,8 @@ BKLineEdit::BKLineEdit()
 
 BKLineEdit::~BKLineEdit()
 {
-
+    delete mpImpl;
+    mpImpl = nullptr;
 }
 
 BKLineEdit* BKLineEdit::setText(const QString& text)

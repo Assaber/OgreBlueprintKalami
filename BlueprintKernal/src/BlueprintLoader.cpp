@@ -302,14 +302,15 @@ void BlueprintLoader::mouseReleaseEvent(QMouseEvent* event)
 
 void BlueprintLoader::keyPressEvent(QKeyEvent* event)
 {
+    QGraphicsView::keyPressEvent(event);
+    if (event->isAccepted())
+        return;
+
     if (event->key() == Qt::Key_Delete)
     {
         // 删除卡片或者连线
         mpImpl->deleteSelectedBKObject();
-    }
-
-
-    QGraphicsView::keyPressEvent(event);
+    }   
 }
 
 bool BlueprintLoader::event(QEvent* event)

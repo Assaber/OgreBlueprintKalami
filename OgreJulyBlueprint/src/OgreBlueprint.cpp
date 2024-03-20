@@ -94,10 +94,12 @@ OgreBlueprint::OgreBlueprint(QWidget* parent/* = nullptr*/)
 
 void OgreBlueprint::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_N)
-    {
-        createUnit<CustomCard>();
-    }
-
     BlueprintLoader::keyPressEvent(event);
+    if (!event->isAccepted())
+    {
+        if (event->key() == Qt::Key_N)
+        {
+            createUnit<CustomCard>();
+        }
+    }
 }

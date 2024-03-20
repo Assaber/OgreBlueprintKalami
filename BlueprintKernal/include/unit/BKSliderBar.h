@@ -21,7 +21,6 @@ public:
     BKSliderBar* setMaximum(const QVariant& max);
     BKSliderBar* setMinimum(const QVariant& min);
 
-    
 private:
     friend class BKSliderBarEditor;
     class Impl;

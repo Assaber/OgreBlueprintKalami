@@ -37,6 +37,8 @@ public:
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override
     {
+        correctRange();
+
         // 绘制外边框
         QPen p(QColor(255, 128, 64));
         painter->save();
@@ -57,28 +59,12 @@ public:
             {
                 float percent = 0;
                 if (mDataType == DateType::Int)
-                {
-                    if (mIntRange[1] == mIntRange[0])
-                        break;
-                    else if (mIntRange[1] < mIntRange[0])
-                        std::swap(mIntRange[0], mIntRange[1]);
-
-
-                    percent = 1.0f * (miCurrentValue - mIntRange[0]) / (mIntRange[1] - mIntRange[0]);    
-                }
+                    percent = (mIntRange[1] == mIntRange[0]) ? 0 : 1.0f * (mIntRange[1] - miCurrentValue) / (mIntRange[1] - mIntRange[0]);
                 else
-                {
-                    if (mDoubleRange[1] == mDoubleRange[0])
-                        break;
-                    else if (mDoubleRange[1] < mDoubleRange[0])
-                        std::swap(mDoubleRange[0], mDoubleRange[1]);
-
-                    percent = 1.0f * (mdCurrentValue - mDoubleRange[0]) / (mDoubleRange[1] - mDoubleRange[0]);
-                }
+                    percent = (mDoubleRange[1] == mDoubleRange[0]) ? 0 : 1.0f * (mDoubleRange[1] - mdCurrentValue) / (mDoubleRange[1] - mDoubleRange[0]);
 
                 percent = percent > 1 ? 1.0f : (percent < 0 ? 0 : percent);
-                percent = 1.0f - percent;
-                painter->drawRoundedRect(mCtrlArea + QMargins(0, 0,  - percent * mCtrlArea.width(), 0), 2.0f, 2.0f);
+                painter->drawRoundedRect(mCtrlArea - QMargins(0, 0, percent * mCtrlArea.width(), 0), 2.0f, 2.0f);
 
             } while (false);
 
@@ -98,10 +84,45 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
+        // 要接收才会响应双击和释放
         event->accept();
     }
 
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override
+    {
+        float x = (event->pos().x() - mCtrlArea.x()) / mCtrlArea.width();
+        x = x > 1.0f ? 1.0f : (x < 0 ? 0 : x);
+        if (mDataType == DateType::Int)
+            miCurrentValue = (mIntRange[1] == mIntRange[0]) ? mIntRange[0] : x * (mIntRange[1] - mIntRange[0]) + mIntRange[0];
+        else if(mDataType == DateType::Double)
+            mdCurrentValue = (mDoubleRange[1] == mDoubleRange[0]) ? mDoubleRange[0] : x * (mDoubleRange[1] - mDoubleRange[0]) + mDoubleRange[0];
+
+        //todo...
+        // 数值改变
+
+        update();
+    }
+
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+
+private:
+    void correctRange()
+    {
+        if (mbHasCorrected)
+            return;
+
+        if (mDataType == DateType::Int)
+        {
+            if (mIntRange[0] > mIntRange[1])
+                std::swap(mIntRange[0], mIntRange[1]);
+        }
+        else if (mDataType == DateType::Double)
+        {
+            if (mDoubleRange[0] > mDoubleRange[1])
+                std::swap(mDoubleRange[0], mDoubleRange[1]);
+        }
+        mbHasCorrected = true;
+    }
 
 public:
     BKSliderBar* mpHandle = nullptr;
@@ -123,6 +144,8 @@ public:
     // Double型范围
     double mdCurrentValue = 0;
     double mDoubleRange[2] = { 0, 100.0f };
+    // 纠正使能
+    bool mbHasCorrected = false;
 };
 
 BKSliderBarEditor* BKSliderBar::Impl::mpPublicEditor = nullptr;
@@ -288,6 +311,8 @@ BKSliderBar* BKSliderBar::setMaximum(const QVariant& max)
         l->mIntRange[1] = max.toInt();
     else
         l->mDoubleRange[1] = max.toDouble();
+
+    l->mbHasCorrected = false;
     return this;
 }
 
@@ -299,6 +324,7 @@ BKSliderBar* BKSliderBar::setMinimum(const QVariant& min)
         l->mIntRange[0] = min.toInt();
     else
         l->mDoubleRange[0] = min.toDouble();
+    l->mbHasCorrected = false;
     return this;
 }
 

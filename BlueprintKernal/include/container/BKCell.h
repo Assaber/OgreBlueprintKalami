@@ -17,24 +17,25 @@ public:
 
 public:
     /**
-     * @brief:                                            追加单元对象
-     * @param: BKUnit* unit                                单元对象
+     * @brief:                                              追加单元对象
+     * @param: BKUnit* unit                                 单元对象
      * @return: void
-     * @remark:                                            追加的单元对象会按照追加的次序进行显示
+     * @remark:                                             追加的单元对象会按照追加的次序进行显示
      */
-    void append(BKUnit* unit);
+    BKCell* append(std::initializer_list<BKUnit*> units);
+    BKCell* append(BKUnit* units);
 
     /**
-     * @brief:                                            更新实际的大小
-     * @param: const QSizeF & aim                        目标大小
-     * @return:                                            规划后布局大小
+     * @brief:                                              更新实际的大小
+     * @param: const QSizeF & aim                           目标大小
+     * @return:                                             规划后布局大小
      * @remark:                                            
      */
     void updateActualSize(const QSizeF& aim);
 
     /**
-     * @brief:                                            获取理论的大小
-     * @return: QSizeF                                    理论大小
+     * @brief:                                              获取理论的大小
+     * @return: QSizeF                                      理论大小
      * @remark: 
      */
     QSizeF getTheorySize();
@@ -42,7 +43,7 @@ public:
     void setAnchorOffset(qreal offset);
 
     /**
-     * @brief:                                            是否有此锚点
+     * @brief:                                              是否有此锚点
      */
     bool hasAnchor(BKAnchor* anchor);
 

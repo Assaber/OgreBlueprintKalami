@@ -131,7 +131,7 @@ void BKCard::setTitle(const QString& title)
     mpImpl->mstrTitle = title;
 }
 
-void BKCard::pack(std::initializer_list<BKCell*> cells)
+void BKCard::_pack(std::initializer_list<BKCell*> cells)
 {
     // 清除
     for (auto& item : mpImpl->mItems)

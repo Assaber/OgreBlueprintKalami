@@ -15,7 +15,7 @@ public:
     virtual QGraphicsItem* getBindItem() override;
 
 protected:
-    void pack(std::initializer_list<BKCell*> cells);
+    void _pack(std::initializer_list<BKCell*> cells);
    
 private:
     class Impl;

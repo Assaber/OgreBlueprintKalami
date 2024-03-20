@@ -1,7 +1,10 @@
 ﻿#pragma once
 #include "container/BKCard.h"
 
-class TestCard
+class TestCard : public BKCard
 {
+public:
+    TestCard();
+
 };
 

@@ -92,9 +92,18 @@ BKCell::~BKCell()
     mpImpl = nullptr;
 }
 
-void BKCell::append(BKUnit* unit)
+BKCell* BKCell::append(std::initializer_list<BKUnit*> units)
+{
+    for (auto item : units)
+        mpImpl->mUnits.push_back(item);
+
+    return this;
+}
+
+BKCell* BKCell::append(BKUnit* unit)
 {
     mpImpl->mUnits.push_back(unit);
+    return this;
 }
 
 void BKCell::updateActualSize(const QSizeF& aim) { mpImpl->updateActualSize(aim); }

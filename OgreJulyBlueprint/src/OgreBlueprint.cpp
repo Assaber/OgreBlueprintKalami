@@ -6,6 +6,8 @@
 #include "unit/BKPushButton.h"
 #include "unit/BKLineEdit.h"
 #include "unit/BKSliderBar.h"
+#include "unit/BKCheckBox.h"
+#include "unit/BKSpacer.h"
 
 #include <QGraphicsObject>
 
@@ -22,9 +24,10 @@ public:
         BKCell* title3 = new BKCell();
         BKCell* combText = new BKCell(BKAnchor::AnchorType::Output);
         BKCell* combText2 = new BKCell(BKAnchor::AnchorType::Input);
-        BKCell* button = new BKCell(BKAnchor::AnchorType::Input);
+        BKCell* button = new BKCell();
         BKCell* lineEdit = new BKCell();
         BKCell* sliderBar = new BKCell();
+        BKCell* checkbox = new BKCell();
 
         BKUnitCreator creator;
         auto* label = creator.create<BKLabel>();
@@ -55,6 +58,7 @@ public:
         auto* btn = creator.create<BKPushButton>();
         btn->setText("ooook", true);
         button->append(btn);
+        button->append(creator.create<BKSpacer>());
 
         auto* le = creator.create<BKLineEdit>();
         le->setText("Snow");
@@ -66,7 +70,10 @@ public:
             ->setCurrentValue(30);
         sliderBar->append(sl);
 
-
+        auto* cb = creator.create<BKCheckBox>();
+        auto* sp = creator.create<BKSpacer>();
+        checkbox->append(cb);
+        checkbox->append(sp);
 
         pack({
             title1,
@@ -77,6 +84,7 @@ public:
             button,
             lineEdit,
             sliderBar,
+            checkbox,
             });
     }
 

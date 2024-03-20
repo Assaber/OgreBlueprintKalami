@@ -62,21 +62,27 @@ public:
 
 BKLabel::BKLabel()
     : super()
-    , mspImpl(std::make_shared<Impl>(this))
+    , mpImpl(new Impl(this))
 {
+}
+
+BKLabel::~BKLabel()
+{
+    delete mpImpl;
+    mpImpl = nullptr;
 }
 
 BKLabel* BKLabel::setText(const QString& text)
 {
-    return mspImpl->setText(text);
+    return mpImpl->setText(text);
 }
 
 BKLabel* BKLabel::setAlignment(Qt::Alignment alignment)
 {
-    return mspImpl->setAlignment(alignment);
+    return mpImpl->setAlignment(alignment);
 }
 
 QGraphicsItem* BKLabel::getGraphicsItem()
 {
-    return mspImpl.get();
+    return mpImpl;
 }

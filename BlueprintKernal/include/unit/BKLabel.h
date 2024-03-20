@@ -8,6 +8,7 @@ class _BlueprintKernalExport BKLabel : public BKUnitBasic<BKLabel>
 public:
     using super = BKUnitBasic<BKLabel>;
     BKLabel();
+    ~BKLabel();
 
 public:
     /**
@@ -27,7 +28,7 @@ public:
 
 private:
     class Impl;
-    std::shared_ptr<Impl> mspImpl;
+    Impl* mpImpl = nullptr;
 
 protected:
     virtual QGraphicsItem* getGraphicsItem() override;

@@ -60,6 +60,6 @@ public:
 
     inline T* setSizePolicy(SizePolicy policy) {
         mSizePolicy = policy;
-        return static_cast<T>(this);
+        return static_cast<T*>(this);
     }
 };

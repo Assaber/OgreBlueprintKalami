@@ -1,6 +1,7 @@
 ﻿#include "unit/BKLabel.h"
 #include <QPainter>
 #include <QDebug>
+#include "container/BKAnchor.h"
 
 class BKLabel::Impl : public QGraphicsItem
 {
@@ -85,4 +86,15 @@ BKLabel* BKLabel::setAlignment(Qt::Alignment alignment)
 QGraphicsItem* BKLabel::getGraphicsItem()
 {
     return mpImpl;
+}
+
+void BKLabel::dataChanged(const QVariant& data)
+{
+    L_IMPL(BKLabel)
+
+    setText(data.toString());
+    l->update();
+
+    if (mpRightAnchor && !mCallbackFunc(data))
+        mpRightAnchor->dataChanged(data);
 }

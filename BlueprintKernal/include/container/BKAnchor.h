@@ -106,12 +106,14 @@ private:
 private:
     // 锚点小球半径
     static constexpr float mnAnchorBallRadius = 6;
-
-
 protected:
     virtual QGraphicsItem* getGraphicsItem() override;
     virtual bool sceneEvent(QEvent* event) override;
 
+public:
+    // 将锚点的数据更新函数升到public
+    virtual void dataChanged(const QVariant& data) override;
+    
 public:
     virtual QRectF boundingRect() const override;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;

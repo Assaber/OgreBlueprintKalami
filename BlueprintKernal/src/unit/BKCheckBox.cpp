@@ -59,7 +59,7 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
-        mbEnable = !mbEnable;
+        mpHandle->dataChanged(!mbEnable);
         update();
     }
 
@@ -109,4 +109,14 @@ void BKCheckBox::resized()
 
     l->mBoundingRect = { 0, 0, mSize.width(), mSize.height() };
     l->mCtrlArea = { 0, l->mFixedMargin, static_cast<int>(l->mBoundingRect.width()), static_cast<int>(l->mBoundingRect.height() - 2 * l->mFixedMargin) };
+}
+
+void BKCheckBox::dataChanged(const QVariant& data)
+{
+    L_IMPL(BKCheckBox)
+
+    setEnable(data.toBool());
+    l->update();
+    if (mpRightAnchor && !mCallbackFunc(data))
+        mpRightAnchor->dataChanged(data);
 }

@@ -248,6 +248,18 @@ bool BKAnchor::sceneEvent(QEvent* event)
     return QGraphicsItem::sceneEvent(event);
 }
 
+void BKAnchor::dataChanged(const QVariant& data)
+{
+    L_IMPL(BKAnchor)
+
+    if (l->mAnchorType == AnchorType::Input)
+        for (auto item : l->mRegistUnitSet)
+            item->dataChanged(data);
+    else if (l->mAnchorType == AnchorType::Output)
+        for (auto item : l->mRegistRecord)
+            item.first->dataChanged(data);
+}
+
 void BKAnchor::Impl::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget /*= nullptr*/)
 {
     static_cast<void*>(widget);

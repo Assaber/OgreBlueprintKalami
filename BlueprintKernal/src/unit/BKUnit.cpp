@@ -2,7 +2,9 @@
 #include <QDebug>
 
 BKUnit::BKUnit()
+    : mCallbackFunc(BKUnit::defaultDataChangeCallback)
 {
+    
 }
 
 BKUnit::~BKUnit()
@@ -15,4 +17,14 @@ BKCard* BKUnit::getBindCard() const
     return mpBindCard;
 }
 
+bool BKUnit::defaultDataChangeCallback(const QVariant& param)
+{
+    return false;
+}
+
 void BKUnit::resized() {}
+
+void BKUnit::registOutputAnchor(BKAnchor* anchor)
+{
+    mpRightAnchor = anchor;
+}

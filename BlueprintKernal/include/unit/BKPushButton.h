@@ -21,6 +21,7 @@ public:
 
 protected:
     virtual void resized() override;
+    virtual void dataChanged(const QVariant& data) override;
 
 private:
     class Impl;

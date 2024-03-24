@@ -1,5 +1,6 @@
 ﻿#include "OgreBlueprint.h"
 #include "TestCard.h"
+#include "PrintCard.h"
 #include <QKeyEvent>
 
 
@@ -16,6 +17,10 @@ void OgreBlueprint::keyPressEvent(QKeyEvent* event)
         if (event->key() == Qt::Key_N)
         {
             createUnit<TestCard>();
+        }
+        else if(event->key() == Qt::Key_P)
+        {
+            createUnit<PrintCard>();
         }
     }
 }

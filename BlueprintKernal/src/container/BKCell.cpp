@@ -95,14 +95,22 @@ BKCell::~BKCell()
 BKCell* BKCell::append(std::initializer_list<BKUnit*> units)
 {
     for (auto item : units)
-        mpImpl->mUnits.push_back(item);
-
+        append(item);
+        
     return this;
 }
 
 BKCell* BKCell::append(BKUnit* unit)
 {
-    mpImpl->mUnits.push_back(unit);
+    L_IMPL(BKCell)
+
+    if (l->mAnchorArray[0])
+        l->mAnchorArray[0]->appendRegist(unit);
+
+    l->mUnits.push_back(unit);
+
+    if (l->mAnchorArray[1])
+        unit->registOutputAnchor(l->mAnchorArray[1]);
     return this;
 }
 

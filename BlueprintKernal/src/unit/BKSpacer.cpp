@@ -39,3 +39,8 @@ QGraphicsItem* BKSpacer::getGraphicsItem()
 {
     return mpImpl;
 }
+
+void BKSpacer::dataChanged(const QVariant& data)
+{
+    return;
+}

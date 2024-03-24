@@ -166,7 +166,12 @@ public:
 
         QObject::connect(mpView, &QListWidget::itemClicked, this, [this]() {
             if (mpBindItem)
-                mpBindItem->mpHandle->setCurrentIndex(mpView->currentIndex().row());
+            {
+                auto root = mpBindItem->mpHandle;
+                int index = mpView->currentIndex().row();
+                mpBindItem->mpHandle->dataChanged(mpBindItem->mItems[index]);
+            }
+                
             resetBind();
             });
 
@@ -304,4 +309,18 @@ void BKComboBox::resized()
     int split = l->mCtrlArea.width() - l->mCtrlArea.height();
     l->mButtonArea = { split, l->mFixedMargin, l->mCtrlArea.height(), l->mCtrlArea.height() };
     l->mTextArea = { 0, l->mFixedMargin, split, l->mCtrlArea.height() };
+}
+
+void BKComboBox::dataChanged(const QVariant& data)
+{
+    L_IMPL(BKComboBox)
+
+    int index = l->mItems.indexOf(data.toString());
+    setCurrentIndex(index);
+    l->update();
+    if (index < 0)      //阻断传递
+        return;
+
+    if (mpRightAnchor && !mCallbackFunc(data))
+        mpRightAnchor->dataChanged(data);
 }

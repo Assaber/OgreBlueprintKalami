@@ -69,19 +69,7 @@ void BlueprintLoader::Impl::init()
     initView();
 
     // 初始化连接线
-    mpView->createUnit<BKConnectingLine>();
-    int count = 0;
-    for (auto item : mpView->mUnitsRecord)
-    {
-        if (item.second->getUnitType() == StandAloneUnit::Type::ConnectingLine)
-        {
-            mpReadyLine = dynamic_cast<BKConnectingLine*>(item.second);
-            ++count;
-        }
-    }
-
-    if (count != 1)
-        throw std::exception("应该就一条连接线才对，是谁插队！");
+    mpReadyLine = mpView->_createUnit<BKConnectingLine>();
 }
 
 void BlueprintLoader::Impl::initScene()

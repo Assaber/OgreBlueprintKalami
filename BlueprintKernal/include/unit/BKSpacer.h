@@ -15,4 +15,5 @@ private:
 
 protected:
     virtual QGraphicsItem* getGraphicsItem() override;
+    virtual void dataChanged(const QVariant& data) override;
 };

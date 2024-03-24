@@ -145,12 +145,9 @@ private:
         {
             if (mpBindItem->mstrText != mpLineEdit->text())
             {
-                mpBindItem->mstrText = mpLineEdit->text();
-
-                // todo...
-                // 文字变更
+                mpBindItem->mpHandle->dataChanged(mpLineEdit->text());
+                mpBindItem->update();
             }
-            mpBindItem->update();
 
             if (auto card = mpBindItem->mpHandle->getBindCard())
             {
@@ -192,6 +189,7 @@ BKLineEdit::BKLineEdit()
     : super()
     , mpImpl(new Impl(this))
 {
+    mMinSize.setWidth(130);
 }
 
 BKLineEdit::~BKLineEdit()
@@ -219,4 +217,15 @@ void BKLineEdit::resized()
 
     l->mBoundingRect = { 0, 0, mSize.width(), mSize.height() };
     l->mCtrlArea = { 0, l->mFixedMargin, static_cast<int>(l->mBoundingRect.width()), static_cast<int>(l->mBoundingRect.height() - 2 * l->mFixedMargin) };
+}
+
+void BKLineEdit::dataChanged(const QVariant& data)
+{
+    L_IMPL(BKLineEdit)
+
+    setText(data.toString());
+    l->update();
+
+    if (mpRightAnchor && !mCallbackFunc(data))
+        mpRightAnchor->dataChanged(data);
 }

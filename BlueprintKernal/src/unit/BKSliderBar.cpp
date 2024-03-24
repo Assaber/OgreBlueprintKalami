@@ -93,12 +93,15 @@ protected:
         float x = (event->pos().x() - mCtrlArea.x()) / mCtrlArea.width();
         x = x > 1.0f ? 1.0f : (x < 0 ? 0 : x);
         if (mDataType == DateType::Int)
+        {
             miCurrentValue = (mIntRange[1] == mIntRange[0]) ? mIntRange[0] : x * (mIntRange[1] - mIntRange[0]) + mIntRange[0];
-        else if(mDataType == DateType::Double)
+            mpHandle->dataChanged(miCurrentValue);
+        }   
+        else if (mDataType == DateType::Double)
+        {
             mdCurrentValue = (mDoubleRange[1] == mDoubleRange[0]) ? mDoubleRange[0] : x * (mDoubleRange[1] - mDoubleRange[0]) + mDoubleRange[0];
-
-        //todo...
-        // 数值改变
+            mpHandle->dataChanged(mdCurrentValue);
+        }
 
         update();
     }
@@ -220,24 +223,10 @@ private:
     {
         if (mpBindItem)
         {
-            bool valChanged = false;
-            if (mpBindItem->mDataType == BKSliderBar::DateType::Int 
-                && mpLineEdit->text().toInt() != mpBindItem->miCurrentValue)
-            {
-                mpBindItem->miCurrentValue = mpLineEdit->text().toInt();
-                valChanged = true;
-            }
-            else if (mpBindItem->mDataType == BKSliderBar::DateType::Double
-                && mpLineEdit->text().toDouble() != mpBindItem->mdCurrentValue)
-            {
-                mpBindItem->mdCurrentValue = mpLineEdit->text().toDouble();
-                valChanged = true;
-            }
-
-            if (valChanged)
-            {
-                //todo...
-            }
+            if (mpBindItem->mDataType == BKSliderBar::DateType::Int  && mpLineEdit->text().toInt() != mpBindItem->miCurrentValue)
+                mpBindItem->mpHandle->dataChanged(mpLineEdit->text().toInt());
+            else if (mpBindItem->mDataType == BKSliderBar::DateType::Double && mpLineEdit->text().toDouble() != mpBindItem->mdCurrentValue)
+                mpBindItem->mpHandle->dataChanged(mpLineEdit->text().toDouble());
 
             mpBindItem->update();
 
@@ -339,4 +328,14 @@ void BKSliderBar::resized()
 
     l->mBoundingRect = { 0, 0, mSize.width(), mSize.height() };
     l->mCtrlArea = { 0, l->mFixedMargin, static_cast<int>(l->mBoundingRect.width()), static_cast<int>(l->mBoundingRect.height() - 2 * l->mFixedMargin) };
+}
+
+void BKSliderBar::dataChanged(const QVariant& data)
+{
+    L_IMPL(BKSliderBar);
+
+    setCurrentValue(data);
+    l->update();
+    if (mpRightAnchor && !mCallbackFunc(data))
+        mpRightAnchor->dataChanged(data);
 }

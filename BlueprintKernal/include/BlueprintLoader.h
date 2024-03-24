@@ -15,16 +15,24 @@ public:
     BlueprintLoader(QWidget* parent = nullptr);
     ~BlueprintLoader();
 
-public:
+private:
     template<typename T, typename... Args, typename = std::enable_if_t<std::is_base_of_v<StandAloneUnit, T>>>
-    void createUnit(Args &&...args) {
+    T* _createUnit(Args &&...args) {
         T* item = new T(std::forward<Args>(args)...);
         StandAloneUnit* unit = dynamic_cast<StandAloneUnit*>(item);
 
         mScene.addItem(unit->getBindItem());
         unit->syncSoulImprint();
 
-        mUnitsRecord.insert({ unit->getBindItem(), unit });
+        mUnitsRecord.insert({ unit->getBindItem(), unit});
+
+        return item;
+    }
+
+public:
+    template<typename T, typename... Args, typename = std::enable_if_t<std::is_base_of_v<StandAloneUnit, T>>>
+    void createUnit(Args &&...args) {
+        _createUnit<T>(std::forward<Args>(args)...);
     }
 
     void destroyUnit(StandAloneUnit* unit);

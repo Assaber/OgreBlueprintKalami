@@ -46,7 +46,6 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr);
 public:
     void setDateType(DataType type);
-    void setBezierOffset(int offset);
     bool inSameCell(BKAnchor* anchor);
 
 public:
@@ -80,8 +79,6 @@ public:
     static const std::map<DataType, QColor> mDataType2Color;
     // 准备线的其实连接点
     QPointF mConnectBegin;
-    // 锚点偏移，为了让连接线看着平行，逻辑上基于最上面的锚点做出偏移
-    int mAnchorOffset = 0;
     // 包裹锚点的组元
     BKCell* mpCell = nullptr;
 };
@@ -99,6 +96,18 @@ const std::map<BKAnchor::DataType, QColor> BKAnchor::Impl::mDataType2Color = {
     { BKAnchor::DataType::Custom,   0xFFFF8000 },
 };
 
+
+QJsonValue BKAnchor::getValue()
+{
+    __debugbreak();
+    return 0;
+}
+
+bool BKAnchor::setValue(const QJsonValue& val)
+{
+    __debugbreak();
+    return true;
+}
 
 BKAnchor::BKAnchor(AnchorType type, BKCell* cell)
     : super()
@@ -119,13 +128,6 @@ BKAnchor* BKAnchor::setDateType(DataType type)
     mpImpl->setDateType(type);
     return this;
 }
-
-BKAnchor* BKAnchor::setBezierOffset(int offset)
-{
-    mpImpl->setBezierOffset(offset);
-    return this;
-}
-
 
 BKAnchor::AnchorType BKAnchor::getAnchorType()
 {
@@ -177,6 +179,22 @@ void BKAnchor::dispatchCellPositionChanged()
 {
     for (auto item : mpImpl->mRegistRecord)
         item.second->updateByBind();
+}
+
+std::vector<BKAnchor*> BKAnchor::getRegistAnchors()
+{
+    L_IMPL(BKAnchor)
+    std::vector<BKAnchor*> ret;
+
+    for (auto item : l->mRegistRecord)
+        ret.push_back(item.first);
+
+    return ret;
+}
+
+BKCell* BKAnchor::getCell()
+{
+    return mpImpl->mpCell;
 }
 
 void BKAnchor::Impl::removeRegist(BKUnit* unit)
@@ -288,11 +306,6 @@ void BKAnchor::Impl::setDateType(DataType type)
         mFilledBrush = QBrush(mColor);
         mBorderPen = QPen(mColor);
     }
-}
-
-void BKAnchor::Impl::setBezierOffset(int offset)
-{
-    mAnchorOffset = offset;
 }
 
 

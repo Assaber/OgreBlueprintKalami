@@ -98,6 +98,16 @@ BKPushButton::BKPushButton()
 {
 }
 
+QJsonValue BKPushButton::getValue()
+{   // 嗨嗨嗨
+    return true;
+}
+
+bool BKPushButton::setValue(const QJsonValue& val)
+{   // 嗨嗨嗨
+    return true;
+}
+
 BKPushButton* BKPushButton::setText(const QString& text, bool comfy/* = false*/)
 {
     L_IMPL(BKPushButton)

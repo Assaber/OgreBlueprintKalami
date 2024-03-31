@@ -11,6 +11,10 @@ public:
     ~BKCheckBox();
 
 public:
+    virtual QJsonValue getValue() override;
+    virtual bool setValue(const QJsonValue& val) override;
+
+public:
 
     /**
      * @brief:                          设置开关使能

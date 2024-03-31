@@ -2,6 +2,7 @@
 #include "global_blueprint_kernal.h"
 #include <QGraphicsObject>
 #include <QSize>
+#include <QJsonValue>
 
 class BKUnitCreator;
 class BKCard;
@@ -26,6 +27,22 @@ public:
 public:
     BKCard* getBindCard() const;
     static bool defaultDataChangeCallback(const QVariant& param);
+
+public:
+    /**
+     * @brief:                          获取当前值
+     * @return: QJsonValue      
+     * @remark:                         导出Json时使用
+     */
+    virtual QJsonValue getValue() = 0;
+
+    /**
+     * @brief:                          获取当前值
+     * @param: const QJsonValue & val   
+     * @return: bool                    是否获取成功
+     * @remark:                         导入Json时使用
+     */
+    virtual bool setValue(const QJsonValue& val) = 0;
 
 protected:
     virtual QGraphicsItem* getGraphicsItem() = 0;

@@ -78,6 +78,8 @@ public:
     static constexpr float mnAnchorBallPadding = 6;
     // 锚点固定宽度（宽高可能不同相同）
     static constexpr float mnAnchorFixedWidth = (mnAnchorBallPadding + BKAnchor::mnAnchorBallRadius) * 2;
+    // 在卡片的行数
+    int mRow = -1;
 };
 
 BKCell::BKCell(BKAnchor::AnchorType type)
@@ -219,14 +221,6 @@ void BKCell::Impl::updateActualSize(const QSizeF& aim)
 
 QSizeF BKCell::getTheorySize() { return mpImpl->getTheorySize(); }
 
-void BKCell::setAnchorOffset(qreal offset)
-{
-    for (auto anchor : mpImpl->mAnchorArray)
-    {
-        if (anchor)
-            anchor->setBezierOffset(static_cast<int>(offset));
-    }
-}
 
 bool BKCell::hasAnchor(BKAnchor* anchor)
 {
@@ -234,11 +228,73 @@ bool BKCell::hasAnchor(BKAnchor* anchor)
     return  l->mAnchorArray[0] == anchor || l->mAnchorArray[1] == anchor;
 }
 
-void BKCell::dispatchPositionChanged() { return mpImpl->dispatchPositionChanged(); }
+BKAnchor* BKCell::getAnchor(BKAnchor::AnchorType type)
+{
+    L_IMPL(BKCell);
 
-void BKCell::bindCard(BKCard* card)
+    if (type == BKAnchor::Input)
+        return l->mAnchorArray[0];
+    else if(type == BKAnchor::Output)
+        return l->mAnchorArray[1];
+
+    return nullptr;
+}
+
+bool BKCell::exportUnitToJson(QJsonArray& obj)
 {
     L_IMPL(BKCell)
+
+    if (l->mUnits.size() == 0)      //答应我，就算没有也用一个空的Label撑一下好么
+        return false;
+
+    if (l->mUnits.size() == 1)
+    {
+        auto unit = *l->mUnits.begin();
+        obj.append(unit->getValue());
+    }
+    else
+    {
+        QJsonArray dst;
+        for (auto unit : l->mUnits)
+            dst.append(unit->getValue());
+        obj.append(dst);
+    }
+    return true;
+}
+
+bool BKCell::updateUnitFromJson(const QJsonValue& value)
+{
+    L_IMPL(BKCell);
+    size_t count = l->mUnits.size();
+
+    if (count == 0)
+        return false;
+    
+    if (count == 1)
+        l->mUnits[0]->setValue(value);
+    else
+        for (int i = 0; i < count; ++i)
+            l->mUnits[i]->setValue(value.toArray()[i]);
+    
+    return true;
+}
+
+int BKCell::getMemberRow(BKAnchor* anchor)
+{
+    L_IMPL(BKCell);
+    if (l->mAnchorArray[0] != anchor && l->mAnchorArray[1] != anchor)
+        return -1;
+
+    return l->mRow;
+}
+
+void BKCell::dispatchPositionChanged() { return mpImpl->dispatchPositionChanged(); }
+
+void BKCell::bindCard(BKCard* card, int index)
+{
+    L_IMPL(BKCell)
+
+    l->mRow = index;
     for (auto anchor : l->mAnchorArray)
     {
         if (anchor)
@@ -275,7 +331,7 @@ QSizeF BKCell::Impl::getTheorySize()
         width += item->mMinSize.width();
     }
 
-    int count = mUnits.size();
+    size_t count = mUnits.size();
     if (count > 1)
         width += mnSpacing * (count - 1);
 

@@ -35,6 +35,16 @@ BKSpacer::~BKSpacer()
     mpImpl = nullptr;
 }
 
+QJsonValue BKSpacer::getValue()
+{
+    return 0;
+}
+
+bool BKSpacer::setValue(const QJsonValue& val)
+{
+    return true;
+}
+
 QGraphicsItem* BKSpacer::getGraphicsItem()
 {
     return mpImpl;

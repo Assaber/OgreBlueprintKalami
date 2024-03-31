@@ -10,6 +10,10 @@ public:
     ~BKLineEdit();
 
 public:
+    virtual QJsonValue getValue() override;
+    virtual bool setValue(const QJsonValue& val) override;
+
+public:
     BKLineEdit* setText(const QString& text);
     
 private:

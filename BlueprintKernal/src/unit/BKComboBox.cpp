@@ -272,6 +272,19 @@ BKComboBox::~BKComboBox()
     mpImpl = nullptr;
 }
 
+QJsonValue BKComboBox::getValue()
+{
+    L_IMPL(BKComboBox);
+    return (l->mCurrentIndex < 0 || l->mItems.size() == 0) ? "" : l->mItems.at(l->mCurrentIndex);
+}
+
+bool BKComboBox::setValue(const QJsonValue& val)
+{
+    L_IMPL(BKComboBox);
+    setCurrentItem(val.toString());
+    return true;
+}
+
 BKComboBox* BKComboBox::setCurrentIndex(int index, bool notify /*= true*/)
 {
     L_IMPL(BKComboBox)
@@ -284,6 +297,15 @@ BKComboBox* BKComboBox::setCurrentIndex(int index, bool notify /*= true*/)
     return this;
 }
 
+
+BKComboBox* BKComboBox::setCurrentItem(const QString& item, bool notify /*= true*/)
+{
+    L_IMPL(BKComboBox);
+    l->mCurrentIndex = l->mItems.indexOf(item);
+    mpImpl->update();
+
+    return this;
+}
 
 BKComboBox* BKComboBox::setItems(const QStringList& items)
 {

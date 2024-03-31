@@ -10,6 +10,10 @@ public:
     BKPushButton();
 
 public:
+    virtual QJsonValue getValue() override;
+    virtual bool setValue(const QJsonValue& val) override;
+
+public:
     /**
      * @brief:                                  设置显示文字
      * @param: const QString & text             文字内容

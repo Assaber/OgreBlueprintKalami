@@ -131,39 +131,89 @@ void BKCard::setTitle(const QString& title)
     mpImpl->mstrTitle = title;
 }
 
+bool BKCard::loadFromJson(const QJsonArray& obj, const QPoint& pos)
+{
+    L_IMPL(BKCard);
+
+    bool ok = true;
+    for (int i = 0; i < l->mItems.size(); ++i)
+    {
+        auto cell = l->mItems[i];
+        if (!cell->updateUnitFromJson(obj[i]))
+        {
+            ok = false;
+            break;
+        }
+    }
+
+    mpImpl->setPos(pos);
+    return true;
+}
+
+QJsonArray BKCard::exportToJson()
+{
+    L_IMPL(BKCard)
+
+    bool ok = true;
+    QJsonArray rows;
+    for (auto item : l->mItems)
+    {
+        if (!item->exportUnitToJson(rows))
+        {
+            ok = false;
+            break;
+        }
+    }
+
+    return ok ? rows : QJsonArray();
+}
+
+BKAnchor* BKCard::getRowAnchor(int row, BKAnchor::AnchorType type)
+{
+    L_IMPL(BKCard)
+
+    if (row >= l->mItems.size())
+        return nullptr;
+
+    return l->mItems[row]->getAnchor(type);
+}
+
 void BKCard::_pack(std::initializer_list<BKCell*> cells)
 {
+    L_IMPL(BKCard)
+
     // 清除
-    for (auto& item : mpImpl->mItems)
-        mpImpl->removeFromGroup(reinterpret_cast<QGraphicsItem*>(item->mpImpl));
-    mpImpl->mItems.clear();
+    for (auto& item : l->mItems)
+        l->removeFromGroup(reinterpret_cast<QGraphicsItem*>(item->mpImpl));
+    l->mItems.clear();
 
     std::vector<qreal> heights;
     heights.reserve(cells.size());
 
-    qreal width = 0, height = mpImpl->mnHeaderHeight;
+    qreal width = 0, height = l->mnHeaderHeight;
     for (auto& item : cells)
     {
-        mpImpl->mItems.push_back(item);
+        l->mItems.push_back(item);
 
         auto size = item->getTheorySize();
         width = std::max(size.width(), width);
         heights.push_back(size.height());
     }
 
-    for (int i = 0; i < mpImpl->mItems.size(); ++i)
+    int index = 0;
+    for (int i = 0; i < l->mItems.size(); ++i)
     {
-        BKCell* cell = mpImpl->mItems[i];
+        BKCell* cell = l->mItems[i];
         cell->updateActualSize({ width, heights[i] });
-        cell->bindCard(this);
+        cell->bindCard(this, index++);
 
         QGraphicsItem* pItem = reinterpret_cast<QGraphicsItem*>(cell->mpImpl);
         pItem->setY(height);
-        mpImpl->addToGroup(pItem);
+        l->addToGroup(pItem);
         height += heights[i];
     }
 
-    mpImpl->mSize = { width, height };
+    l->mSize = { width, height };
 }
 
 QGraphicsItem* BKCard::getBindItem()

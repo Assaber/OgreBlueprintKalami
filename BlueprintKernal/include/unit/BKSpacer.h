@@ -9,6 +9,10 @@ public:
     BKSpacer();
     ~BKSpacer();
 
+public:
+    virtual QJsonValue getValue() override;
+    virtual bool setValue(const QJsonValue& val) override;
+
 private:
     class Impl;
     Impl* mpImpl = nullptr;

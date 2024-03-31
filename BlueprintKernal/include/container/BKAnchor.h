@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include "BKCreator.h"
 
 /*!
  * \class BKAnchor
@@ -59,7 +60,6 @@ public:
 
 public:
     BKAnchor* setDateType(DataType type);
-    BKAnchor* setBezierOffset(int offset);
 
 public:
     AnchorType getAnchorType();
@@ -95,6 +95,8 @@ public:
 
 private:
     void dispatchCellPositionChanged();
+    std::vector<BKAnchor*> getRegistAnchors();
+    BKCell* getCell();
 
 private:
     friend class BKCell;
@@ -106,6 +108,7 @@ private:
 private:
     // 锚点小球半径
     static constexpr float mnAnchorBallRadius = 6;
+
 protected:
     virtual QGraphicsItem* getGraphicsItem() override;
     virtual bool sceneEvent(QEvent* event) override;
@@ -113,8 +116,17 @@ protected:
 public:
     // 将锚点的数据更新函数升到public
     virtual void dataChanged(const QVariant& data) override;
+
+private:
+    class Factory
+    {
+    public:
+        static constexpr char* _cardName = "_Anchor";
+    };
     
 public:
     virtual QRectF boundingRect() const override;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
+    virtual QJsonValue getValue() override;
+    virtual bool setValue(const QJsonValue& val) override;
 };

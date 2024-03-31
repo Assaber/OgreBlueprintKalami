@@ -4,6 +4,10 @@
 #include <QDebug>
 #include "container/BKConnectingLine.h"
 #include "BKEvent.h"
+#include <QCoreApplication>
+#include <QJsonDocument>
+
+std::map<std::string, BKCreator::CardCreatorPtr> BKCreator::mRegistItems;
 
 class BlueprintLoader::Impl
 {
@@ -17,18 +21,14 @@ public:
 
     ~Impl()
     {
+        destroyAllItems();
+
         /* 只释放卡片，卡片里面的成分有、复杂，需要按层释放
             - 卡片间的连接线会在卡片内部进行释放
             - 预连接线需要手动释放
         */
-        for (auto unit : mpView->mUnitsRecord)
-        {
-            int unitType = unit.first->data(StandAloneUnitInUserData).toInt();
-            if (static_cast<StandAloneUnit::Type>(unitType) == StandAloneUnit::Type::Card)
-                delete unit.second;
-            else if (unit.second == mpReadyLine)
-                delete unit.second;
-        }
+        delete mpReadyLine;
+        mpReadyLine = nullptr;
 
         mpView->mUnitsRecord.clear();
     }
@@ -40,6 +40,7 @@ public:
     void deleteSelectedBKObject();
     void destroyUnit(QGraphicsItem* item);
     void updateTopmostCardItem(QGraphicsItem* card);
+    void destroyAllItems();
 
 private:
     void initScene();
@@ -208,7 +209,7 @@ void BlueprintLoader::Impl::destroyUnit(QGraphicsItem* item)
     auto itor = mpView->mUnitsRecord.find(item);
     if (itor == mpView->mUnitsRecord.end())
         return;
-    StandAloneUnit* unit = itor->second;
+    StandAloneUnit* unit = itor->second.item;
     mpView->mUnitsRecord.erase(itor);
 
     delete unit;
@@ -231,10 +232,169 @@ void BlueprintLoader::Impl::updateTopmostCardItem(QGraphicsItem* card)
     mpLastActiveCard = card;
 }
 
+void BlueprintLoader::Impl::destroyAllItems()
+{
+    auto& record = mpView->mUnitsRecord;
+
+    auto itor = record.begin();
+    while (itor != record.end())
+    {
+        int unitType = itor->first->data(StandAloneUnitInUserData).toInt();
+        auto item = itor->second.item;
+
+        if (static_cast<StandAloneUnit::Type>(unitType) == StandAloneUnit::Type::Card)
+        {
+            delete item;
+            itor = record.erase(itor);
+        }
+        else
+            ++itor;
+    }
+}
+
 void BlueprintLoader::destroyUnit(StandAloneUnit* unit)
 {
     auto item = unit->getBindItem();
     mpImpl->destroyUnit(item);
+}
+
+void BlueprintLoader::exportSceneToJson(const QString& path)
+{
+    L_IMPL(BlueprintLoader);
+
+    QFile file(path);
+    if (file.exists())
+        file.remove();
+
+    if (!file.open(QIODevice::ReadWrite))
+        return;
+
+    QJsonDocument doc;
+    QJsonObject scene;
+    QJsonArray cards, lines;
+    std::map<BKCard*, int> card2Index;
+    for (const auto& item : mUnitsRecord)
+    {
+        auto type = static_cast<StandAloneUnit::Type>(item.first->data(StandAloneUnitInUserData).toInt());
+        if( type == StandAloneUnit::Type::Card)
+        {
+            auto card = dynamic_cast<BKCard*>(item.second.item);
+
+            QJsonArray obj(std::move(card->exportToJson()));
+            if (obj.isEmpty())
+                continue;
+
+            QJsonObject cardObject{
+                {"index", cards.size() },
+                {"name", item.second.name },
+                {"x", item.first->x()},
+                {"y", item.first->y()},
+                {"rows", obj}
+            };
+
+            cards.append(cardObject);
+            card2Index[card] = cardObject["index"].toInt();
+        }
+    };
+
+    for (const auto& item : mUnitsRecord)
+    {
+        auto type = static_cast<StandAloneUnit::Type>(item.first->data(StandAloneUnitInUserData).toInt());
+        if( type == StandAloneUnit::Type::ConnectingLine)
+        {
+            auto line = dynamic_cast<BKConnectingLine*>(item.second.item);
+            BKConnectingLine::BasicInfo info;
+            if (!line->getBasicInfo(info))
+                continue;
+
+            auto lItor = card2Index.find(info.lCard);
+            int lIndex = (lItor == card2Index.end()) ? -1 : lItor->second;
+
+            auto rItor = card2Index.find(info.rCard);
+            int rIndex = (rItor == card2Index.end()) ? -1 : rItor->second;
+
+            if (lIndex < 0 || rIndex < 0)
+                continue;
+
+            QJsonObject lineObject{
+                {"card1", lIndex },
+                {"card2", rIndex },
+                {"row1", info.lIndex },
+                {"row2", info.rIndex}
+            };
+            lines.append(lineObject);
+        }
+    }
+
+    scene.insert("card", cards);
+    scene.insert("connect", lines);
+    doc.setObject(scene);
+    file.write(doc.toJson());
+    file.flush();
+
+    file.close();
+}
+
+bool BlueprintLoader::loadSceneFromJson(const QString& path)
+{
+    L_IMPL(BlueprintLoader);
+
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly))
+        return false;
+
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &error);
+    file.close();
+
+    if (error.error != QJsonParseError::NoError)
+        return false;
+
+    //清除场景全部
+    l->destroyAllItems();
+
+    auto cardsObject = doc["card"];
+    if (cardsObject.isNull())
+        return false;
+    auto cards = cardsObject.toArray();
+    std::map<int, BKCard*> record;
+    for (const auto& item : cards)
+    {
+        auto card = item.toObject();
+        std::string name = card["name"].toString().toStdString();
+        
+        auto creator = BKCreator::getCreator(name.c_str());
+        if (!creator)
+            continue;
+
+        auto newItem = creator(this);
+        newItem->loadFromJson(card["rows"].toArray() , { card["x"].toInt(), card["y"].toInt() });
+
+        record[card["index"].toInt()] = newItem;
+    }
+
+    auto linesObject = doc["connect"];
+    auto get_card = [&](int index, int row, BKAnchor::AnchorType type) -> BKAnchor* {
+        auto itor = record.find(index);
+        if (itor == record.end())
+            return nullptr;
+
+        auto card = itor->second;
+        return card->getRowAnchor(row, type);
+    };
+
+    if (!linesObject.isNull())
+    {
+        for (const auto& item : linesObject.toArray())
+        {
+            auto connect = item.toObject();
+            auto lAnchor = get_card(connect["card1"].toInt(), connect["row1"].toInt(), BKAnchor::AnchorType::Input);
+            auto rAnchor = get_card(connect["card2"].toInt(), connect["row2"].toInt(), BKAnchor::AnchorType::Output);
+            createUnit<BKConnectingLine>(QColor(255, 128, 0), lAnchor, rAnchor);
+        }
+    }
+
+    return true;
 }
 
 BlueprintLoader::BlueprintLoader(QWidget* parent /*= nullptr*/)
@@ -275,7 +435,7 @@ void BlueprintLoader::mousePressEvent(QMouseEvent* event)
     {
         auto itor = mUnitsRecord.find(item);
         if (itor != mUnitsRecord.end() 
-            && itor->second->getUnitType() == StandAloneUnit::Type::Card)
+            && itor->second.item->getUnitType() == StandAloneUnit::Type::Card)
         {
             l->updateTopmostCardItem(itor->first);
         }
@@ -295,10 +455,12 @@ void BlueprintLoader::keyPressEvent(QKeyEvent* event)
         return;
 
     if (event->key() == Qt::Key_Delete)
-    {
-        // 删除卡片或者连线
         mpImpl->deleteSelectedBKObject();
-    }   
+    else if (event->key() == Qt::Key_S && (event->modifiers() & Qt::ControlModifier))
+    {
+        exportSceneToJson(qApp->applicationDirPath() + "/" + "scene.json");
+    }
+        
 }
 
 bool BlueprintLoader::event(QEvent* event)

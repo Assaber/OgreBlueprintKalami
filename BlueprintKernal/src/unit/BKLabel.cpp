@@ -73,6 +73,19 @@ BKLabel::~BKLabel()
     mpImpl = nullptr;
 }
 
+QJsonValue BKLabel::getValue()
+{
+    L_IMPL(BKLabel);
+
+    return l->mstrText;
+}
+
+bool BKLabel::setValue(const QJsonValue& val)
+{
+    setText(val.toString());
+    return true;
+}
+
 BKLabel* BKLabel::setText(const QString& text)
 {
     return mpImpl->setText(text);

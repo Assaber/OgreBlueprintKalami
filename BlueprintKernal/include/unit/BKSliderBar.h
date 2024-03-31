@@ -12,6 +12,10 @@ public:
     };
 
 public:
+    virtual QJsonValue getValue() override;
+    virtual bool setValue(const QJsonValue& val) override;
+
+public:
     using super = BKUnitBasic<BKSliderBar>;
     BKSliderBar(DateType type = DateType::Int);
     ~BKSliderBar();

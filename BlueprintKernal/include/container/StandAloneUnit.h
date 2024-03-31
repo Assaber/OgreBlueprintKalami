@@ -11,7 +11,6 @@ public:
         Default,
         Card,
         ConnectingLine,
-        PreConnectingLine,
     };
 
 public:

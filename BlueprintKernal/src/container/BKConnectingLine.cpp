@@ -4,6 +4,7 @@
 #include <array>
 #include <QPainter>
 #include <QStyleOption>
+#include "container/BKCell.h"
 
 class BKConnectingLine::Impl : public QGraphicsItem
 {
@@ -11,8 +12,10 @@ public:
     Impl(BKConnectingLine* handle, BKAnchor* a1, BKAnchor* a2)
         : QGraphicsItem(nullptr)
         , mpHandle(handle)
-        , mAnchorArray({a1, a2})
+        , mAnchorArray({ a1, a2 })
     {
+        standardAnchors();
+
         setZValue(-1);
         setFlag(QGraphicsItem::ItemIsSelectable);
 
@@ -73,6 +76,20 @@ public:
 
         mAnchorArray[0]->update();
         mAnchorArray[1]->update();
+    }
+
+    void standardAnchors() {
+        // 要么就都没有，要么更新布局
+        if ((mAnchorArray[0] && !mAnchorArray[1])
+            || (!mAnchorArray[0] && mAnchorArray[1]))
+        {
+            throw std::exception("查！严查！！为什么会有不配套的传入");
+        }
+
+        if (!mAnchorArray[0] && !mAnchorArray[1])
+            return;
+        else if (mAnchorArray[0]->getAnchorType() == BKAnchor::Input)
+                std::swap(mAnchorArray[0], mAnchorArray[1]);
     }
 
 public:
@@ -170,6 +187,25 @@ QPainterPath BKConnectingLine::createPainterPath(const QPointF* begin, const QPo
     }
 
     return ret;
+}
+
+
+bool BKConnectingLine::getBasicInfo(BasicInfo& info)
+{
+    L_IMPL(BKConnectingLine);
+
+    if (!l->mAnchorArray[0] || !l->mAnchorArray[1])
+        return false;
+
+    auto rAnchor = l->mAnchorArray[0];
+    info.rCard = rAnchor->getBindCard();
+    info.rIndex = rAnchor->getCell()->getMemberRow(rAnchor);
+
+    auto lAnchor = l->mAnchorArray[1];
+    info.lCard = lAnchor->getBindCard();
+    info.lIndex = lAnchor->getCell()->getMemberRow(lAnchor);
+
+    return true;
 }
 
 QGraphicsItem* BKConnectingLine::getBindItem()

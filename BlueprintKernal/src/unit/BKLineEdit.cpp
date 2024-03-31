@@ -198,6 +198,19 @@ BKLineEdit::~BKLineEdit()
     mpImpl = nullptr;
 }
 
+QJsonValue BKLineEdit::getValue()
+{
+    L_IMPL(BKLineEdit);
+
+    return l->mstrText;
+}
+
+bool BKLineEdit::setValue(const QJsonValue& val)
+{
+    setText(val.toString());
+    return true;
+}
+
 BKLineEdit* BKLineEdit::setText(const QString& text)
 {
     L_IMPL(BKLineEdit)

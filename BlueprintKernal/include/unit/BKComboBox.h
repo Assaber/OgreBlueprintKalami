@@ -12,8 +12,14 @@ public:
     BKComboBox();
     ~BKComboBox();
 
+
+public:
+    virtual QJsonValue getValue() override;
+    virtual bool setValue(const QJsonValue& val) override;
+
 public:
     BKComboBox* setCurrentIndex(int index, bool notify = true);
+    BKComboBox* setCurrentItem(const QString& item, bool notify = true);
     BKComboBox* setItems(const QStringList& items);
     
 private:

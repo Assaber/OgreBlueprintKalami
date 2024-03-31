@@ -24,7 +24,7 @@ private:
         mScene.addItem(unit->getBindItem());
         unit->syncSoulImprint();
 
-        mUnitsRecord.insert({ unit->getBindItem(), unit});
+        mUnitsRecord.insert({ unit->getBindItem(), { unit, T::Factory::_cardName} });
 
         return item;
     }
@@ -36,6 +36,8 @@ public:
     }
 
     void destroyUnit(StandAloneUnit* unit);
+    void exportSceneToJson(const QString& path);
+    bool loadSceneFromJson(const QString& path);
 
 protected:
     virtual bool event(QEvent* event) override;
@@ -50,11 +52,19 @@ protected:
 public:
     class Impl;
     friend class Impl;
+    friend class BKCreator;
     Impl* mpImpl = nullptr;
+
+private:
+    struct _UnitItem
+    {
+        StandAloneUnit* item;
+        const char* name;
+    };
 
 private:
     // 场景
     QGraphicsScene mScene;
     // 单元集
-    std::map<QGraphicsItem*, StandAloneUnit*> mUnitsRecord;
+    std::map<QGraphicsItem*, _UnitItem> mUnitsRecord;
 };

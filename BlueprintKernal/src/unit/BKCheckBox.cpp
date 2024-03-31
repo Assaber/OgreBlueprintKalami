@@ -90,6 +90,20 @@ BKCheckBox::~BKCheckBox()
 }
 
 
+QJsonValue BKCheckBox::getValue()
+{
+    L_IMPL(BKCheckBox);
+    return { l->mbEnable };
+}
+
+bool BKCheckBox::setValue(const QJsonValue& val)
+{
+    L_IMPL(BKCheckBox);
+    setEnable(val.toBool());
+
+    return true;
+}
+
 BKCheckBox* BKCheckBox::setEnable(bool enable)
 {
     L_IMPL(BKCheckBox)

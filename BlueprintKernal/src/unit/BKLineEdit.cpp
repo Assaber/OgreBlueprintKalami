@@ -236,9 +236,17 @@ void BKLineEdit::dataChanged(const QVariant& data)
 {
     L_IMPL(BKLineEdit)
 
-    setText(data.toString());
-    l->update();
+    if (data.isNull())
+    {
+        if (mpRightAnchor)
+            mpRightAnchor->dataChanged(l->mstrText);
+    }
+    else
+    {
+        setText(data.toString());
+        l->update();
 
-    if (mpRightAnchor && !mCallbackFunc(data))
-        mpRightAnchor->dataChanged(data);
+        if (mpRightAnchor && !mCallbackFunc(data))
+            mpRightAnchor->dataChanged(data);
+    }
 }

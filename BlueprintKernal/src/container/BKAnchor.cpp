@@ -154,11 +154,7 @@ void BKAnchor::Impl::appendRegist(BKAnchor* anchor, BKConnectingLine* path)
 void BKAnchor::appendRegist(BKUnit* unit) { mpImpl->appendRegist(unit); }
 void BKAnchor::Impl::appendRegist(BKUnit* unit)
 {
-    // 只有可能Unit向输入锚点注入
-    if (mAnchorType == AnchorType::Input)
-        mRegistUnitSet.insert(unit);
-    else
-        qWarning() << "注册单元关联失败";
+    mRegistUnitSet.insert(unit);
 }
 
 void BKAnchor::removeRegist(BKAnchor* anchor) { mpImpl->removeRegist(anchor); }
@@ -190,6 +186,11 @@ std::vector<BKAnchor*> BKAnchor::getRegistAnchors()
         ret.push_back(item.first);
 
     return ret;
+}
+
+std::set<BKUnit*> BKAnchor::getRegistUnits()
+{
+    return mpImpl->mRegistUnitSet;
 }
 
 BKCell* BKAnchor::getCell()

@@ -46,6 +46,12 @@ public:
 
 protected:
     virtual QGraphicsItem* getGraphicsItem() = 0;
+    /**
+     * @brief:                          更新数据
+     * @param: const QVariant & data    数据变量
+     * @return: void                
+     * @remark:                         当变量为空，则视为使用当前值触发后续更新，否则使用传入值进行更新
+     */
     virtual void dataChanged(const QVariant& data) = 0;
     virtual void resized();
     virtual void registOutputAnchor(BKAnchor* anchor);
@@ -53,6 +59,7 @@ protected:
 protected:
     friend class BKCell;
     friend class BKAnchor;
+    friend class BKConnectingLine;
     // 当前组元大小，原则上步应该由组元确定，应当由cell统一调配
     QSizeF mSize = { 0, 0 };
     // 组元的最小大小限制

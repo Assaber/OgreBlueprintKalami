@@ -337,12 +337,20 @@ void BKComboBox::dataChanged(const QVariant& data)
 {
     L_IMPL(BKComboBox)
 
-    int index = l->mItems.indexOf(data.toString());
-    setCurrentIndex(index);
-    l->update();
-    if (index < 0)      //阻断传递
-        return;
+    if (data.isNull())
+    {
+        if (mpRightAnchor)
+            mpRightAnchor->dataChanged(mpImpl->mCurrentIndex < 0 ? "" : l->mItems[l->mCurrentIndex]);
+    }
+    else
+    {
+        int index = l->mItems.indexOf(data.toString());
+        setCurrentIndex(index);
+        l->update();
+        if (index < 0)      //阻断传递
+            return;
 
-    if (mpRightAnchor && !mCallbackFunc(data))
-        mpRightAnchor->dataChanged(data);
+        if (mpRightAnchor && !mCallbackFunc(data))
+            mpRightAnchor->dataChanged(data);
+    }
 }

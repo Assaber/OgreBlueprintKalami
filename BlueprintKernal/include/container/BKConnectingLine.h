@@ -7,6 +7,8 @@ class BKAnchor;
 class BKCard;
 class _BlueprintKernalExport BKConnectingLine : public StandAloneUnit
 {
+    UNIT_FACTORY_ONLY_NAME("_ConnectLine")
+
 public:
     struct BasicInfo
     {
@@ -29,6 +31,7 @@ public:
     BKConnectingLine& setPainterPath(const QPointF& begin, const QPointF& end);
     void update();
     void updateByBind();
+    void triggerOriginOutput();
 
 public:
     static QPainterPath createPainterPath(const QPointF* begin, const QPointF* end = nullptr);
@@ -40,10 +43,6 @@ protected:
 private:
     friend class BlueprintLoader;
     friend class BKCreator;
-    class Factory {
-    public:
-        static constexpr char* _cardName = "_ConnectLine";
-    };
 
 private:
     class Impl;

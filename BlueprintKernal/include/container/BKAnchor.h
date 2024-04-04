@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include "BKCreator.h"
+#include <set>
 
 /*!
  * \class BKAnchor
@@ -31,6 +32,8 @@ class BKCell;
 class BKConnectingLine;
 class BKAnchor : public QGraphicsItem, public BKUnitBasic<BKAnchor>
 {
+    UNIT_FACTORY_ONLY_NAME("_Anchor")
+
 public:
     enum AnchorType
     {
@@ -86,6 +89,12 @@ public: //注册
     void appendRegist(BKAnchor* anchor, BKConnectingLine* line = nullptr);
     void removeRegist(BKAnchor* anchor);
 
+    /**
+     * @brief:                                  
+     * @param: BKUnit * unit
+     * @return: void
+     * @remark:                                 输入锚点和输出锚点都会注册，输入锚点注册为了整个链路相通；输出锚点注册为了连接时使用原数据更新
+     */
     void appendRegist(BKUnit* unit);
     void removeRegist(BKUnit* unit);
 
@@ -96,6 +105,7 @@ public:
 private:
     void dispatchCellPositionChanged();
     std::vector<BKAnchor*> getRegistAnchors();
+    std::set<BKUnit*> getRegistUnits();
     BKCell* getCell();
 
 private:
@@ -117,13 +127,6 @@ public:
     // 将锚点的数据更新函数升到public
     virtual void dataChanged(const QVariant& data) override;
 
-private:
-    class Factory
-    {
-    public:
-        static constexpr char* _cardName = "_Anchor";
-    };
-    
 public:
     virtual QRectF boundingRect() const override;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;

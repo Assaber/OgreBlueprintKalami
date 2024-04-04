@@ -112,7 +112,11 @@ BKCell* BKCell::append(BKUnit* unit)
     l->mUnits.push_back(unit);
 
     if (l->mAnchorArray[1])
+    {
         unit->registOutputAnchor(l->mAnchorArray[1]);
+        l->mAnchorArray[1]->appendRegist(unit);
+    }
+        
     return this;
 }
 
@@ -244,7 +248,7 @@ bool BKCell::exportUnitToJson(QJsonArray& obj)
 {
     L_IMPL(BKCell)
 
-    if (l->mUnits.size() == 0)      //答应我，就算没有也用一个空的Label撑一下好么
+    if (l->mUnits.size() == 0)      //答应我，就算没有也用一个空的Spacer撑一下好么，用空Label也行
         return false;
 
     if (l->mUnits.size() == 1)

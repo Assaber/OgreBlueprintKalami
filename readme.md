@@ -58,7 +58,13 @@ git clone git@github.com:OGRECave/ogre-next.git
             <td>3</td>
             <td>2024-03-24</td>
             <td>丰富支持的控件以及完成数据串联</td>
-            <td><p>1. 支持开关（CheckBox）<br>2. 支持线性输入（LineEdit）<br>3. 支持水平弹簧（Spacer）<br>4. 初步完成数据串联<br><font color="#FF8000">*原本打算做Undo/Redo的，渡劫失败了<br>*数据串联的时候再次感叹Qt帅的嘞~<br>*确实发现了锚点连接后，后面的unit不会自动更新。但是我不想让前一个unit主动触发了，因为不确定前一个cell中有多少个控制unit（虽然理论上只有一个）...</font></p></td>
+            <td><p>1. 支持开关（CheckBox）<br>2. 支持线性输入（LineEdit）<br>3. 支持水平弹簧（Spacer）<br>4. 初步完成数据串联<br><font color="#FF8000">*原本打算做Undo/Redo的，渡劫失败了<br>*数据串联的时候再次感叹Qt帅的嘞~<br><del>*确实发现了锚点连接后，后面的unit不会自动更新。但是我不想让前一个unit主动触发了，因为不确定前一个cell中有多少个控制unit（虽然理论上只有一个）...</del></font></p></td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>2024-04-04</td>
+            <td>请来了另一位主角(ogre)，掌声(ohhhhhh</td>
+            <td><p>1. 引入ogre-next、ogre-next-dep<br>2. 上次说的连线后自动触发一次更新改过来了</p></td>
         </tr>
     </tbody>
 </table>

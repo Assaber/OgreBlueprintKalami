@@ -30,7 +30,9 @@ static constexpr int StandAloneUnitInUserData = 101;
 class BlueprintLoader;
 // 获取枚举值的上升类型
 #define GET_ENUM_CLASS_UPWARD_VARIANT(x) (static_cast<std::underlying_type<decltype(x)>::type>(x))
+
 #define GET_CARD_NAME(Class) #Class
+
 #define CREATE_CARD_FACTORY(Class) \
 private: \
 friend class BlueprintLoader; \
@@ -43,5 +45,13 @@ public: \
     } \
     static constexpr char* _cardName = GET_CARD_NAME(Class); \
 };
+
+#define UNIT_FACTORY_ONLY_NAME(name) \
+private: \
+class Factory \
+{ \
+public: \
+    static constexpr char* _cardName = name; \
+}; \
 
 #define L_IMPL(x) x::Impl* l = mpImpl;

@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QStyleOption>
 #include "container/BKCell.h"
+#include "unit/BKPushButton.h"
+#include <QGraphicsSceneEvent>
 
 class BKConnectingLine::Impl : public QGraphicsItem
 {
@@ -52,6 +54,23 @@ public:
         return mBoundRect;
     }
 
+    virtual bool sceneEvent(QEvent* event)
+    {
+        if (event->type() == QEvent::GraphicsSceneMousePress)           // 如果按照包围盒算，可能会选中错误
+        {
+            auto mouseEvent = dynamic_cast<QGraphicsSceneMouseEvent*>(event);
+            QRectF range(mouseEvent->pos().x() - mnAnchorLineWidth,
+                mouseEvent->pos().y() - mnAnchorLineWidth,
+                mnAnchorLineWidth * 2,
+                mnAnchorLineWidth * 2);
+
+            if (!mPath.intersects(range))
+                event->ignore();
+        }
+
+        return QGraphicsItem::sceneEvent(event);
+    }
+
 public:
     inline bool isFullyBinding() 
     {
@@ -89,7 +108,7 @@ public:
         if (!mAnchorArray[0] && !mAnchorArray[1])
             return;
         else if (mAnchorArray[0]->getAnchorType() == BKAnchor::Input)
-                std::swap(mAnchorArray[0], mAnchorArray[1]);
+            std::swap(mAnchorArray[0], mAnchorArray[1]);
     }
 
 public:
@@ -112,7 +131,9 @@ BKConnectingLine::BKConnectingLine(const QColor& color, BKAnchor* a1, BKAnchor* 
     , mpImpl(new Impl(this, a1, a2))
 {
     setColor(color);
+
     updateByBind();
+    triggerOriginOutput();
 }
 
 BKConnectingLine::BKConnectingLine()
@@ -175,6 +196,18 @@ void BKConnectingLine::updateByBind()
     }
 
     update();
+}
+
+void BKConnectingLine::triggerOriginOutput()
+{
+    L_IMPL(BKConnectingLine);
+
+    auto anchor = l->mAnchorArray[0];
+    if (!anchor)
+        return;
+
+    for (auto unit : anchor->getRegistUnits())
+        unit->dataChanged(QVariant());
 }
 
 QPainterPath BKConnectingLine::createPainterPath(const QPointF* begin, const QPointF* end /*= nullptr*/)

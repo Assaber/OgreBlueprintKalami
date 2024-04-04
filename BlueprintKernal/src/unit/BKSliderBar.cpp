@@ -356,10 +356,18 @@ void BKSliderBar::resized()
 
 void BKSliderBar::dataChanged(const QVariant& data)
 {
-    L_IMPL(BKSliderBar);
+    L_IMPL(BKSliderBar)
 
-    setCurrentValue(data);
-    l->update();
-    if (mpRightAnchor && !mCallbackFunc(data))
-        mpRightAnchor->dataChanged(data);
+    if (data.isNull())
+    {
+        if (mpRightAnchor)
+            mpRightAnchor->dataChanged(l->mDataType == DateType::Int ? l->miCurrentValue : l->mdCurrentValue);
+    }
+    else
+    {
+        setCurrentValue(data);
+        l->update();
+        if (mpRightAnchor && !mCallbackFunc(data))
+            mpRightAnchor->dataChanged(data);
+    }
 }

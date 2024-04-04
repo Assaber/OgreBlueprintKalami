@@ -127,10 +127,18 @@ void BKCheckBox::resized()
 
 void BKCheckBox::dataChanged(const QVariant& data)
 {
-    L_IMPL(BKCheckBox)
+    L_IMPL(BKCheckBox);
 
-    setEnable(data.toBool());
-    l->update();
-    if (mpRightAnchor && !mCallbackFunc(data))
-        mpRightAnchor->dataChanged(data);
+    if (data.isNull())
+    {
+        if (mpRightAnchor)
+            mpRightAnchor->dataChanged(l->mbEnable);
+    }
+    else
+    {
+        setEnable(data.toBool());
+        l->update();
+        if (mpRightAnchor && !mCallbackFunc(data))
+            mpRightAnchor->dataChanged(data);
+    }
 }

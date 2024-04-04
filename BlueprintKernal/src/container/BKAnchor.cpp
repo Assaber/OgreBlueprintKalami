@@ -199,7 +199,8 @@ BKCell* BKAnchor::getCell()
 
 void BKAnchor::Impl::removeRegist(BKUnit* unit)
 {
-    if (auto itor = mRegistUnitSet.find(unit); itor != mRegistUnitSet.end())
+    auto itor = mRegistUnitSet.find(unit);
+    if ( itor != mRegistUnitSet.end())
         mRegistUnitSet.erase(itor);
 }
 
@@ -299,8 +300,8 @@ void BKAnchor::Impl::paint(QPainter* painter, const QStyleOptionGraphicsItem* op
 void BKAnchor::Impl::setDateType(DataType type)
 {
     mDataType = type;
-
-    if (auto itor = mDataType2Color.find(mDataType); itor != mDataType2Color.end())
+    auto itor = mDataType2Color.find(mDataType);
+    if ( itor != mDataType2Color.end())
     {
         mColor = itor->second;
         mFilledBrush = QBrush(mColor);

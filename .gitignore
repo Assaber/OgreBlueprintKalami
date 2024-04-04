@@ -2,3 +2,6 @@
 
 #Dir
 build/
+store/
+ogre-next/
+ogre-next-dep/

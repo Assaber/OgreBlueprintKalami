@@ -4,6 +4,11 @@ project(BlueprintKernal)
 
 include(../cmake/AutoAddSources.cmake)
 
+if (NOT APPLE)
+  # Create debug libraries with _d postfix
+  set(CMAKE_DEBUG_POSTFIX "_d")
+endif ()
+
 find_package(Qt5 COMPONENTS Widgets Gui Core REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)

@@ -7,5 +7,4 @@ if not exist %BUILD_DIR% (
     md %BUILD_DIR%
 ) 
 
-cd %BUILD_DIR%
-cmake ../
+cmake ./ -B %BUILD_DIR%

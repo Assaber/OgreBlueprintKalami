@@ -16,6 +16,21 @@
 //todo...
 
 
+### Ogre下载
+
+如果访问github速度还可以，可以通过下面的方式
+
+``` bash 
+# 下载ogre-next依赖
+git clone git@github.com:OGRECave/ogre-next-deps.git
+
+git submodule update --init --recursive
+
+git clone git@github.com:OGRECave/ogre-next.git
+```
+
+
+
 ### 关键结点记录
 <table width="95%" cellpadding="2" cellspacing="1">
     <thead>

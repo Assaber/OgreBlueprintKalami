@@ -5,6 +5,7 @@
 
 #include "TestCard.h"
 #include "PrintCard.h"
+#include "RenderItemCard.h"
 
 BlueprintEditor::BlueprintEditor(QWidget* parent/* = nullptr*/)
     : super(parent)
@@ -23,6 +24,10 @@ void BlueprintEditor::keyPressEvent(QKeyEvent* event)
         else if (event->key() == Qt::Key_P)
         {
             createUnit<PrintCard>();
+        }
+        else if (event->key() == Qt::Key_I)
+        {
+            createUnit<RenderItemCard>();
         }
         else if (event->key() == Qt::Key_L && (event->modifiers() & Qt::ControlModifier))
         {

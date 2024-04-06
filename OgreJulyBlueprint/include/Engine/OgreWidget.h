@@ -53,4 +53,7 @@ private:
     Ogre::Log* mpLogHandle = nullptr;
     // 资源路径
     std::set<std::string> mExtraRecPath;
+
+public:
+    static constexpr const char* strSceneMgrName = "DefaultSceneManager";
 };

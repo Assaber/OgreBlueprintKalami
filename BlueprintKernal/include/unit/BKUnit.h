@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "global_blueprint_kernal.h"
+#include <functional>
 #include <QGraphicsObject>
 #include <QSize>
 #include <QJsonValue>
@@ -18,7 +19,7 @@ public:
         Adaptive,        ///< 自适应
     };
 
-    using DataChangeCallback = bool(*)(const QVariant& param);
+    using DataChangeCallback = std::function<bool(const QVariant& param)>;
 
 public:
     explicit BKUnit();
@@ -75,7 +76,7 @@ protected:
 };
 
 template<typename T>
-class _BlueprintKernalExport BKUnitBasic : public BKUnit
+class BKUnitBasic : public BKUnit
 {
 public:
     using super = BKUnit;
@@ -90,6 +91,11 @@ public:
 
     inline T* setMinSize(const QSizeF& size) {
         mMinSize = size;
+        return static_cast<T*>(this);
+    }
+
+    inline T* setMinWidth(qreal width) {
+        mMinSize.setWidth(width);
         return static_cast<T*>(this);
     }
 

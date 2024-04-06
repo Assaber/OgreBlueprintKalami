@@ -27,6 +27,15 @@ public:
     BKCell* append(BKUnit* units);
 
     /**
+     * @brief:                                              设置锚点数据类型
+     * @param: BKAnchor::AnchorType anchor                  锚点位置
+     * @param: BKAnchor::DataType data                      锚点数据类型
+     * @return: BKCell*                                     自身指针
+     * @remark: 
+     */
+    BKCell* setDataType(BKAnchor::AnchorType anchor, BKAnchor::DataType data);
+
+    /**
      * @brief:                                              更新实际的大小
      * @param: const QSizeF & aim                           目标大小
      * @return:                                             规划后布局大小
@@ -53,7 +62,6 @@ public:
      * @remark: 
      */
     BKAnchor* getAnchor(BKAnchor::AnchorType type);
-
 
 public:
     /**

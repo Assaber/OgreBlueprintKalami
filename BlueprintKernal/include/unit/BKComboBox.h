@@ -8,10 +8,16 @@ class BKComboBoxItemView;
 class _BlueprintKernalExport BKComboBox : public BKUnitBasic<BKComboBox>
 {
 public:
+    enum CallbackParamType
+    {
+        Data,               ///< 数据
+        Index,              ///< 索引
+    };
+
+public:
     using super = BKUnitBasic<BKComboBox>;
     BKComboBox();
     ~BKComboBox();
-
 
 public:
     virtual QJsonValue getValue() override;
@@ -21,6 +27,7 @@ public:
     BKComboBox* setCurrentIndex(int index, bool notify = true);
     BKComboBox* setCurrentItem(const QString& item, bool notify = true);
     BKComboBox* setItems(const QStringList& items);
+    BKComboBox* setCallbackParamType(CallbackParamType type);
     
 private:
     friend class BKComboBoxItemView;

@@ -67,6 +67,10 @@ public:
         }
     }
 
+    QString getCurrentText() {
+        return (mCurrentIndex > -1 && mCurrentIndex < mItems.size()) ? mItems[mCurrentIndex] : "";
+    }
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
@@ -112,6 +116,8 @@ public:
     QTextOption mOption;
     // 展开窗体
     static BKComboBoxItemView* mpPublicView;
+    // 回调参数类型
+    CallbackParamType mCbType = CallbackParamType::Data;
 };
 
 BKComboBoxItemView* BKComboBox::Impl::mpPublicView = nullptr;
@@ -263,7 +269,6 @@ BKComboBox::BKComboBox()
     : super()
     , mpImpl(new Impl(this))
 {
-
 }
 
 BKComboBox::~BKComboBox()
@@ -294,6 +299,10 @@ BKComboBox* BKComboBox::setCurrentIndex(int index, bool notify /*= true*/)
         l->mCurrentIndex = -1;
 
     mpImpl->update();
+
+    if (notify)
+        dataChanged(l->getCurrentText());
+
     return this;
 }
 
@@ -316,6 +325,14 @@ BKComboBox* BKComboBox::setItems(const QStringList& items)
     return this;
 }
 
+BKComboBox* BKComboBox::setCallbackParamType(CallbackParamType type)
+{
+    L_IMPL(BKComboBox);
+    l->mCbType = type;
+
+    return this;
+}
+
 QGraphicsItem* BKComboBox::getGraphicsItem()
 {
     return mpImpl;
@@ -335,22 +352,23 @@ void BKComboBox::resized()
 
 void BKComboBox::dataChanged(const QVariant& data)
 {
-    L_IMPL(BKComboBox)
+    L_IMPL(BKComboBox);
 
     if (data.isNull())
     {
         if (mpRightAnchor)
-            mpRightAnchor->dataChanged(mpImpl->mCurrentIndex < 0 ? "" : l->mItems[l->mCurrentIndex]);
+            mpRightAnchor->dataChanged(l->getCurrentText());
     }
     else
     {
         int index = l->mItems.indexOf(data.toString());
-        setCurrentIndex(index);
+        setCurrentIndex(index, false);
         l->update();
+
         if (index < 0)      //阻断传递
             return;
 
-        if (mpRightAnchor && !mCallbackFunc(data))
+        if (!mCallbackFunc(l->mCbType == CallbackParamType::Data ? data : index) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);
     }
 }

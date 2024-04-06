@@ -151,7 +151,7 @@ void OgreWidget::createRenderWindow()
 
 void OgreWidget::createScene()
 {
-    mpDefaultSceneManager = mpRoot->createSceneManager(Ogre::ST_GENERIC, 1u, "DefaultSceneManager");
+    mpDefaultSceneManager = mpRoot->createSceneManager(Ogre::ST_GENERIC, 1u, strSceneMgrName);
     Ogre::SceneNode* rootSceneNode = mpDefaultSceneManager->getRootSceneNode();
 
     mpDefaultCamera = mpDefaultSceneManager->createCamera("DefaultCamera");

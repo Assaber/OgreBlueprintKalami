@@ -6,6 +6,7 @@
 #include "BKEvent.h"
 #include <QCoreApplication>
 #include <QJsonDocument>
+#include <QScrollBar>
 
 std::map<std::string, BKCreator::CardCreatorPtr> BKCreator::mRegistItems;
 
@@ -402,6 +403,9 @@ BlueprintLoader::BlueprintLoader(QWidget* parent /*= nullptr*/)
     , mpImpl(new Impl(this, &mScene))
 {
     mpImpl->init();
+
+    verticalScrollBar()->setEnabled(false);
+    horizontalScrollBar()->setEnabled(false);
 }
 
 BlueprintLoader::~BlueprintLoader()
@@ -422,8 +426,13 @@ bool BlueprintLoader::eventFilter(QObject* obj, QEvent* event)
 
 void BlueprintLoader::wheelEvent(QWheelEvent* event)
 {
-    mpImpl->scale(event);
-    event->accept();
+    QGraphicsView::wheelEvent(event);
+
+    if (!event->isAccepted())
+    {
+        mpImpl->scale(event);
+        event->accept();
+    }
 }
 
 void BlueprintLoader::mousePressEvent(QMouseEvent* event)

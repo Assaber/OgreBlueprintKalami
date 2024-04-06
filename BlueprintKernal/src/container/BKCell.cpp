@@ -120,6 +120,21 @@ BKCell* BKCell::append(BKUnit* unit)
     return this;
 }
 
+BKCell* BKCell::setDataType(BKAnchor::AnchorType anchor, BKAnchor::DataType data)
+{
+    L_IMPL(BKCell)
+    BKAnchor* la = l->mAnchorArray[0];
+    BKAnchor* ra = l->mAnchorArray[1];
+
+    if((anchor & BKAnchor::AnchorType::Input) && la)
+        la->setDateType(data);
+
+    if ((anchor & BKAnchor::AnchorType::Output) && ra)
+        ra->setDateType(data);
+
+    return this;
+}
+
 void BKCell::updateActualSize(const QSizeF& aim) { mpImpl->updateActualSize(aim); }
 void BKCell::Impl::updateActualSize(const QSizeF& aim)
 {

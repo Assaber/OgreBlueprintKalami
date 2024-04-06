@@ -4,6 +4,7 @@
 #include "BKCreator.h"
 #include "TestCard.h"
 #include "PrintCard.h"
+#include "RenderItemCard.h"
 
 int main(int argc, char** argv)
 {
@@ -11,6 +12,7 @@ int main(int argc, char** argv)
 
     BKCreator::registCard<TestCard>();
     BKCreator::registCard<PrintCard>();
+    BKCreator::registCard<RenderItemCard>();
 
     OgreBlueprint b;
     b.showMaximized();

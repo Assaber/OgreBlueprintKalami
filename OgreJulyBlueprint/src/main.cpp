@@ -1,4 +1,4 @@
-﻿#include <QApplication>
+﻿#include "Application.h"
 #include "OgreBlueprint.h"
 
 #include "BKCreator.h"
@@ -7,14 +7,19 @@
 
 int main(int argc, char** argv)
 {
-    QApplication a(argc, argv);
+    Application a(argc, argv);
 
     BKCreator::registCard<TestCard>();
     BKCreator::registCard<PrintCard>();
 
-    OgreBlueprint blueprint;
-    blueprint.showMaximized();
+    OgreBlueprint b;
+    b.showMaximized();
 
-    int ret = a.exec();
-    return 0;
+    int ret = a.join(
+        [&]() {
+            b.drive();
+        }
+    );
+
+    return ret;
 }

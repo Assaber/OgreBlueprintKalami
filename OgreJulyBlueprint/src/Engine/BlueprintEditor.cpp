@@ -1,24 +1,26 @@
-﻿#include "OgreBlueprint.h"
-#include "TestCard.h"
-#include "PrintCard.h"
+﻿#include "BlueprintEditor.h"
+
 #include <QKeyEvent>
 #include <QFileDialog>
 
-OgreBlueprint::OgreBlueprint(QWidget* parent/* = nullptr*/)
-    : BlueprintLoader(parent)
+#include "TestCard.h"
+#include "PrintCard.h"
+
+BlueprintEditor::BlueprintEditor(QWidget* parent/* = nullptr*/)
+    : super(parent)
 {
 }
 
-void OgreBlueprint::keyPressEvent(QKeyEvent* event)
+void BlueprintEditor::keyPressEvent(QKeyEvent* event)
 {
-    BlueprintLoader::keyPressEvent(event);
+    super::keyPressEvent(event);
     if (!event->isAccepted())
     {
         if (event->key() == Qt::Key_N)
         {
             createUnit<TestCard>();
         }
-        else if(event->key() == Qt::Key_P)
+        else if (event->key() == Qt::Key_P)
         {
             createUnit<PrintCard>();
         }

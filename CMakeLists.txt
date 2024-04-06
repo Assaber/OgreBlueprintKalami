@@ -65,6 +65,9 @@ if(NOT BUILD_SHARED)
     add_compile_definitions(BK_STATIC_LIB)
 endif()
 
+# 允许创建工程文件夹
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # ogre-next编译
 add_subdirectory(ogre-next-deps)
 add_subdirectory(ogre-next)

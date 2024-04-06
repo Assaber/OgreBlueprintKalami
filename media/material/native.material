@@ -1,0 +1,10 @@
+hlms snow pbs
+{
+	//Note: Internally the diffuse colour is divided by PI.
+	diffuse		1 1 1
+	specular	1 1 1
+	emissive 1.0 0.5 0
+
+	roughness	0.4
+	fresnel		1.33
+}

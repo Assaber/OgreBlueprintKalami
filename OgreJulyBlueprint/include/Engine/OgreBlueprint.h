@@ -21,5 +21,6 @@ protected:
 private:
     BlueprintEditor* mpEditor = nullptr;
     QDockWidget* mpEditorDock = nullptr;
+    QDockWidget* mpEngineDock = nullptr;
     OgreWidget* mpEngineBrowser = nullptr;
 };

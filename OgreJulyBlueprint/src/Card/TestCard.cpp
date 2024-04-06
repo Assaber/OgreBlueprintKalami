@@ -9,6 +9,7 @@
 #include "unit/BKSliderBar.h"
 #include "unit/BKCheckBox.h"
 #include "unit/BKSpacer.h"
+#include "unit/BKColorSelector.h"
 
 TestCard::TestCard()
     : BKCard()
@@ -64,5 +65,8 @@ TestCard::TestCard()
             ->append({ BKCreator::create<BKCheckBox>(),
                        BKCreator::create<BKSpacer>(),
             }),
+        BKCreator::create()
+            ->append({ BKCreator::create<BKColorSelector>(),
+                BKCreator::create<BKSpacer>()}),
         });
 }

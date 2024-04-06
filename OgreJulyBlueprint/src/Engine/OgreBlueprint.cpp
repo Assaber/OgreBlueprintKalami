@@ -12,10 +12,17 @@ OgreBlueprint::OgreBlueprint(QWidget* parent/* = nullptr*/)
     mpEditor = new BlueprintEditor(mpEditorDock);
     mpEditorDock->setWidget(mpEditor);
     
+    mpEngineDock = new QDockWidget(tr("引擎视口"), this);
+    this->addDockWidget(Qt::RightDockWidgetArea, mpEngineDock);
+    mpEngineDock->setAllowedAreas(Qt::AllDockWidgetAreas);
     mpEngineBrowser = new OgreWidget(this);
-    this->setCentralWidget(mpEngineBrowser);
+    mpEngineDock->setWidget(mpEngineBrowser);
+
+    QFrame* centerFrame = new QFrame(this);
+    centerFrame->setFixedWidth(1);
+    this->setCentralWidget(centerFrame);
     
-    this->resizeDocks(QList<QDockWidget*>() << mpEditorDock, QList<int>() << 400, Qt::Orientation::Horizontal);
+    resizeDocks({ mpEditorDock }, { 1000 }, Qt::Orientation::Horizontal);
 
     initWindowMenuBar();
 }
@@ -29,19 +36,24 @@ void OgreBlueprint::initWindowMenuBar()
 {
     QMenuBar* mb = menuBar();
     QMenu* windowMenu = new QMenu(tr("窗口"), mb);
-    QAction* editorAction = new QAction(tr("编辑器"), windowMenu);
-    editorAction->setCheckable(true);
-    windowMenu->addAction(editorAction);
+    auto add_window_action = [mb, windowMenu, this](const QString& text, QDockWidget* bind) {
+        QAction* action = new QAction(text, windowMenu);
+        action->setCheckable(true);
+        windowMenu->addAction(action);
 
-    mb->addMenu(windowMenu);
+        mb->addMenu(windowMenu);
 
-    QObject::connect(windowMenu, &QMenu::aboutToShow, editorAction, [this, editorAction]() {
-        editorAction->setChecked(mpEditorDock->isVisible());
-        });
+        QObject::connect(windowMenu, &QMenu::aboutToShow, action, [this, action, bind]() {
+            action->setChecked(bind->isVisible());
+            });
 
-    QObject::connect(editorAction, &QAction::triggered, this, [this, editorAction](bool checked) {
-        mpEditorDock->setVisible(checked);
-        });
+        QObject::connect(action, &QAction::triggered, this, [this, action, bind](bool checked) {
+            bind->setVisible(checked);
+            });
+    };
+    
+    add_window_action(tr("编辑器"), mpEditorDock);
+    add_window_action(tr("引擎视口"), mpEngineDock);
 }
 
 void OgreBlueprint::closeEvent(QCloseEvent* event)

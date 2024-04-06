@@ -1,14 +1,13 @@
 ﻿#include "unit/BKCheckBox.h"
-#include <QGraphicsSceneMouseEvent>
-#include <QPainter>
-#include <QFontMetrics>
-#include <QGraphicsProxyWidget>
-#include <QLineEdit>
-#include <QStyle>
-#include <QGraphicsScene>
 #include "container/BKCard.h"
 #include "BKEvent.h"
+
+#include <QGraphicsSceneMouseEvent>
 #include <QCoreApplication>
+#include <QGraphicsScene>
+#include <QPainter>
+#include <QStyle>
+
 
 class BKCheckBox::Impl : public QGraphicsItem
 {

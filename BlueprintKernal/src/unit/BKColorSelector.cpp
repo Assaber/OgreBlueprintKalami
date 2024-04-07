@@ -46,9 +46,9 @@ public:
     {
         QStringList split;
         if (color.indexOf(',') < 0)     // 空格分隔
-            split = color.split(',', QString::SkipEmptyParts);
-        else
             split = color.split(' ', QString::SkipEmptyParts);
+        else
+            split = color.split(',', QString::SkipEmptyParts);
 
         if (split.count() > 2)
         {

@@ -68,10 +68,10 @@ public:
 
 
     /**
-     * 1. #FF8000
-     * 2. #FF8000FF
-     * 3. 1.0 0.5 0
-     * 4. 1 0.5 0 1
+     * 1. #FF8000    rgb
+     * 2. #FFFF8000  argb
+     * 3. 1.0 0.5 0  rgb
+     * 4. 1 0.5 0 1  rgba
      */
     QColor transString2Color(const QString& color, bool* ok = nullptr)
     {

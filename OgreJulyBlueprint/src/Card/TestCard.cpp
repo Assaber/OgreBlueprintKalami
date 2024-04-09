@@ -11,6 +11,7 @@
 #include "unit/BKSpacer.h"
 #include "unit/BKColorSelector.h"
 #include "unit/BKColorSelectorEx.h"
+#include "unit/BKPixmap.h"
 
 TestCard::TestCard()
     : BKCard()
@@ -71,5 +72,7 @@ TestCard::TestCard()
                 BKCreator::create<BKSpacer>()}),
         BKCreator::create()
             ->append({ BKCreator::create<BKColorSelectorEx>() }),
+        BKCreator::create()
+            ->append({ BKCreator::create<BKPixmap>() }),
         });
 }

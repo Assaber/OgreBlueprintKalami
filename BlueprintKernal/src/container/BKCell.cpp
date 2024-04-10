@@ -102,16 +102,16 @@ BKCell* BKCell::append(std::initializer_list<BKUnit*> units)
     return this;
 }
 
-BKCell* BKCell::append(BKUnit* unit)
+BKCell* BKCell::append(BKUnit* unit, bool regist/* = true*/)
 {
     L_IMPL(BKCell)
 
-    if (l->mAnchorArray[0])
+    if (regist && l->mAnchorArray[0])
         l->mAnchorArray[0]->appendRegist(unit);
 
     l->mUnits.push_back(unit);
 
-    if (l->mAnchorArray[1])
+    if (regist && l->mAnchorArray[1])
     {
         unit->registOutputAnchor(l->mAnchorArray[1]);
         l->mAnchorArray[1]->appendRegist(unit);
@@ -257,6 +257,18 @@ BKAnchor* BKCell::getAnchor(BKAnchor::AnchorType type)
         return l->mAnchorArray[1];
 
     return nullptr;
+}
+
+bool BKCell::valueChanged(const QVariant& param)
+{
+    L_IMPL(BKCell);
+    BKAnchor* ra = l->mAnchorArray[1];
+    if (!ra)
+        return false;
+
+    ra->dataChanged(param);
+
+    return true;
 }
 
 bool BKCell::exportUnitToJson(QJsonArray& obj)

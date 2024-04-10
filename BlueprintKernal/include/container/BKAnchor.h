@@ -30,7 +30,7 @@
 class BKUnit;
 class BKCell;
 class BKConnectingLine;
-class BKAnchor : public QGraphicsItem, public BKUnitBasic<BKAnchor>
+class _BlueprintKernalExport BKAnchor : public QGraphicsItem, public BKUnitBasic<BKAnchor>
 {
     UNIT_FACTORY_ONLY_NAME("_Anchor")
 

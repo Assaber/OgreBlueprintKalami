@@ -45,6 +45,8 @@ public:
      */
     virtual bool setValue(const QJsonValue& val) = 0;
 
+    virtual void registOutputAnchor(BKAnchor* anchor);
+
 protected:
     virtual QGraphicsItem* getGraphicsItem() = 0;
     /**
@@ -55,7 +57,6 @@ protected:
      */
     virtual void dataChanged(const QVariant& data) = 0;
     virtual void resized();
-    virtual void registOutputAnchor(BKAnchor* anchor);
 
 protected:
     friend class BKCell;
@@ -104,6 +105,7 @@ public:
         return static_cast<T*>(this);
     }
 
+    // 返回true，则停止传递；返回false则根据右锚点继续传递
     inline T* setDataChangeCallback(DataChangeCallback function) {
         mCallbackFunc = function;
         return static_cast<T*>(this);

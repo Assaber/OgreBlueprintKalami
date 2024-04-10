@@ -5,6 +5,7 @@
 #include "TestCard.h"
 #include "PrintCard.h"
 #include "RenderItemCard.h"
+#include "Card/Hlms/PbsDatablock.h"
 
 int main(int argc, char** argv)
 {
@@ -13,6 +14,7 @@ int main(int argc, char** argv)
     BKCreator::registCard<TestCard>();
     BKCreator::registCard<PrintCard>();
     BKCreator::registCard<RenderItemCard>();
+    BKCreator::registCard<PbsDatablockCard>();
 
     OgreBlueprint b;
     b.showMaximized();

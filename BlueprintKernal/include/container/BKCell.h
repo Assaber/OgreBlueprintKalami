@@ -20,11 +20,18 @@ public:
     /**
      * @brief:                                              追加单元对象
      * @param: BKUnit* unit                                 单元对象
-     * @return: void
-     * @remark:                                             追加的单元对象会按照追加的次序进行显示
+     * @return: KCell*                                      自身指针
+     * @remark:                                             追加的单元对象会按照追加的次序进行显示，并且会自动注册到锚点
      */
     BKCell* append(std::initializer_list<BKUnit*> units);
-    BKCell* append(BKUnit* units);
+    /**
+     * @brief:                                              追加单元对象
+     * @param: BKUnit * units                               单元对象
+     * @param: bool regist                                  是否注册到锚点
+     * @return: BKCell*                                     自身指针
+     * @remark: 
+     */
+    BKCell* append(BKUnit* units, bool regist = true);
 
     /**
      * @brief:                                              设置锚点数据类型
@@ -62,6 +69,14 @@ public:
      * @remark: 
      */
     BKAnchor* getAnchor(BKAnchor::AnchorType type);
+
+    /**
+     * @brief:                                              以输出锚点的身份更新数据
+     * @param: const QVariant & param                       自定义数据
+     * @return: bool                                        是否传递成功
+     * @remark: 
+     */
+    bool valueChanged(const QVariant& param);
 
 public:
     /**

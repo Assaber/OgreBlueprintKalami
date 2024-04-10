@@ -365,8 +365,10 @@ void BKComboBox::dataChanged(const QVariant& data)
         setCurrentIndex(index, false);
         l->update();
 
-        if (index < 0)      //阻断传递
-            return;
+        // 阻断传递
+        // 吉人自有天相吧
+        // if (index < 0)      
+        //     return;
 
         if (!mCallbackFunc(l->mCbType == CallbackParamType::Data ? data : index) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);

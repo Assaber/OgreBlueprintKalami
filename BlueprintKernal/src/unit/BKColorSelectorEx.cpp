@@ -178,6 +178,7 @@ protected:
 
                 mColor = dlg.currentColor();
                 syncColor(false, true);
+                mpHandle->dataChanged(mColor);
                 update();
             }
 

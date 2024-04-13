@@ -13,12 +13,22 @@
 class BKAnchor::Impl
 {
 public:
-    Impl(BKAnchor* handle, AnchorType type, BKCell* cell)
+    Impl(BKAnchor* handle, uint32_t type, BKCell* cell)
         : mpHandle(handle)
         , mAnchorType(type)
         , mpCell(cell)
     {
         mpHandle->mMinSize = { 2 * mnAnchorBallRadius , 2 * mnAnchorBallRadius };
+
+        if ((type & AnchorType::Input) && (type & AnchorType::MultiConn))
+        {
+            mMultiPath.moveTo(0, mnAnchorBallRadius * 0.2f);
+            mMultiPath.lineTo(mnAnchorBallRadius * 1.3f, mnAnchorBallRadius * 0.2f);
+            mMultiPath.lineTo(mnAnchorBallRadius * 2, mnAnchorBallRadius);
+            mMultiPath.lineTo(mnAnchorBallRadius * 1.3f, mnAnchorBallRadius * 1.8f);
+            mMultiPath.lineTo(0, mnAnchorBallRadius * 1.8f);
+            mMultiPath.closeSubpath();
+        }
     }
 
     ~Impl()
@@ -59,7 +69,7 @@ public:
 
 public:
     BKAnchor* mpHandle = nullptr;
-    AnchorType mAnchorType = AnchorType::None;
+    uint32_t mAnchorType = AnchorType::None;
     DataType mDataType = DataType::Default;
 
     std::map<BKAnchor*, BKConnectingLine*> mRegistRecord;
@@ -81,6 +91,8 @@ public:
     QPointF mConnectBegin;
     // 包裹锚点的组元
     BKCell* mpCell = nullptr;
+    // 多输入path
+    QPainterPath mMultiPath;
 };
 
 // 这个配色会让人觉得踏实，不要问为什么，毕竟取自人民币配色√
@@ -109,7 +121,7 @@ bool BKAnchor::setValue(const QJsonValue& val)
     return true;
 }
 
-BKAnchor::BKAnchor(AnchorType type, BKCell* cell)
+BKAnchor::BKAnchor(uint32_t type, BKCell* cell)
     : super()
     , mpImpl(new Impl(this, type, cell))
 {
@@ -129,7 +141,7 @@ BKAnchor* BKAnchor::setDateType(DataType type)
     return this;
 }
 
-BKAnchor::AnchorType BKAnchor::getAnchorType()
+uint32_t BKAnchor::getAnchorType()
 {
     return mpImpl->mAnchorType;
 }
@@ -272,10 +284,10 @@ void BKAnchor::dataChanged(const QVariant& data)
 {
     L_IMPL(BKAnchor)
 
-    if (l->mAnchorType == AnchorType::Input)
+    if (l->mAnchorType & AnchorType::Input)
         for (auto item : l->mRegistUnitSet)
             item->dataChanged(data);
-    else if (l->mAnchorType == AnchorType::Output)
+    else if (l->mAnchorType & AnchorType::Output)
         for (auto item : l->mRegistRecord)
             item.first->dataChanged(data);
 }
@@ -293,7 +305,11 @@ void BKAnchor::Impl::paint(QPainter* painter, const QStyleOptionGraphicsItem* op
         else
             painter->setBrush(Qt::NoBrush);
 
-        painter->drawEllipse({ mnAnchorBallRadius, mnAnchorBallRadius }, mnAnchorBallRadius, mnAnchorBallRadius);
+        if((mAnchorType & AnchorType::Input) && (mAnchorType & AnchorType::MultiConn))
+            painter->drawPath(mMultiPath);
+        else
+            painter->drawEllipse({ mnAnchorBallRadius, mnAnchorBallRadius }, mnAnchorBallRadius, mnAnchorBallRadius);
+
         painter->restore();
     }
 }
@@ -309,7 +325,6 @@ void BKAnchor::Impl::setDateType(DataType type)
         mBorderPen = QPen(mColor);
     }
 }
-
 
 BlueprintLoader* BKAnchor::Impl::getInnerView(QGraphicsScene* s)
 {

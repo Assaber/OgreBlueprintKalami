@@ -156,14 +156,14 @@ bool BlueprintLoader::Impl::PreConnectLineEvent(PreConnLineEvent* event)
                 if (!anchor)                   //释放对象也为锚点
                     continue;
 
-                if (anchor->getAnchorType() == sender->getAnchorType())             // 锚点不能为同种类型
+                if (anchor->getAnchorType() == sender->getAnchorType())                                             // 锚点不能为同种类型
                     continue;
 
-                if (anchor->getDataType() != sender->getDataType())                 // 锚点数据类型必须相同
+                if (anchor->getDataType() != sender->getDataType())                                                 // 锚点数据类型必须相同
                     continue;
                 
-                auto input = sender->getAnchorType() == BKAnchor::Input ? sender : anchor;
-                if (input->hasConnected())                                          // 禁止多个输出对应一个输入
+                auto input = (sender->getAnchorType() & BKAnchor::Input) ? sender : anchor;
+                if (input->hasConnected() && (input->getAnchorType() & BKAnchor::AnchorType::MultiConn) == 0)       // 禁止多个输出对应一个输入，VIP除外
                     continue;
 
                 if(anchor->hasRegisted(sender))
@@ -391,6 +391,10 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
             auto connect = item.toObject();
             auto lAnchor = get_card(connect["card1"].toInt(), connect["row1"].toInt(), BKAnchor::AnchorType::Input);
             auto rAnchor = get_card(connect["card2"].toInt(), connect["row2"].toInt(), BKAnchor::AnchorType::Output);
+
+            // assaber
+            // 这里的颜色是不对的，应该按照类型进行修改
+            // todo...
             createUnit<BKConnectingLine>(QColor(255, 128, 0), lAnchor, rAnchor);
         }
     }

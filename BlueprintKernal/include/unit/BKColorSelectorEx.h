@@ -11,8 +11,13 @@ public:
     using Color4f = std::array<float, 4>;     // rgba
     using Color3f = std::array<float, 3>;     // rgb a=1
 
+    enum class Type : uint8_t {
+        Vector3,
+        Vector4,
+    };
+
 public:
-    BKColorSelectorEx();
+    BKColorSelectorEx(Type type = Type::Vector3);
     ~BKColorSelectorEx();
 
 public:

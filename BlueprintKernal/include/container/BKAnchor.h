@@ -40,7 +40,8 @@ public:
         None                        = 0x00, ///< 无连接锚点
         Input                       = 0x01, ///< 仅输入锚点（左侧）
         Output                      = 0x02, ///< 仅输出锚点（右侧）
-        Both                        = Input | Output,///< 两端
+        Both                        = Input | Output,   ///< 两端
+        MultiConn                   = 0x04, ///< 多重绑定
     };
 
     enum DataType
@@ -58,14 +59,14 @@ public:
 
 public:
     using super = BKUnitBasic<BKAnchor>;
-    BKAnchor(AnchorType type, BKCell* cell);
+    BKAnchor(uint32_t type, BKCell* cell);
     ~BKAnchor();
 
 public:
     BKAnchor* setDateType(DataType type);
 
 public:
-    AnchorType getAnchorType();
+    uint32_t getAnchorType();
     DataType getDataType();
     bool hasConnected();
     /**

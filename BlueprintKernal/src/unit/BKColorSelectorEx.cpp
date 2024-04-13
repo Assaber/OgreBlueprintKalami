@@ -16,9 +16,10 @@ class BKColorEditor;
 class BKColorSelectorEx::Impl : public QGraphicsItem
 {
 public:
-    Impl(BKColorSelectorEx* handle)
+    Impl(BKColorSelectorEx* handle, BKColorSelectorEx::Type type)
         : QGraphicsItem()
         , mpHandle(handle)
+        , mType(type)
     {
         mOption.setWrapMode(QTextOption::NoWrap);
         mOption.setAlignment(Qt::AlignCenter);
@@ -59,7 +60,7 @@ public:
     }
 
     QString getCurrentColor() {
-        return QString("%1 %2 %3 %4")
+        return QString(mType == Type::Vector3 ? "%1 %2 %3" : "%1 %2 %3 %4")
             .arg(QString::number(mColorData[0], 'f', 3))
             .arg(QString::number(mColorData[1], 'f', 3))
             .arg(QString::number(mColorData[2], 'f', 3))
@@ -173,6 +174,9 @@ protected:
             if (mColorDrawableArea.contains(event->pos()))
             {
                 QColorDialog dlg(mColor);
+                if (mType == Type::Vector4)
+                    dlg.setOption(QColorDialog::ShowAlphaChannel);
+
                 if (dlg.exec() != QDialog::Accepted)
                     return;
 
@@ -180,9 +184,12 @@ protected:
                 syncColor(false, true);
                 mpHandle->dataChanged(mColor);
                 update();
-            }
 
-            event->accept();
+                this->setFocus();
+                event->ignore();
+            }
+            else
+                event->accept();
         }
     }
 
@@ -210,6 +217,8 @@ public:
     QTextOption mOption;
     // 编辑器
     static BKColorEditor* mpPublicEditor;
+    // 显示向量
+    BKColorSelectorEx::Type mType;
 };
 
 BKColorEditor* BKColorSelectorEx::Impl::mpPublicEditor = nullptr;
@@ -320,12 +329,12 @@ void BKColorSelectorEx::Impl::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* ev
     }
 }
 
-BKColorSelectorEx::BKColorSelectorEx()
+BKColorSelectorEx::BKColorSelectorEx(Type type /*= Type::Vector3*/)
     : super()
-    , mpImpl(new Impl(this))
+    , mpImpl(new Impl(this, type))
 {
     // setMinSize({ 120 + Impl::mSpacing + Impl::mFixedColorAreaWidth, 20 });
-    setMinWidth(140 + Impl::mSpacing + Impl::mFixedColorAreaWidth);
+    setMinWidth((type == Type::Vector3 ? 120 : 140) + Impl::mSpacing + Impl::mFixedColorAreaWidth);
 }
 
 BKColorSelectorEx::~BKColorSelectorEx()

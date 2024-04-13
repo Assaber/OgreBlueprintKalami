@@ -14,6 +14,7 @@ class _BlueprintKernalExport BKCell
 
 public:
     BKCell(BKAnchor::AnchorType type = BKAnchor::AnchorType::Both);
+    BKCell(uint32_t l, uint32_t r);
     ~BKCell();
 
 public:

@@ -107,7 +107,7 @@ public:
 
         if (!mAnchorArray[0] && !mAnchorArray[1])
             return;
-        else if (mAnchorArray[0]->getAnchorType() == BKAnchor::Input)
+        else if (mAnchorArray[0]->getAnchorType() & BKAnchor::Input)
             std::swap(mAnchorArray[0], mAnchorArray[1]);
     }
 

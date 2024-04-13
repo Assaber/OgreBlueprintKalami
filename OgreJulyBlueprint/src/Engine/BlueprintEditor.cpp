@@ -18,6 +18,11 @@ Ogre::ColourValue BlueprintEditor::toColor(const QColor& color)
     return Ogre::ColourValue( 1.0f * color.red() / 255, 1.0f * color.green() / 255, 1.0f * color.blue() / 255, 1.0f * color.alpha() / 255 );
 }
 
+Ogre::Vector3 BlueprintEditor::toVec3f(const QColor& color)
+{
+    return Ogre::Vector3(1.0f * color.red() / 255, 1.0f * color.green() / 255, 1.0f * color.blue() / 255);
+}
+
 void BlueprintEditor::keyPressEvent(QKeyEvent* event)
 {
     super::keyPressEvent(event);

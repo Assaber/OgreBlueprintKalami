@@ -1,23 +1,33 @@
 ﻿#include "container/BKCell.h"
 #include <array>
 #include <QGraphicsItemGroup>
+#include <stdexcept>
 #include <QDebug>
+#include "BKCreator.h"
+#include "unit/BKSpacer.h"
+
+static constexpr const int target = 5;
+static constexpr const int all = 3;
+static constexpr const int l = 1;
+static constexpr const int r = 2;
+static constexpr const int r2 = ~r;
+static constexpr const int merge = target & ~r;
 
 class BKCell::Impl : public QGraphicsItemGroup
 {
 public:
-    Impl(BKCell* handle, BKAnchor::AnchorType type)
+    Impl(BKCell* handle, uint32_t l, uint32_t r)
         : QGraphicsItemGroup()
         , mpHandle(handle)
     {
         // 支持让子组件可以处理自己的事件，比如combobox
         setHandlesChildEvents(false);
 
-        if (type & BKAnchor::AnchorType::Input)
-            mAnchorArray[0] = new BKAnchor(BKAnchor::AnchorType::Input, mpHandle);
+        if (l != BKAnchor::None)
+            mAnchorArray[0] = new BKAnchor(l &(~BKAnchor::AnchorType::Output), mpHandle);
 
-        if(type & BKAnchor::AnchorType::Output)
-            mAnchorArray[1] = new BKAnchor(BKAnchor::AnchorType::Output, mpHandle);
+        if(r != BKAnchor::None)         //输出锚点自带多重绑定
+            mAnchorArray[1] = new BKAnchor((r & (~BKAnchor::AnchorType::Input)) | BKAnchor::MultiConn, mpHandle);
     }
 
     ~Impl()
@@ -83,7 +93,15 @@ public:
 };
 
 BKCell::BKCell(BKAnchor::AnchorType type)
-    : mpImpl(new Impl(this, type))
+    : mpImpl(new Impl(this, 
+        static_cast<BKAnchor::AnchorType>(type & BKAnchor::AnchorType::Input), 
+        static_cast<BKAnchor::AnchorType>(type & BKAnchor::AnchorType::Output)))
+{
+
+}
+
+BKCell::BKCell(uint32_t l, uint32_t r)
+    : mpImpl(new Impl(this, l, r))
 {
 
 }
@@ -139,6 +157,9 @@ void BKCell::updateActualSize(const QSizeF& aim) { mpImpl->updateActualSize(aim)
 void BKCell::Impl::updateActualSize(const QSizeF& aim)
 {
     removeAll();
+
+    if (mUnits.size() == 0) //一行中至少拥有一个控件，如果为空就用BKSpacer顶
+        mpHandle->append(BKCreator::create<BKSpacer>());
 
     /* 对于自适应的宽度
     *    组元宽度 = (总宽度 - 全部固定宽度 - 总间隔 - 左右锚点占位) / 自适应组元个数;
@@ -251,9 +272,9 @@ BKAnchor* BKCell::getAnchor(BKAnchor::AnchorType type)
 {
     L_IMPL(BKCell);
 
-    if (type == BKAnchor::Input)
+    if (type & BKAnchor::Input)
         return l->mAnchorArray[0];
-    else if(type == BKAnchor::Output)
+    else if(type & BKAnchor::Output)
         return l->mAnchorArray[1];
 
     return nullptr;
@@ -273,23 +294,17 @@ bool BKCell::valueChanged(const QVariant& param)
 
 bool BKCell::exportUnitToJson(QJsonArray& obj)
 {
-    L_IMPL(BKCell)
+    L_IMPL(BKCell);
 
-    if (l->mUnits.size() == 0)      //答应我，就算没有也用一个空的Spacer撑一下好么，用空Label也行
-        return false;
+    if (l->mUnits.size() == 0)
+        throw std::logic_error("逻辑错误，应该已经对组元为空做了补对象的处理...");
 
-    if (l->mUnits.size() == 1)
-    {
-        auto unit = *l->mUnits.begin();
-        obj.append(unit->getValue());
-    }
-    else
-    {
-        QJsonArray dst;
-        for (auto unit : l->mUnits)
-            dst.append(unit->getValue());
-        obj.append(dst);
-    }
+    // 先导出锚点类型
+    QJsonArray dst;
+    for (auto unit : l->mUnits)
+        dst.append(unit->getValue());
+
+    obj.append(dst);
     return true;
 }
 
@@ -297,15 +312,13 @@ bool BKCell::updateUnitFromJson(const QJsonValue& value)
 {
     L_IMPL(BKCell);
     size_t count = l->mUnits.size();
+    QJsonArray info = value.toArray();
 
-    if (count == 0)
-        return false;
-    
-    if (count == 1)
-        l->mUnits[0]->setValue(value);
-    else
-        for (int i = 0; i < count; ++i)
-            l->mUnits[i]->setValue(value.toArray()[i]);
+    if (count == 0)  
+        throw std::logic_error("逻辑错误，应该已经对组元为空做了补对象的处理...");
+
+    for (int i = 0; i < count; ++i)
+        l->mUnits[i]->setValue(info[i]);
     
     return true;
 }

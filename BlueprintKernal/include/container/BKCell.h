@@ -37,11 +37,11 @@ public:
     /**
      * @brief:                                              设置锚点数据类型
      * @param: BKAnchor::AnchorType anchor                  锚点位置
-     * @param: BKAnchor::DataType data                      锚点数据类型
+     * @param: uint32_t data                      锚点数据类型
      * @return: BKCell*                                     自身指针
      * @remark: 
      */
-    BKCell* setDataType(BKAnchor::AnchorType anchor, BKAnchor::DataType data);
+    BKCell* setDataType(BKAnchor::AnchorType anchor, uint32_t data);
 
     /**
      * @brief:                                              更新实际的大小

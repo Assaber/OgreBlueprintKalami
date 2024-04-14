@@ -54,7 +54,7 @@ public:
         Float,                      ///< 小数类型
         Double,                     ///< 双精度浮点数
 
-        Custom,
+        Custom = 0x0100,            ///< 自定义部分：这里注册时沿用Qt MetaType的ID，理论上是1024往后，但是感觉预制类型也用不上就缩啦
     };
 
 public:
@@ -63,11 +63,14 @@ public:
     ~BKAnchor();
 
 public:
-    BKAnchor* setDateType(DataType type);
+    BKAnchor* setDateType(uint32_t type);
+    BKAnchor* setMinSize(const QSizeF& size) = delete;
+    BKAnchor* setSizePolicy(SizePolicy policy) = delete;
 
 public:
     uint32_t getAnchorType();
-    DataType getDataType();
+    uint32_t getDataType();
+
     bool hasConnected();
     /**
      * @brief:                                  是否在相同的组元中
@@ -85,6 +88,19 @@ public:
      */
     bool hasRegisted(BKAnchor* other);
 
+    /**
+     * @brief:                                  锚点将以传入数据进行传递更新
+     */
+    virtual void dataChanged(const QVariant& data) override;
+
+    /**
+     * @brief:                                  [限输入锚点使用]获取输出锚点全部关联数据
+     * @param: std::vector<QVariant> & rec      记录
+     * @return: int                             记录的个数
+     * @remark: 
+     */
+    int getBindOutputData(std::vector<QVariant>& rec);
+
 public: //注册
     // 会影响绘制时是否填充
     void appendRegist(BKAnchor* anchor, BKConnectingLine* line = nullptr);
@@ -99,9 +115,23 @@ public: //注册
     void appendRegist(BKUnit* unit);
     void removeRegist(BKUnit* unit);
 
+    /**
+     * @brief:                  重定向绑定到卡片
+     * @return: bool            是否重定向成功
+     * @remark:                 只限于输出锚点可以调用该方法，调用后注册的Unit会被清空
+     */
+    bool redirectToCard();
+
 public:
-    BKAnchor* setMinSize(const QSizeF& size) = delete;
-    BKAnchor* setSizePolicy(SizePolicy policy) = delete;
+    /**
+     * @brief:                              注册锚点可以识别的数据类型
+     * @param: uint32_t type                注册类型
+     * @param: const QColor & color         注册颜色，不给就随机
+     * @return: void
+     * @remark:                             将结构体通过Q_DECLARE_METATYPE包裹注册，并通过QMetaTypeId<T>::qt_metatype_id返回的id作为type即可。
+     * PS： Custom以前的即便传重复了也视为颜色更新，Custom之后的只允许注册一次！
+     */
+    static void registDataType(uint32_t type, const QColor& color = QColor(qrand() % 255, qrand() % 255, qrand() % 255));
 
 private:
     void dispatchCellPositionChanged();
@@ -123,10 +153,6 @@ private:
 protected:
     virtual QGraphicsItem* getGraphicsItem() override;
     virtual bool sceneEvent(QEvent* event) override;
-
-public:
-    // 将锚点的数据更新函数升到public
-    virtual void dataChanged(const QVariant& data) override;
 
 public:
     virtual QRectF boundingRect() const override;

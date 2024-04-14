@@ -66,5 +66,11 @@ git clone git@github.com:OGRECave/ogre-next.git
             <td>请来了另一位主角(ogre)，掌声(ohhhhhh</td>
             <td><p>1. 引入ogre-next、ogre-next-dep<br>2. 上次说的连线后自动触发一次更新改过来了</p></td>
         </tr>
+        <tr>
+            <td>5</td>
+            <td>2024-04-14</td>
+            <td>升级了控件功能，初步对PBS卡片做了拆分</td>
+            <td><p>1. 输入锚点支持被多个输出锚点连接，但是只限输出锚点是绑定卡片的<br>2. 开始霍霍PBS卡片，暂且先跟组织的参数列表所支持的部分保持一致吧<br>3. 自定义数据类型可以注册并识别啦，颜色可以随机（每天换一种配色会不会开心点<br>PS: 至此控件部分还差以下内容<br>&emsp;1. 卡片支持缩进<br>&emsp;2. 向量输入的方式（Vec3f）<br></p></td>
+        </tr>
     </tbody>
 </table>

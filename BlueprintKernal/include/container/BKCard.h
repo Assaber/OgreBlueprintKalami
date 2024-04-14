@@ -17,6 +17,13 @@ public:
 public:
     void setTitle(const QString& title);
     virtual QGraphicsItem* getBindItem() override;
+    /**
+     * @brief:                  获取当前卡片的绑定值
+     * @return: QVariant
+     * @remark:                 原则上只有当子输出锚点在所在的Cell中无法找到绑定对象时(nullptr)，才会调用该方法获取整个卡片的值
+     * 如果有需要请重写该函数，默认为缺省QVariant
+     */
+    virtual QVariant getCurrentCardValue();
 
 public:
     bool loadFromJson(const QJsonArray& obj, const QPoint& pos = QPoint(0, 0));

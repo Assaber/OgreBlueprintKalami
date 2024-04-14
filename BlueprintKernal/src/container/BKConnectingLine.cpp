@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QStyleOption>
 #include "container/BKCell.h"
+#include "container/BKCard.h"
 #include "unit/BKPushButton.h"
 #include <QGraphicsSceneEvent>
 
@@ -91,6 +92,13 @@ public:
         {
             mAnchorArray[0]->removeRegist(mAnchorArray[1]);
             mAnchorArray[1]->removeRegist(mAnchorArray[0]);
+
+            // 在移除关联关系时，判断锚点是否存在多重锚点，如果存在多重锚点则通知触发一次更新
+            bool notify = (mAnchorArray[1]->getAnchorType() & BKAnchor::AnchorType::MultiConn)          // 输入锚点挂着多重连接
+                && mAnchorArray[0]->getRegistUnits().size() == 0;                                       // 输出锚点无注册单元，直接绑定的卡片
+
+            if(notify)
+                mAnchorArray[1]->dataChanged(mAnchorArray[0]->getBindCard()->getCurrentCardValue());
         }
 
         mAnchorArray[0]->update();
@@ -206,8 +214,14 @@ void BKConnectingLine::triggerOriginOutput()
     if (!anchor)
         return;
 
-    for (auto unit : anchor->getRegistUnits())
-        unit->dataChanged(QVariant());
+    auto units = anchor->getRegistUnits();
+    if (units.size())
+    {
+        for (auto unit : units)
+            unit->dataChanged(QVariant());
+    }
+    else if (anchor->mpBindCard)
+        anchor->dataChanged(anchor->mpBindCard->getCurrentCardValue());
 }
 
 QPainterPath BKConnectingLine::createPainterPath(const QPointF* begin, const QPointF* end /*= nullptr*/)

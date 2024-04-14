@@ -34,8 +34,9 @@ public:
     {
         qDebug() << "cell item destroy";
         // 不通过Qt的GraphicsItem释放机制，解组后分批释放
-        removeAll(true);
+
         destroyAnchorBall();
+        removeAll(true);
     }
 
 public:
@@ -138,7 +139,7 @@ BKCell* BKCell::append(BKUnit* unit, bool regist/* = true*/)
     return this;
 }
 
-BKCell* BKCell::setDataType(BKAnchor::AnchorType anchor, BKAnchor::DataType data)
+BKCell* BKCell::setDataType(BKAnchor::AnchorType anchor, uint32_t data)
 {
     L_IMPL(BKCell)
     BKAnchor* la = l->mAnchorArray[0];

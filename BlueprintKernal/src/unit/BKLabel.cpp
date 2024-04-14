@@ -21,6 +21,7 @@ public:
     BKLabel* mpHandle = nullptr;
     QString mstrText = "";
     Qt::Alignment mAlignment = Qt::AlignVCenter | Qt::AlignLeft;
+    bool mbDontUpdate = false;
 
 public:
     BKLabel* setAlignment(Qt::Alignment alignment)
@@ -29,9 +30,10 @@ public:
         return mpHandle;
     }
 
-    BKLabel* setText(const QString& text)
+    BKLabel* setText(const QString& text, bool donotUpdate)
     {
         mstrText = text;
+        mbDontUpdate = donotUpdate;
 
         QFont defaultFont;
         QFontMetrics fm(defaultFont);        //assaber: 需要更新到系统字体
@@ -86,9 +88,9 @@ bool BKLabel::setValue(const QJsonValue& val)
     return true;
 }
 
-BKLabel* BKLabel::setText(const QString& text)
+BKLabel* BKLabel::setText(const QString& text, bool dontUpdate/* = false*/)
 {
-    return mpImpl->setText(text);
+    return mpImpl->setText(text, dontUpdate);
 }
 
 BKLabel* BKLabel::setAlignment(Qt::Alignment alignment)
@@ -112,8 +114,11 @@ void BKLabel::dataChanged(const QVariant& data)
     }
     else
     {
-        setText(data.toString());
-        l->update();
+        if (!l->mbDontUpdate)
+        {
+            setText(data.toString());
+            l->update();
+        }
 
         if (!mCallbackFunc(data) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);

@@ -1,14 +1,17 @@
 ﻿#include "container/BKAnchor.h"
-#include <map>
+#include "container/BKConnectingLine.h"
+#include "BlueprintLoader.h"
+#include "BKEvent.h"
+
+#include <QGraphicsSceneMouseEvent>
+#include <QApplication>
 #include <QPainter>
-#include <set>
 #include <QDebug>
 #include <QEvent>
-#include <QGraphicsSceneMouseEvent>
-#include "BlueprintLoader.h"
-#include "container/BKConnectingLine.h"
-#include <QApplication>
-#include "BKEvent.h"
+
+#include <stdexcept>
+#include <map>
+#include <set>
 
 class BKAnchor::Impl
 {
@@ -55,7 +58,7 @@ public:
 
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr);
 public:
-    void setDateType(DataType type);
+    void setDateType(uint32_t type);
     bool inSameCell(BKAnchor* anchor);
 
 public:
@@ -70,7 +73,7 @@ public:
 public:
     BKAnchor* mpHandle = nullptr;
     uint32_t mAnchorType = AnchorType::None;
-    DataType mDataType = DataType::Default;
+    uint32_t mDataType = DataType::Default;
 
     std::map<BKAnchor*, BKConnectingLine*> mRegistRecord;
     std::set<BKUnit*> mRegistUnitSet;
@@ -86,7 +89,7 @@ public:
     // 边界画笔
     QPen mBorderPen = mColor;
     // 数据类型到颜色的映射
-    static const std::map<DataType, QColor> mDataType2Color;
+    static std::map<uint32_t, QColor> mDataType2Color;
     // 准备线的其实连接点
     QPointF mConnectBegin;
     // 包裹锚点的组元
@@ -97,7 +100,7 @@ public:
 
 // 这个配色会让人觉得踏实，不要问为什么，毕竟取自人民币配色√
 // 感谢萌姐好几年前朋友圈提供的灵感
-const std::map<BKAnchor::DataType, QColor> BKAnchor::Impl::mDataType2Color = {
+std::map<uint32_t, QColor> BKAnchor::Impl::mDataType2Color = {
     { BKAnchor::DataType::Default,  0xFFFF8000 },
     { BKAnchor::DataType::Boolean,  0xFFA28C88 },
     { BKAnchor::DataType::Short,    0xFF708E98 },
@@ -135,7 +138,7 @@ BKAnchor::~BKAnchor()
     mpImpl = nullptr;
 }
 
-BKAnchor* BKAnchor::setDateType(DataType type)
+BKAnchor* BKAnchor::setDateType(uint32_t type)
 {
     mpImpl->setDateType(type);
     return this;
@@ -146,7 +149,7 @@ uint32_t BKAnchor::getAnchorType()
     return mpImpl->mAnchorType;
 }
 
-BKAnchor::DataType BKAnchor::getDataType()
+uint32_t BKAnchor::getDataType()
 {
     return mpImpl->mDataType;
 }
@@ -182,6 +185,34 @@ void BKAnchor::Impl::removeRegist(BKAnchor* anchor)
 
 
 void BKAnchor::removeRegist(BKUnit* unit) { mpImpl->removeRegist(unit); }
+
+bool BKAnchor::redirectToCard()
+{
+    L_IMPL(BKAnchor);
+
+    if (!(l->mAnchorType & BKAnchor::Output))
+        return false;
+
+    auto units = getRegistUnits();
+    for (auto unit : units)
+        removeRegist(unit);
+
+    return true;
+}
+
+void BKAnchor::registDataType(uint32_t type, const QColor& color /*= QColor(qrand() % 255, qrand() % 255, qrand() % 255)*/)
+{
+    auto itor = Impl::mDataType2Color.find(type);
+    if (itor != Impl::mDataType2Color.end())
+    {
+        if (type > BKAnchor::Custom)
+            throw std::logic_error(QString("注册数据类型错误<%1>, 文件[%2], 行数[%3]").arg(type).arg(__FILE__).arg(__LINE__).toStdString());
+        else
+            itor->second = color;
+    }
+    else
+        Impl::mDataType2Color[type] = color;
+}
 
 void BKAnchor::dispatchCellPositionChanged()
 {
@@ -292,6 +323,25 @@ void BKAnchor::dataChanged(const QVariant& data)
             item.first->dataChanged(data);
 }
 
+int BKAnchor::getBindOutputData(std::vector<QVariant>& rec)
+{
+    L_IMPL(BKAnchor);
+
+    if (l->mAnchorType & AnchorType::Output)
+        return -1;
+
+    rec.clear();
+    for (auto other : l->mRegistRecord)
+    {
+        auto ol = other.first->mpImpl;
+        auto card = other.first->mpBindCard;
+        if (ol->mRegistUnitSet.size() == 0)             //只支持无绑定节点的锚点
+            rec.push_back(card->getCurrentCardValue());
+    }
+
+    return rec.size();
+}
+
 void BKAnchor::Impl::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget /*= nullptr*/)
 {
     static_cast<void*>(widget);
@@ -314,7 +364,7 @@ void BKAnchor::Impl::paint(QPainter* painter, const QStyleOptionGraphicsItem* op
     }
 }
 
-void BKAnchor::Impl::setDateType(DataType type)
+void BKAnchor::Impl::setDateType(uint32_t type)
 {
     mDataType = type;
     auto itor = mDataType2Color.find(mDataType);

@@ -3,10 +3,6 @@
 #include <QKeyEvent>
 #include <QFileDialog>
 
-#include "TestCard.h"
-#include "PrintCard.h"
-#include "RenderItemCard.h"
-#include "Card/Hlms/PbsDatablock.h"
 
 BlueprintEditor::BlueprintEditor(QWidget* parent/* = nullptr*/)
     : super(parent)

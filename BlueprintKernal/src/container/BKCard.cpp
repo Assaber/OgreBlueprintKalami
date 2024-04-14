@@ -220,3 +220,8 @@ QGraphicsItem* BKCard::getBindItem()
 {
     return mpImpl;
 }
+
+QVariant BKCard::getCurrentCardValue()
+{
+    return QVariant();
+}

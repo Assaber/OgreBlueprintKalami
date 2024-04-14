@@ -8,16 +8,15 @@
 #include <QJsonDocument>
 #include <QScrollBar>
 
-std::map<std::string, BKCreator::CardCreatorPtr> BKCreator::mRegistItems;
-
 class BlueprintLoader::Impl
 {
 public:
     Impl(BlueprintLoader* loader, QGraphicsScene* scene)
         : mpView(loader)
         , mpScene(scene)
+        , mpCreatorMenu(new BKCreatorMenu(loader))
     {
-
+        mpCreatorMenu->hide();
     }
 
     ~Impl()
@@ -63,6 +62,8 @@ public:
     BKConnectingLine* mpReadyLine = nullptr;
     // 最后一个活跃的卡片
     QGraphicsItem* mpLastActiveCard = nullptr;
+    // 右键菜单
+    BKCreatorMenu* mpCreatorMenu = nullptr;
 };
 
 void BlueprintLoader::Impl::init()
@@ -402,12 +403,21 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
     return true;
 }
 
+void BlueprintLoader::setDarling(BKCard* card)
+{
+    L_IMPL(BlueprintLoader);
+
+    if (!card || !card->getBindItem())
+        return; 
+
+    l->updateTopmostCardItem(card->getBindItem());
+}
+
 BlueprintLoader::BlueprintLoader(QWidget* parent /*= nullptr*/)
     : QGraphicsView(parent)
     , mpImpl(new Impl(this, &mScene))
 {
     mpImpl->init();
-
     verticalScrollBar()->setEnabled(false);
     horizontalScrollBar()->setEnabled(false);
 }
@@ -444,20 +454,36 @@ void BlueprintLoader::mousePressEvent(QMouseEvent* event)
     L_IMPL(BlueprintLoader)
     QGraphicsView::mousePressEvent(event);
 
-    for (auto item : mScene.selectedItems())
+    if (event->button() == Qt::LeftButton)
     {
-        auto itor = mUnitsRecord.find(item);
-        if (itor != mUnitsRecord.end() 
-            && itor->second.item->getUnitType() == StandAloneUnit::Type::Card)
+        for (auto item : mScene.selectedItems())
         {
-            l->updateTopmostCardItem(itor->first);
+            auto itor = mUnitsRecord.find(item);
+            if (itor != mUnitsRecord.end()
+                && itor->second.item->getUnitType() == StandAloneUnit::Type::Card)
+            {
+                l->updateTopmostCardItem(itor->first);
+            }
         }
+
+        if (l->mpCreatorMenu->isActiveWindow())
+            l->mpCreatorMenu->hide();
     }
 }
 
 void BlueprintLoader::mouseReleaseEvent(QMouseEvent* event)
 {
+    L_IMPL(BlueprintLoader);
     QGraphicsView::mouseReleaseEvent(event);
+
+    if (event->button() == Qt::RightButton)
+    {
+        l->mpCreatorMenu->setCurrentIndex(-1);
+        l->mpCreatorMenu->move(event->windowPos().x(), event->windowPos().y());
+        l->mpCreatorMenu->show();
+        l->mpCreatorMenu->setFocus(Qt::FocusReason::MouseFocusReason);
+    }
+
     viewport()->setCursor(Qt::ArrowCursor);
 }
 

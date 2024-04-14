@@ -28,20 +28,7 @@ void BlueprintEditor::keyPressEvent(QKeyEvent* event)
     super::keyPressEvent(event);
     if (!event->isAccepted())
     {
-        if (event->key() == Qt::Key_N)
-        {
-            createUnit<TestCard>();
-        }
-        else if (event->key() == Qt::Key_P)
-        {
-            createUnit<PrintCard>();
-        }
-        else if (event->key() == Qt::Key_I)
-        {
-            createUnit<PbsDatablockCard>();
-            createUnit<RenderItemCard>();
-        }
-        else if (event->key() == Qt::Key_L && (event->modifiers() & Qt::ControlModifier))
+        if (event->key() == Qt::Key_L && (event->modifiers() & Qt::ControlModifier))
         {
             QString scene = QFileDialog::getOpenFileName();
             loadSceneFromJson(scene);

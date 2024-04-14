@@ -8,6 +8,7 @@
 
 class BKAnchor;
 class BKCard;
+class BKCreatorMenu;
 
 class _BlueprintKernalExport BlueprintLoader : public QGraphicsView
 {
@@ -38,6 +39,8 @@ public:
     void destroyUnit(StandAloneUnit* unit);
     void exportSceneToJson(const QString& path);
     bool loadSceneFromJson(const QString& path);
+
+    void setDarling(BKCard* card);
 
 protected:
     virtual bool event(QEvent* event) override;

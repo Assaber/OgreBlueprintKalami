@@ -1,13 +1,18 @@
 ﻿#pragma once
 #include "global_blueprint_kernal.h"
 #include <memory>
+#include <map>
+#include <QComboBox>
 
 class BKCell;
 class BKUnit;
+class BKCard;
 class BlueprintLoader;
+class QStringListModel;
+
+using CardCreatorPtr = BKCard* (*)(BlueprintLoader* loader);
 class BKCreator
 {
-    using CardCreatorPtr = BKCard * (*)(BlueprintLoader* loader);
 public:
     template<typename T, typename... Args, typename = std::enable_if_t<std::is_base_of_v<BKUnit, T>>>
     static T* create(Args &&...args)
@@ -31,17 +36,30 @@ public:
     }
 
     template<typename T, typename... Args, typename = std::enable_if_t<std::is_base_of_v<BKCard, T>>>
-    static void registCard()
+    static void registCard(const char* group = "Default")
     {
-        mRegistItems.insert({ T::Factory::_cardName, T::Factory::createOne });
+        auto& g = BKCreatorMenu::mRegistItems[group];
+        g.insert({ T::Factory::_cardName, T::Factory::createOne });
     }
 
-    static CardCreatorPtr getCreator(const char* name)
-    {
-        auto itor = mRegistItems.find(name);
-        return itor != mRegistItems.end() ? itor->second : nullptr;
-    }
+    static CardCreatorPtr getCreator(const char* name, const char* group = "Default");
+};
+
+class _BlueprintKernalExport BKCreatorMenu : public QComboBox
+{
+public:
+    BKCreatorMenu(BlueprintLoader* loader);
 
 private:
-    static _BlueprintKernalExport std::map<std::string, CardCreatorPtr> mRegistItems;
+    void updateListItems();
+
+private:
+    BlueprintLoader* mpLoader = nullptr;
+    QLineEdit* mpInput = nullptr;
+    QCompleter* mpCompleter = nullptr;
+    QStringListModel* mpModel = nullptr;
+
+private:
+    friend class BKCreator;
+    static std::map<std::string, std::map<std::string, CardCreatorPtr>> mRegistItems;
 };

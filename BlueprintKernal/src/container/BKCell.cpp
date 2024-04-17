@@ -79,8 +79,6 @@ public:
     BKCell* mpHandle = nullptr;
     // 单元列表
     std::vector<BKUnit*> mUnits;
-    // 最小高度
-    static constexpr int mnMinHeight = 20;
     // 组元最小间隔
     static constexpr int mnSpacing = 5;
     // 锚点
@@ -361,7 +359,7 @@ void BKCell::Impl::dispatchPositionChanged()
 
 QSizeF BKCell::Impl::getTheorySize()
 {
-    float width = 0, height = mnMinHeight;
+    float width = 0, height = BKUnit::minUnitHeight;
 
     // 根据锚点设置更新最小高度
     bool hasAnchor = mAnchorArray[0] || mAnchorArray[1];

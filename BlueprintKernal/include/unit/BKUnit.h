@@ -74,6 +74,9 @@ protected:
     BKAnchor* mpRightAnchor = nullptr;
     // 数据更新回调
     DataChangeCallback mCallbackFunc;
+
+public:
+    static constexpr int minUnitHeight = 20;
 };
 
 template<typename T>

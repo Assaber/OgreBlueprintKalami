@@ -12,6 +12,7 @@
 #include "unit/BKColorSelector.h"
 #include "unit/BKColorSelectorEx.h"
 #include "unit/BKPixmap.h"
+#include "unit/BKVectorEditor.h"
 
 TestCard::TestCard()
     : BKCard()
@@ -74,5 +75,9 @@ TestCard::TestCard()
             ->append({ BKCreator::create<BKColorSelectorEx>() }),
         BKCreator::create()
             ->append({ BKCreator::create<BKPixmap>() }),
+         BKCreator::create()
+            ->append( BKCreator::create<BKVectorEditor>()
+            ->setItemInLine(3)
+            ->setNames({"r", "g"})),
         });
 }

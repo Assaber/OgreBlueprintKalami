@@ -53,7 +53,9 @@ public:
         String,                     ///< 字符串类型
         Float,                      ///< 小数类型
         Double,                     ///< 双精度浮点数
-
+        VecInteger,                 ///< 整型容器：vector<int>
+        VecFloat,                   ///< 浮点型容器：vector<float>
+        
         Custom = 0x0100,            ///< 自定义部分：这里注册时沿用Qt MetaType的ID，理论上是1024往后，但是感觉预制类型也用不上就缩啦
     };
 

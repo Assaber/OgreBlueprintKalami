@@ -101,14 +101,16 @@ public:
 // 这个配色会让人觉得踏实，不要问为什么，毕竟取自人民币配色√
 // 感谢萌姐好几年前朋友圈提供的灵感
 std::map<uint32_t, QColor> BKAnchor::Impl::mDataType2Color = {
-    { BKAnchor::DataType::Default,  0xFFFF8000 },
-    { BKAnchor::DataType::Boolean,  0xFFA28C88 },
-    { BKAnchor::DataType::Short,    0xFF708E98 },
-    { BKAnchor::DataType::Integer,  0xFF8B6773 },
-    { BKAnchor::DataType::String,   0xFF89916B },
-    { BKAnchor::DataType::Float,    0xFF846992 },
-    { BKAnchor::DataType::Double,   0xFF435C74 },
-    { BKAnchor::DataType::Custom,   0xFFFF8000 },
+    { BKAnchor::DataType::Default,      0xFFFF8000 },
+    { BKAnchor::DataType::Boolean,      0xFFA28C88 },
+    { BKAnchor::DataType::Short,        0xFF708E98 },
+    { BKAnchor::DataType::Integer,      0xFF8B6773 },
+    { BKAnchor::DataType::String,       0xFF89916B },
+    { BKAnchor::DataType::Float,        0xFF846992 },
+    { BKAnchor::DataType::Double,       0xFF435C74 },
+    { BKAnchor::DataType::VecInteger,   0xFF886349 },
+    { BKAnchor::DataType::VecFloat,     0xFF4F9C83 },
+    { BKAnchor::DataType::Custom,       0xFFBF6074 },
 };
 
 

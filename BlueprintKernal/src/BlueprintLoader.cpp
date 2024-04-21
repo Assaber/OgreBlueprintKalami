@@ -159,6 +159,9 @@ bool BlueprintLoader::Impl::PreConnectLineEvent(PreConnLineEvent* event)
 
                 if (anchor->getAnchorType() == sender->getAnchorType())                                             // 锚点不能为同种类型
                     continue;
+                    
+                if (anchor->mpBindCard == sender->mpBindCard)                                                       // 禁止自娱自乐
+                    continue;
 
                 if (anchor->getDataType() != sender->getDataType())                                                 // 锚点数据类型必须相同
                     continue;

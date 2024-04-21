@@ -76,8 +76,10 @@ TestCard::TestCard()
         BKCreator::create()
             ->append({ BKCreator::create<BKPixmap>() }),
          BKCreator::create()
+            ->setDataType(BKAnchor::Input, BKAnchor::VecInteger)
             ->append( BKCreator::create<BKVectorEditor>()
-            ->setItemInLine(3)
-            ->setNames({"r", "g"})),
+            ->setItemInLine(1)
+            ->setNames({"r", "g"})
+            ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{ 1, 2, 3 }))),
         });
 }

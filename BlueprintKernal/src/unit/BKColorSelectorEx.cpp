@@ -266,7 +266,7 @@ public:
         this->setMaximumSize(size);
 
         mpLineEdit->setText(parent->mstrColor);
-        parent->setVisible(false);
+        // parent->setVisible(false);
 
         mpScene = mpBindItem->scene();
         mpScene->addItem(this);

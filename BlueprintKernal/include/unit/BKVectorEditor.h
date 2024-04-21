@@ -6,6 +6,10 @@
 class _BlueprintKernalExport BKVectorEditor : public BKUnitBasic<BKVectorEditor>
 {
 public:
+    using IntegerVec = std::vector<int>;
+    using FloatVec = std::vector<float>;
+
+public:
     enum class Type : uint8_t
     {
         Float,
@@ -43,6 +47,7 @@ public:
     BKVectorEditor* setItemInLine(int count);
 
 private:
+    friend class BKVectorCtrl;
     class Impl;
     Impl* mpImpl = nullptr;
 

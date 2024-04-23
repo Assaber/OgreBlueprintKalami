@@ -316,7 +316,7 @@ private:
     {
         T oldVal, min, max;
         std::tie(oldVal, min, max) = rec[mLastIndex];
-        if (oldVal >= min && oldVal <= max && oldVal != newVal)
+        if (newVal >= min && newVal <= max && oldVal != newVal)
         {
             std::get<0>(rec[mLastIndex]) = newVal;
 

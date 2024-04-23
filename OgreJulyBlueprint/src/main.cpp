@@ -6,6 +6,7 @@
 #include "PrintCard.h"
 #include "RenderItemCard.h"
 #include "Card/Hlms/PbsDatablockCard.h"
+#include "Card/Hlms/PbsDetailCard.h"
 #include "Card/Hlms/PbsMapCard.h"
 #include <functional>
 #include <QDateTime>
@@ -22,6 +23,7 @@ int main(int argc, char** argv)
     BKCreator::registCard<RenderItemCard>();
     BKCreator::registCard<PbsDatablockCard>();
     BKCreator::registCard<PbsMapCard>();
+    BKCreator::registCard<PbsDetailCard>();
 
     // 注册自定义结构体的锚点识别及颜色
     BKAnchor::registDataType(QMetaTypeId<PbsMapCard::TexInfo>::qt_metatype_id());

@@ -4,7 +4,6 @@
 #include "container/BKCell.h"
 #include "unit/BKLabel.h"
 #include "unit/BKComboBox.h"
-#include "unit/BKCheckBox.h"
 #include "unit/BKSpacer.h"
 #include "unit/BKPixmap.h"
 #include "unit/BKColorSelectorEx.h"

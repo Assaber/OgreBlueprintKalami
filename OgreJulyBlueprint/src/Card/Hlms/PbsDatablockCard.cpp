@@ -46,7 +46,6 @@ PbsDatablockCard::PbsDatablockCard()
         ->redirectToCard();
 
     auto texMapInputCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
-
     texMapInputCell->append(BKCreator::create<BKLabel>()
         ->setText("材质组", true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
@@ -64,6 +63,36 @@ PbsDatablockCard::PbsDatablockCard()
         );
     mpTextureMapInputAnchor = texMapInputCell->getAnchor(BKAnchor::Input);
     mpTextureMapInputAnchor->setDateType(QMetaTypeId<PbsMapCard::TexInfo>::qt_metatype_id());
+
+    auto texDetailCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
+    texDetailCell->append(BKCreator::create<BKLabel>()
+        ->setText("细节组", true)
+        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            std::vector<QVariant> items;
+            if (mpTextureDetailAnchor->getBindOutputData(items) < 0)
+                return true;
+
+            // todo...
+            return true;
+            })
+    );
+    mpTextureDetailAnchor = texDetailCell->getAnchor(BKAnchor::Input);
+    mpTextureDetailAnchor->setDateType(QMetaTypeId<PbsDetailCard::DetailInfo>::qt_metatype_id());
+
+    auto transparentCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
+    transparentCell->append(BKCreator::create<BKLabel>()
+        ->setText("细节组", true)
+        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            std::vector<QVariant> items;
+            if (mpTextureDetailAnchor->getBindOutputData(items) < 0)
+                return true;
+
+            // todo...
+            return true;
+            })
+    );
+    mpTextureDetailAnchor = texDetailCell->getAnchor(BKAnchor::Input);
+    mpTextureDetailAnchor->setDateType(QMetaTypeId<PbsDetailCard::DetailInfo>::qt_metatype_id());
 
 
     _pack({
@@ -128,8 +157,20 @@ PbsDatablockCard::PbsDatablockCard()
                 return false;
                 })),
 
-        texMapInputCell
+        texMapInputCell,
+        texDetailCell,
 
+        BKCreator::create(BKAnchor::AnchorType::Input)->append(
+            BKCreator::create<BKLabel>()->setText("透明", true)
+                ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    if (!param.canConvert<PbsTransparentCard::Info>())
+                        return true;
+
+                    PbsTransparentCard::Info info = param.value<PbsTransparentCard::Info>();
+                    // todo...
+                    return true;
+                }))
+            ->setDataType(BKAnchor::Input, QMetaTypeId<PbsTransparentCard::Info>::qt_metatype_id())
         });
 
     createHlms(true);

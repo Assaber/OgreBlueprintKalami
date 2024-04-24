@@ -2,6 +2,8 @@
 #include "container/BKCard.h"
 #include "OgreHlmsPbsDatablock.h"
 #include "Hlms/PbsMapCard.h"
+#include "Hlms/PbsDetailCard.h"
+#include "Hlms/PbsTransparentCard.h"
 
 class BKLineEdit;
 class BKCell;
@@ -38,6 +40,7 @@ private:
     BKLineEdit* mpNameLineEdit = nullptr;
     BKCell* mpOutputCell = nullptr;
     BKAnchor* mpTextureMapInputAnchor = nullptr;
+    BKAnchor* mpTextureDetailAnchor = nullptr;
 };
 
 // Q_DECLARE_METATYPE(Ogre::HlmsPbsDatablock)

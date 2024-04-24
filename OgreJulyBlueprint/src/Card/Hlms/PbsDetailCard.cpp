@@ -162,27 +162,27 @@ PbsDetailCard::PbsDetailCard()
                 })
             ),
 
-                        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKVectorEditor>(BKVectorEditor::Type::Int, 1)
-                            ->setNames({ "绑定资源" })
-                            ->setValue(QVariant::fromValue(BKVectorEditor::IntegerVec{ -1 }))
-                            ->setRange(0, { -1, 7 })
-                            ->setDataChangeCallback([this](const QVariant& param) -> bool {
-                                BKVectorEditor::IntegerVec data = param.value<BKVectorEditor::IntegerVec>();
-                                if (data.size() == 1 && mDetailInfo.offsetScaleEnable)
-                                {
-                                    mDetailInfo.uv = data[0];
-                                    mpOutputCell->valueChanged(mDetailInfo);
-                                }
-                                return true;
-                                })
-                        ),
+         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKVectorEditor>(BKVectorEditor::Type::Int, 1)
+             ->setNames({ "绑定资源" })
+             ->setValue(QVariant::fromValue(BKVectorEditor::IntegerVec{ -1 }))
+             ->setRange(0, { -1, 7 })
+             ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                BKVectorEditor::IntegerVec data = param.value<BKVectorEditor::IntegerVec>();
+                if (data.size() == 1 && mDetailInfo.offsetScaleEnable)
+                {
+                    mDetailInfo.uv = data[0];
+                    mpOutputCell->valueChanged(mDetailInfo);
+                }
+                return true;
+             })
+         ),
 
-        });
+    });
 }
 
 QVariant PbsDetailCard::getCurrentCardValue()
 {
-    return QVariant();
+    return mDetailInfo;
 }
 
 Ogre::TextureAddressingMode PbsDetailCard::getTAMByName(const char* name) const

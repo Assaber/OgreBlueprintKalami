@@ -21,7 +21,6 @@
 
 PbsDatablockCard::PbsDatablockCard()
     : mpPbs(reinterpret_cast<Ogre::HlmsPbs*>(Ogre::Root::getSingletonPtr()->getHlmsManager()->getHlms(Ogre::HLMS_PBS)))
-    , mstrName("snow")
 {
     setTitle("Pbs数据块");
 
@@ -254,7 +253,6 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
     mpDatablock->setEmissive(mEmissive.isValid() ? BlueprintEditor::toVec3f(mEmissive) : Ogre::Vector3(1.0f, 1.0f, 1.0f));
 
     mpDatablock->setFresnel(mFresnel.isValid() ? BlueprintEditor::toVec3f(mFresnel) : Ogre::Vector3(1.0f, 1.0f, 1.0f), true);
-
 
 
     if (notify)

@@ -22,7 +22,7 @@ private:
     void createHlms(bool recreate = false);
 
 private:
-    Ogre::String mstrName = "";
+    Ogre::String mstrName = "snow";
     Ogre::String mstrOldName = "";
     Ogre::HlmsPbs* mpPbs = nullptr;
     Ogre::HlmsPbsDatablock* mpDatablock = nullptr;

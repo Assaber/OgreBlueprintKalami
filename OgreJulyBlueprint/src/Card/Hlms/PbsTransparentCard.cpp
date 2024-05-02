@@ -91,11 +91,6 @@ PbsTransparentCard::PbsTransparentCard()
         });
 }
 
-PbsTransparentCard::~PbsTransparentCard()
-{
-
-}
-
 QVariant PbsTransparentCard::getCurrentCardValue()
 {
     return mInfo;

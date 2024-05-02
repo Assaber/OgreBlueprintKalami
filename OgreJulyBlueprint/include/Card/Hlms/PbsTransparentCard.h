@@ -23,7 +23,6 @@ public:
 
 public:
     PbsTransparentCard();
-    ~PbsTransparentCard();
 
     virtual QVariant getCurrentCardValue() override;
      

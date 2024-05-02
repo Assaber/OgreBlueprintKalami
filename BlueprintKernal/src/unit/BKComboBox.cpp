@@ -347,7 +347,7 @@ void BKComboBox::resized()
 
     int split = l->mCtrlArea.width() - l->mCtrlArea.height();
     l->mButtonArea = { split, l->mFixedMargin, l->mCtrlArea.height(), l->mCtrlArea.height() };
-    l->mTextArea = { 0, l->mFixedMargin, split, l->mCtrlArea.height() };
+    l->mTextArea = { 4, l->mFixedMargin, split - 4, l->mCtrlArea.height() };        // 4 = 左侧内边距
 }
 
 void BKComboBox::dataChanged(const QVariant& data)

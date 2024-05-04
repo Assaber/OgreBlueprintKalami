@@ -59,7 +59,7 @@ PbsDatablockCard::PbsDatablockCard()
 
             mTextureInfoSet.clear();
             for (const auto& item : items)
-                mTextureInfoSet.insert(item.value<PbsMapCard::TexInfo>());
+                mTextureInfoSet.insert(item.value<PbsCommonTextureCard::Info>());
 
             // 这里是需要重建材质的...吗？
             // todo...
@@ -68,7 +68,7 @@ PbsDatablockCard::PbsDatablockCard()
             })
         );
     mpTextureMapInputAnchor = texMapInputCell->getAnchor(BKAnchor::Input);
-    mpTextureMapInputAnchor->setDateType(QMetaTypeId<PbsMapCard::TexInfo>::qt_metatype_id());
+    mpTextureMapInputAnchor->setDateType(QMetaTypeId<PbsCommonTextureCard::Info>::qt_metatype_id());
 
     auto texDetailCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
     texDetailCell->append(BKCreator::create<BKLabel>()
@@ -80,7 +80,7 @@ PbsDatablockCard::PbsDatablockCard()
 
             mDetailInfoSet.clear();
             for (const auto& item : items)
-                mDetailInfoSet.insert(item.value<PbsDetailCard::DetailInfo>());
+                mDetailInfoSet.insert(item.value<PbsDetailTextureCard::Info>());
 
             // 这里是需要重建材质的...吗？
             // todo...
@@ -89,7 +89,7 @@ PbsDatablockCard::PbsDatablockCard()
             })
     );
     mpTextureDetailAnchor = texDetailCell->getAnchor(BKAnchor::Input);
-    mpTextureDetailAnchor->setDateType(QMetaTypeId<PbsDetailCard::DetailInfo>::qt_metatype_id());
+    mpTextureDetailAnchor->setDateType(QMetaTypeId<PbsDetailTextureCard::Info>::qt_metatype_id());
 
     BKCell* blendblockCell = BKCreator::create(BKAnchor::Input);
     blendblockCell->append(BKCreator::create<BKLabel>()
@@ -277,7 +277,7 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
     mpDatablock->setEmissive(mEmissive.isValid() ? BlueprintEditor::toVec3f(mEmissive) : Ogre::Vector3(1.0f, 1.0f, 1.0f));
     mpDatablock->setFresnel(mFresnel.isValid() ? BlueprintEditor::toVec3f(mFresnel) : Ogre::Vector3(1.0f, 1.0f, 1.0f), true);
 
-    for (const PbsMapCard::TexInfo& item : mTextureInfoSet)
+    for (const PbsCommonTextureCard::Info& item : mTextureInfoSet)
     {
         if (item.texture.empty())
             continue;
@@ -287,7 +287,7 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
             mpDatablock->setTextureUvSource(item.type, item.uv);
     }
 
-    for (const PbsDetailCard::DetailInfo item : mDetailInfoSet)
+    for (const PbsDetailTextureCard::Info item : mDetailInfoSet)
     {
         if (item.texture.empty() || item.indexOffset < 0)
             continue;

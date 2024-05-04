@@ -1,4 +1,4 @@
-﻿#include "Card/Hlms/PbsMapCard.h"
+﻿#include "Card/Hlms/PbsCommonTextureCard.h"
 
 #include "BKCreator.h"
 #include "container/BKCell.h"
@@ -31,12 +31,12 @@ const QMap<QString, Ogre::PbsTextureTypes> name2TextureType = {
     {"reflection_map", Ogre::PbsTextureTypes::PBSM_REFLECTION },
 };
 
-PbsMapCard::PbsMapCard()
+PbsCommonTextureCard::PbsCommonTextureCard()
 {
     setTitle("Pbs贴图");
 
-    mpOutputCell = BKCreator::create(BKAnchor::AnchorType::Output);
-    mpOutputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsMapCard::TexInfo>::qt_metatype_id())
+    BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
+    outputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsCommonTextureCard::Info>::qt_metatype_id())
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
             ->setText("输出")
@@ -52,15 +52,15 @@ PbsMapCard::PbsMapCard()
     int initTextureAddrModeIndex = textureAddrMode.indexOf(name2TextureAddrMode.key(Ogre::TAM_WRAP));
 
     _pack({
-        mpOutputCell,
+        outputCell,
 
          BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图类型")),
          BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(textureTypeNames)
             ->setCurrentIndex(initTextureTypeIndex, false)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                 mTextureInfo.type = name2TextureType[param.toString()];
-                mpOutputCell->valueChanged(mTextureInfo);
+                outputCell->valueChanged(mTextureInfo);
                 return true;
                 })
          ),
@@ -70,14 +70,12 @@ PbsMapCard::PbsMapCard()
             ->setDataType(BKAnchor::Input, BKAnchor::String)
             ->append(BKCreator::create<BKPixmap>()
                 ->setFixedSize({100, 100})
-                ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                     Ogre::String texturePath = param.toString().toStdString();
                     resetResourceDir(texturePath);
 
-
-
                     mTextureInfo.texture = QFileInfo(param.toString()).fileName().toStdString();
-                    mpOutputCell->valueChanged(mTextureInfo);
+                    outputCell->valueChanged(mTextureInfo);
                     return true;
                     })
             ),
@@ -95,9 +93,9 @@ PbsMapCard::PbsMapCard()
                     ->setMinWidth(60)
                     ->setItems(textureAddrMode)
                     ->setCurrentIndex(initTextureAddrModeIndex, false)
-                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                         mTextureInfo.sampler.mU = name2TextureAddrMode[param.toString()];
-                        mpOutputCell->valueChanged(mTextureInfo);
+                        outputCell->valueChanged(mTextureInfo);
                         return true;
                         }),
 
@@ -105,9 +103,9 @@ PbsMapCard::PbsMapCard()
                     ->setMinWidth(60)
                     ->setItems(textureAddrMode)
                     ->setCurrentIndex(initTextureAddrModeIndex, false)
-                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                         mTextureInfo.sampler.mV = name2TextureAddrMode[param.toString()];
-                        mpOutputCell->valueChanged(mTextureInfo);
+                        outputCell->valueChanged(mTextureInfo);
                         return true;
                         }),
 
@@ -115,9 +113,9 @@ PbsMapCard::PbsMapCard()
                     ->setMinWidth(60)
                     ->setItems(textureAddrMode)
                     ->setCurrentIndex(initTextureAddrModeIndex, false)
-                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                         mTextureInfo.sampler.mW = name2TextureAddrMode[param.toString()];
-                        mpOutputCell->valueChanged(mTextureInfo);
+                        outputCell->valueChanged(mTextureInfo);
                         return true;
                         }),
 
@@ -128,24 +126,24 @@ PbsMapCard::PbsMapCard()
             ->append(BKCreator::create<BKComboBox>()
                 ->setItems(QStringList() << "" << "0" << "1" << "2" << "3" << "4" << "5" << "6" << "7")
                 ->setCurrentItem(0, false)
-                ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                     QString si = param.toString();
                     mTextureInfo.uv = si.isEmpty() ? -1 : si.toInt();
-                    mpOutputCell->valueChanged(mTextureInfo);
+                    outputCell->valueChanged(mTextureInfo);
                     return true;
                     })
             )
         });
 }
 
-QVariant PbsMapCard::getCurrentCardValue()
+QVariant PbsCommonTextureCard::getCurrentCardValue()
 {
     return mTextureInfo;
 }
 
-void PbsMapCard::resetResourceDir(const Ogre::String& filepath)
+void PbsCommonTextureCard::resetResourceDir(const Ogre::String& filepath)
 {
-    auto groupMgr = Ogre::ResourceGroupManager::getSingletonPtr();
+    Ogre::ResourceGroupManager* groupMgr = Ogre::ResourceGroupManager::getSingletonPtr();
     static const Ogre::String snowResourceGroupName = "ResourceGroup.Snow";
 
     if (!groupMgr->resourceGroupExists(snowResourceGroupName))

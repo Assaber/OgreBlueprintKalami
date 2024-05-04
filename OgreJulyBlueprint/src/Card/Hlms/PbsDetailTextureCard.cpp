@@ -1,4 +1,4 @@
-﻿#include "Card/Hlms/PbsDetailCard.h"
+﻿#include "Card/Hlms/PbsDetailTextureCard.h"
 
 #include "BKCreator.h"
 #include "container/BKCell.h"
@@ -46,7 +46,7 @@ const QMap<QString, Ogre::TextureAddressingMode> name2TextureAddrMode = {
     { "Border", Ogre::TAM_BORDER },
 };
 
-PbsDetailCard::PbsDetailCard()
+PbsDetailTextureCard::PbsDetailTextureCard()
 {
     setTitle("Pbs细节");
 
@@ -63,7 +63,7 @@ PbsDetailCard::PbsDetailCard()
 
 
     mpOutputCell = BKCreator::create(BKAnchor::AnchorType::Output);
-    mpOutputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsDetailCard::DetailInfo>::qt_metatype_id())
+    mpOutputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsDetailTextureCard::Info>::qt_metatype_id())
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
             ->setText("输出")
@@ -188,13 +188,13 @@ PbsDetailCard::PbsDetailCard()
     });
 }
 
-QVariant PbsDetailCard::getCurrentCardValue()
+QVariant PbsDetailTextureCard::getCurrentCardValue()
 {
     return mDetailInfo;
 }
 
 static_assert(Ogre::PBSM_DETAIL1 < Ogre::PBSM_DETAIL0_NM, "This comparison relates to calculating 'indexOffset'");
-int8_t PbsDetailCard::getOffsetByTextureType(Ogre::PbsTextureTypes type)
+int8_t PbsDetailTextureCard::getOffsetByTextureType(Ogre::PbsTextureTypes type)
 {
     if (mDetailInfo.type >= Ogre::PBSM_DETAIL0 && mDetailInfo.type <= Ogre::PBSM_DETAIL3)
         return mDetailInfo.type - Ogre::PBSM_DETAIL0;

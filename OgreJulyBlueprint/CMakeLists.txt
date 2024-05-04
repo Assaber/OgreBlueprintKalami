@@ -23,6 +23,7 @@ include_directories(
     include/Card
     include/Engine
     ${CMAKE_BINARY_DIR}/ogre-next/include
+	${OUTPUT_BASE_DIR}/include
     ${OGRE_DIR}
     ${OGRE_DIR}/OgreMain/include
     ${OGRE_DIR}/Components/Hlms/Common/include

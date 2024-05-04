@@ -6,9 +6,9 @@
 #include "PrintCard.h"
 #include "RenderItemCard.h"
 #include "Card/Hlms/PbsDatablockCard.h"
-#include "Card/Hlms/PbsDetailCard.h"
+#include "Card/Hlms/PbsDetailTextureCard.h"
 #include "Card/Hlms/PbsTransparentCard.h"
-#include "Card/Hlms/PbsMapCard.h"
+#include "Card/Hlms/PbsCommonTextureCard.h"
 #include "Card/Hlms/BlendblockCard.h"
 #include "Card/Hlms/MacroblockCard.h"
 #include <functional>
@@ -25,15 +25,15 @@ int main(int argc, char** argv)
     BKCreator::registCard<PrintCard>();
     BKCreator::registCard<RenderItemCard>();
     BKCreator::registCard<PbsDatablockCard>();
-    BKCreator::registCard<PbsMapCard>();
-    BKCreator::registCard<PbsDetailCard>();
+    BKCreator::registCard<PbsCommonTextureCard>();
+    BKCreator::registCard<PbsDetailTextureCard>();
     BKCreator::registCard<PbsTransparentCard>();
     BKCreator::registCard<BlendblockCard>();
     BKCreator::registCard<MacroblockCard>();
 
     // 注册自定义结构体的锚点识别及颜色
-    BKAnchor::registDataType(QMetaTypeId<PbsMapCard::TexInfo>::qt_metatype_id());
-    BKAnchor::registDataType(QMetaTypeId<PbsDetailCard::DetailInfo>::qt_metatype_id());
+    BKAnchor::registDataType(QMetaTypeId<PbsCommonTextureCard::Info>::qt_metatype_id());
+    BKAnchor::registDataType(QMetaTypeId<PbsDetailTextureCard::Info>::qt_metatype_id());
     BKAnchor::registDataType(QMetaTypeId<PbsTransparentCard::Info>::qt_metatype_id());
     BKAnchor::registDataType(QMetaTypeId<Ogre::HlmsBlendblock>::qt_metatype_id());
     BKAnchor::registDataType(QMetaTypeId<Ogre::HlmsMacroblock>::qt_metatype_id());

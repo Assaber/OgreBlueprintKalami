@@ -7,12 +7,12 @@
 #include <QDebug>
 
 class BKCell;
-class PbsDetailCard : public BKCard
+class PbsDetailTextureCard : public BKCard
 {
-    CREATE_CARD_FACTORY(PbsDetailCard)
+    CREATE_CARD_FACTORY(PbsDetailTextureCard)
 
 public:
-    struct DetailInfo
+    struct Info
     {
         Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
         Ogre::HlmsSamplerblock sampler;
@@ -27,25 +27,25 @@ public:
             return QVariant::fromValue(*this);
         }
 
-        bool operator <(const DetailInfo& o) const {
+        bool operator <(const Info& o) const {
             return type < o.type;
         }
 
-        bool operator ==(const DetailInfo& o) const {
+        bool operator ==(const Info& o) const {
             return type == o.type;
         }
     };
 
 public:
-    PbsDetailCard();
+    PbsDetailTextureCard();
     virtual QVariant getCurrentCardValue() override;
 
 private:
     int8_t getOffsetByTextureType(Ogre::PbsTextureTypes type);
 
 private:
-    DetailInfo mDetailInfo;
+    Info mDetailInfo;
     BKCell* mpOutputCell = nullptr;
 };
 
-Q_DECLARE_METATYPE(PbsDetailCard::DetailInfo)
+Q_DECLARE_METATYPE(PbsDetailTextureCard::Info)

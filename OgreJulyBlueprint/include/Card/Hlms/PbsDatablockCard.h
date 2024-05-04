@@ -1,8 +1,8 @@
 #pragma once
 #include "container/BKCard.h"
 #include "OgreHlmsPbsDatablock.h"
-#include "Hlms/PbsMapCard.h"
-#include "Hlms/PbsDetailCard.h"
+#include "Hlms/PbsCommonTextureCard.h"
+#include "Hlms/PbsDetailTextureCard.h"
 #include "Hlms/PbsTransparentCard.h"
 
 class BKLineEdit;
@@ -28,8 +28,8 @@ private:
     Ogre::HlmsPbsDatablock* mpDatablock = nullptr;
     Ogre::HlmsMacroblock mMacroblock;
     Ogre::HlmsBlendblock mBlendblock;
-    std::set<PbsMapCard::TexInfo> mTextureInfoSet;
-    std::set<PbsDetailCard::DetailInfo> mDetailInfoSet;
+    std::set<PbsCommonTextureCard::Info> mTextureInfoSet;
+    std::set<PbsDetailTextureCard::Info> mDetailInfoSet;
     PbsTransparentCard::Info mTransparentInfo;
 
     QColor mBackgroundColor;

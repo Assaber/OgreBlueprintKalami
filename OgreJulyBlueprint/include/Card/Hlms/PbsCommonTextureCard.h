@@ -5,12 +5,12 @@
 #include <QDebug>
 
 class BKCell;
-class PbsMapCard : public BKCard
+class PbsCommonTextureCard : public BKCard
 {
-    CREATE_CARD_FACTORY(PbsMapCard)
+    CREATE_CARD_FACTORY(PbsCommonTextureCard)
 
 public:
-    struct TexInfo
+    struct Info
     {
         Ogre::PbsTextureTypes type = Ogre::PBSM_DIFFUSE;
         Ogre::String texture =  "";
@@ -21,25 +21,24 @@ public:
             return QVariant::fromValue(*this);
         }
 
-        bool operator <(const TexInfo& o) const {
+        bool operator <(const Info& o) const {
             return type < o.type;
         }
 
-        bool operator ==(const TexInfo& o) const {
+        bool operator ==(const Info& o) const {
             return type == o.type;
         }
     };
 
 public:
-    PbsMapCard();
+    PbsCommonTextureCard();
     virtual QVariant getCurrentCardValue() override;
 
 private:
     void resetResourceDir(const Ogre::String& filepath);
      
 private:
-    TexInfo mTextureInfo;
-    BKCell* mpOutputCell = nullptr;
+    Info mTextureInfo;
 };
 
-Q_DECLARE_METATYPE(PbsMapCard::TexInfo)
+Q_DECLARE_METATYPE(PbsCommonTextureCard::Info)

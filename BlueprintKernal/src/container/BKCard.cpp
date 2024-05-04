@@ -24,6 +24,10 @@ public:
     static constexpr float mnRadius = 8.0f;
     // 阴影效果
     QGraphicsDropShadowEffect* mpEffext = nullptr;
+    // 是否正在释放
+    // 卡片释放时会导致锚点释放，锚点关联连接线可能又回来了（dataChanged），所以用一个标识更新释放状态
+    // 理论上只有释放的时候会用得到
+    bool mbImmortal = false;
 
 public:
     Impl(BKCard* handle)
@@ -45,6 +49,8 @@ public:
 
     ~Impl()
     {
+        mbImmortal = true;
+
         qDebug() << "card item delete";
 
         // 从场景中移除后分元释放
@@ -176,6 +182,12 @@ BKAnchor* BKCard::getRowAnchor(int row, BKAnchor::AnchorType type)
         return nullptr;
 
     return l->mItems[row]->getAnchor(type);
+}
+
+bool BKCard::isStillAlive()
+{
+    L_IMPL(BKCard);
+    return !(l->mbImmortal);
 }
 
 void BKCard::_pack(std::initializer_list<BKCell*> cells)

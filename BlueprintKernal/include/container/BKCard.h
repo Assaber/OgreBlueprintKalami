@@ -28,7 +28,19 @@ public:
 public:
     bool loadFromJson(const QJsonArray& obj, const QPoint& pos = QPoint(0, 0));
     QJsonArray exportToJson();
+    /**
+     * @brief:                                      获取一行中的锚点
+     * @param: int row                              行数（从0计数）
+     * @param: BKAnchor::AnchorType type            锚点类型
+     * @return: BKAnchor*                           锚点指针
+     * @remark: 
+     */
     BKAnchor* getRowAnchor(int row, BKAnchor::AnchorType type);
+
+    /**
+     * @brief:                                      是否持续可被使用
+     */
+    bool isStillAlive();
 
 protected:
     void _pack(std::initializer_list<BKCell*> cells);

@@ -93,12 +93,18 @@ public:
             mAnchorArray[0]->removeRegist(mAnchorArray[1]);
             mAnchorArray[1]->removeRegist(mAnchorArray[0]);
 
+            BKCard* inputCard = mAnchorArray[1]->getBindCard();
+            BKCard* outputCard = mAnchorArray[0]->getBindCard();
             // 在移除关联关系时，判断锚点是否存在多重锚点，如果存在多重锚点则通知触发一次更新
             bool notify = (mAnchorArray[1]->getAnchorType() & BKAnchor::AnchorType::MultiConn)          // 输入锚点挂着多重连接
-                && mAnchorArray[0]->getRegistUnits().size() == 0;                                       // 输出锚点无注册单元，直接绑定的卡片
+                && mAnchorArray[0]->getRegistUnits().size() == 0                                        // 输出锚点无注册单元，直接绑定的卡片
+                && inputCard->isStillAlive();                                                           // 输入锚点是否还能接收消息
 
-            if(notify)
-                mAnchorArray[1]->dataChanged(mAnchorArray[0]->getBindCard()->getCurrentCardValue());
+            if (notify)
+            {
+                QVariant value = outputCard->getCurrentCardValue();
+                mAnchorArray[1]->dataChanged(value);
+            }  
         }
 
         mAnchorArray[0]->update();

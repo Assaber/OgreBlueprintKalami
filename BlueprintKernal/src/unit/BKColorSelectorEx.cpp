@@ -60,11 +60,17 @@ public:
     }
 
     QString getCurrentColor() {
-        return QString(mType == Type::Vector3 ? "%1 %2 %3" : "%1 %2 %3 %4")
-            .arg(QString::number(mColorData[0], 'f', 3))
+        if (mType == Type::Vector3)
+            return QString("%1 %2 %3").arg(QString::number(mColorData[0], 'f', 3))
+            .arg(QString::number(mColorData[1], 'f', 3))
+            .arg(QString::number(mColorData[2], 'f', 3));
+        else if(mType == Type::Vector4)
+            return QString("%1 %2 %3 %4").arg(QString::number(mColorData[0], 'f', 3))
             .arg(QString::number(mColorData[1], 'f', 3))
             .arg(QString::number(mColorData[2], 'f', 3))
             .arg(QString::number(mColorData[3], 'f', 3));
+
+        return "";
     }
 
 

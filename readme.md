@@ -8,6 +8,11 @@
 
 ### 编译
 
+1. 注意在编译**OgreSceneFormat**时，需要添加一个CmakeLists的条目
+
+``` shell
+[line 25] include_directories(${CMAKE_SOURCE_DIR}/ogre-next/Components/Hlms/Common/include)
+```
 //todo...
 
 

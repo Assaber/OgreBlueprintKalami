@@ -5,6 +5,12 @@
 
 class BKLineEdit;
 class BKCell;
+namespace Ogre
+{
+    class SceneNode;
+    class SubItem;
+};
+
 class UnlitDatablockCard : public BKCard
 {
     CREATE_CARD_FACTORY(UnlitDatablockCard)
@@ -18,6 +24,7 @@ public:
 
 private:
     void createHlms(bool recreate = false);
+    void getHitSubItems(const Ogre::IdString& id, Ogre::SceneNode* node, std::set<Ogre::SubItem*>& items);
 
 private:
     Ogre::String mstrName = "usnow";

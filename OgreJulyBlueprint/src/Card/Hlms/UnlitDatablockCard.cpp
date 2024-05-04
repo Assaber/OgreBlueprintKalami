@@ -15,10 +15,12 @@
 
 #include "OgreRoot.h"
 #include "OgreHlmsManager.h"
-#include "OgreHlmsPbs.h"
 
 #include "Card/Hlms/BlendblockCard.h"
 #include "Card/Hlms/MacroblockCard.h"
+#include "OgreWidget.h"
+#include "OgreItem.h"
+#include "OgreSceneNode.h"
 
 #include <QMessageBox>
 #include <QUuid>
@@ -153,6 +155,7 @@ QVariant UnlitDatablockCard::getCurrentCardValue()
 void UnlitDatablockCard::createHlms(bool recreate/* = false*/)
 {
     bool notify = false;
+    std::set<Ogre::SubItem*> refreshSubItems;
 
     // 我无法销毁一个datablock，因为别的渲染对象可能正在使用这个材质
     // 策略变更：只要名字发生变化，则重新创建datablock，当然也包括HlmsMacroblock和HlmsBlendblock的更新
@@ -185,6 +188,16 @@ void UnlitDatablockCard::createHlms(bool recreate/* = false*/)
 #endif
                 mstrName = uuid;
                 mpNameLineEdit->setText(mstrName.c_str());
+
+                if (!mstrOldName.empty())
+                {
+                    // 移除使用旧纹理的对象
+                    Ogre::SceneManager* sceneMgr = Ogre::Root::getSingletonPtr()->getSceneManager(OgreWidget::strSceneMgrName);
+                    assert(sceneMgr && "what?");
+
+                    getHitSubItems(mstrOldName, sceneMgr->getRootSceneNode(), refreshSubItems);
+                    mpUnlit->destroyDatablock(mstrOldName);
+                }
 #if CHANGE_DATABLOCK_NAME_HAS_NOTIFY
             }
 #endif
@@ -224,4 +237,39 @@ void UnlitDatablockCard::createHlms(bool recreate/* = false*/)
 
     if (notify)
         mpOutputCell->valueChanged(QString(mstrName.c_str()));
+}
+
+void UnlitDatablockCard::getHitSubItems(const Ogre::IdString& id, Ogre::SceneNode* node, std::set<Ogre::SubItem*>& items)
+{
+    auto itemItorVec = node->getAttachedObjectIterator();
+    auto itemItor = itemItorVec.begin();
+    while (itemItor != itemItorVec.end())
+    {
+        Ogre::Item* item = dynamic_cast<Ogre::Item*>(*itemItor);
+        if (item)
+        {
+            for (int i = 0; i < item->getNumSubItems(); ++i)
+            {
+                auto subItem = item->getSubItem(i);
+
+                if (subItem->getDatablockOrMaterialName() == mstrOldName)
+                {
+                    subItem->setDatablock(mpUnlit->getDefaultDatablock());
+                    items.insert(subItem);
+                }
+            }
+        }
+        ++itemItor;
+    }
+
+    auto nodeItorVec = node->getChildIterator();
+    auto nodeItor = nodeItorVec.begin();
+    while (nodeItor != nodeItorVec.end())
+    {
+        Ogre::SceneNode* item = dynamic_cast<Ogre::SceneNode*>(*nodeItor);
+        if (item)
+            getHitSubItems(id, item, items);
+
+        ++nodeItor;
+    }
 }

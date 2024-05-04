@@ -18,6 +18,9 @@
 
 #include "Card/Hlms/BlendblockCard.h"
 #include "Card/Hlms/MacroblockCard.h"
+#include "OgreWidget.h"
+#include "OgreItem.h"
+#include "OgreSceneNode.h"
 
 #include <QMessageBox>
 #include <QUuid>
@@ -214,9 +217,7 @@ QVariant PbsDatablockCard::getCurrentCardValue()
 void PbsDatablockCard::createHlms(bool recreate/* = false*/)
 {
     bool notify = false;
-
-    // 我无法销毁一个datablock，因为别的渲染对象可能正在使用这个材质
-    // 策略变更：只要名字发生变化，则重新创建datablock，当然也包括HlmsMacroblock和HlmsBlendblock的更新
+    std::set<Ogre::SubItem*> refreshSubItems;
 
     if (recreate)
     {
@@ -246,6 +247,16 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
 #endif
                 mstrName = uuid;
                 mpNameLineEdit->setText(mstrName.c_str());
+
+                if (!mstrOldName.empty())
+                {
+                    // 移除使用旧纹理的对象
+                    Ogre::SceneManager* sceneMgr = Ogre::Root::getSingletonPtr()->getSceneManager(OgreWidget::strSceneMgrName);
+                    assert(sceneMgr && "what?");
+
+                    getHitSubItems(mstrOldName, sceneMgr->getRootSceneNode(), refreshSubItems);
+                    mpPbs->destroyDatablock(mstrOldName);
+                }
 #if CHANGE_DATABLOCK_NAME_HAS_NOTIFY
             }
 #endif
@@ -264,7 +275,6 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
         notify = true;
     }
         
-
     mpDatablock->setBackgroundDiffuse(mBackgroundColor.isValid() ? BlueprintEditor::toColor(mBackgroundColor) : Ogre::ColourValue());
     mpDatablock->setDiffuse(mDiffuse.isValid() ? BlueprintEditor::toVec3f(mDiffuse) : Ogre::Vector3(1.0f, 1.0f, 1.0f));
     {
@@ -306,6 +316,45 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
     else
         mpDatablock->setTransparency(1.0f, Ogre::HlmsPbsDatablock::None, true);
 
+    // 这里不进行展开，通过锚点传递的方式进行更新 ( o _ < )
+    // for (Ogre::SubItem* item : refreshSubItems)
+    //     item->setDatablock(mpDatablock);
+
     if (notify)
         mpOutputCell->valueChanged(QString(mstrName.c_str()));
+}
+
+void PbsDatablockCard::getHitSubItems(const Ogre::IdString& id, Ogre::SceneNode* node, std::set<Ogre::SubItem*>& items)
+{
+    auto itemItorVec = node->getAttachedObjectIterator();
+    auto itemItor = itemItorVec.begin();
+    while (itemItor != itemItorVec.end())
+    {
+        Ogre::Item* item = dynamic_cast<Ogre::Item*>(*itemItor);
+        if (item)
+        {
+            for (int i = 0; i < item->getNumSubItems(); ++i)
+            {
+                auto subItem = item->getSubItem(i);
+
+                if (subItem->getDatablockOrMaterialName() == mstrOldName)
+                {
+                    subItem->setDatablock(mpPbs->getDefaultDatablock());
+                    items.insert(subItem);
+                }
+            }
+        }
+        ++itemItor;
+    }
+
+    auto nodeItorVec = node->getChildIterator();
+    auto nodeItor = nodeItorVec.begin();
+    while (nodeItor != nodeItorVec.end())
+    {
+        Ogre::SceneNode* item = dynamic_cast<Ogre::SceneNode*>(*nodeItor);
+        if (item)
+            getHitSubItems(id, item, items);
+
+        ++nodeItor;
+    }
 }

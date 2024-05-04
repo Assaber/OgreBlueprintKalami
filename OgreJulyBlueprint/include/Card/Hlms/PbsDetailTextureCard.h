@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "container/BKCard.h"
+#include "ResetResourceSup.h"
 #include "OgreHlmsPbs.h"
 #include "OgreHlmsSamplerblock.h"
 #include <limits>
@@ -7,7 +8,7 @@
 #include <QDebug>
 
 class BKCell;
-class PbsDetailTextureCard : public BKCard
+class PbsDetailTextureCard : public ResetResourceSup
 {
     CREATE_CARD_FACTORY(PbsDetailTextureCard)
 
@@ -19,7 +20,7 @@ public:
         Ogre::String texture = "";
         int8_t uv = -1;
         uint8_t indexOffset = -1;
-        Ogre::PbsBlendModes blendMode = Ogre::PbsBlendModes::NUM_PBSM_BLEND_MODES;
+        Ogre::PbsBlendModes blendMode = Ogre::PbsBlendModes::PBSM_BLEND_NORMAL_NON_PREMUL;
         bool offsetScaleEnable = false;
         std::array<float, 4> offsetScale = {0, 0, 1.0f, 1.0f};
         

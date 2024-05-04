@@ -44,5 +44,3 @@ private:
     BKAnchor* mpTextureMapInputAnchor = nullptr;
     BKAnchor* mpTextureDetailAnchor = nullptr;
 };
-
-// Q_DECLARE_METATYPE(Ogre::HlmsPbsDatablock)

@@ -11,6 +11,8 @@
 #include "unit/BKVectorEditor.h"
 #include "BlueprintEditor.h"
 
+#include <QFileInfo>
+
 const QMap<QString, Ogre::PbsBlendModes> name2PbsBlendModes = {
     { "NormalNonPremul", Ogre::PBSM_BLEND_NORMAL_NON_PREMUL },
     { "NormalPremul"   ,  Ogre::PBSM_BLEND_NORMAL_PREMUL },
@@ -47,16 +49,16 @@ const QMap<QString, Ogre::TextureAddressingMode> name2TextureAddrMode = {
 };
 
 PbsDetailTextureCard::PbsDetailTextureCard()
+    : ResetResourceSup("ResourceGroup.Pbs.Snow")
 {
     setTitle("Pbs细节");
 
     QStringList blendModes = name2PbsBlendModes.keys();
-    int initBlendModeIndex = blendModes.indexOf(name2PbsBlendModes.key(Ogre::PBSM_BLEND_NORMAL_NON_PREMUL));
+    int initBlendModeIndex = blendModes.indexOf(name2PbsBlendModes.key(mDetailInfo.blendMode));
 
-    Ogre::PbsTextureTypes tt = Ogre::PBSM_DETAIL0;
     QStringList textureTypes = name2PbsDetailTextureType.keys();
-    int initTextureTypeIndex = textureTypes.indexOf(name2PbsDetailTextureType.key(tt));
-    mDetailInfo.indexOffset = getOffsetByTextureType(tt);
+    int initTextureTypeIndex = textureTypes.indexOf(name2PbsDetailTextureType.key(mDetailInfo.type));
+    mDetailInfo.indexOffset = getOffsetByTextureType(mDetailInfo.type);
 
     QStringList textureAddrMode = name2TextureAddrMode.keys();
     int initTextureAddrModeIndex = textureAddrMode.indexOf(name2TextureAddrMode.key(Ogre::TAM_WRAP));
@@ -90,7 +92,10 @@ PbsDetailTextureCard::PbsDetailTextureCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKPixmap>()
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
-            mDetailInfo.texture = param.toString().toStdString();
+            Ogre::String texturePath = param.toString().toStdString();
+            resetResourceDir(texturePath);
+
+            mDetailInfo.texture = QFileInfo(param.toString()).fileName().toStdString();
             mpOutputCell->valueChanged(mDetailInfo);
             return true;
             })
@@ -137,7 +142,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
 
                 }),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("环绕模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("混合模式")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendModes)
             ->setCurrentIndex(initBlendModeIndex, false)

@@ -32,6 +32,7 @@ const QMap<QString, Ogre::PbsTextureTypes> name2TextureType = {
 };
 
 PbsCommonTextureCard::PbsCommonTextureCard()
+    : ResetResourceSup("ResourceGroup.Pbs.Snow")
 {
     setTitle("Pbs贴图");
 
@@ -139,36 +140,4 @@ PbsCommonTextureCard::PbsCommonTextureCard()
 QVariant PbsCommonTextureCard::getCurrentCardValue()
 {
     return mTextureInfo;
-}
-
-void PbsCommonTextureCard::resetResourceDir(const Ogre::String& filepath)
-{
-    Ogre::ResourceGroupManager* groupMgr = Ogre::ResourceGroupManager::getSingletonPtr();
-    static const Ogre::String snowResourceGroupName = "ResourceGroup.Snow";
-
-    if (!groupMgr->resourceGroupExists(snowResourceGroupName))
-        groupMgr->createResourceGroup(snowResourceGroupName);
-
-
-    QFileInfo fileInfo(filepath.c_str());
-    Ogre::String dir = fileInfo.absolutePath().toStdString();
-    Ogre::String name = fileInfo.fileName().toStdString();
-
-    if (!groupMgr->resourceLocationExists(dir, snowResourceGroupName))
-        groupMgr->addResourceLocation(dir, "FileSystem", snowResourceGroupName);
-
-    bool needDeclare = true;
-    for (const Ogre::ResourceGroupManager::ResourceDeclaration& rd : groupMgr->getResourceDeclarationList(snowResourceGroupName))
-    {
-        if (rd.resourceName.compare(name) == 0)
-        {
-            needDeclare = false;
-            break;
-        }
-    }
-
-    if (needDeclare)
-        groupMgr->declareResource(name, "Texture", snowResourceGroupName);
-    
-    groupMgr->loadResourceGroup(snowResourceGroupName);
 }

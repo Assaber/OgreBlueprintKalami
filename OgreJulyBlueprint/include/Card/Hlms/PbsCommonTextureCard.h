@@ -1,11 +1,12 @@
 ﻿#pragma once
 #include "container/BKCard.h"
 #include "OgreHlmsSamplerblock.h"
+#include "ResetResourceSup.h"
 #include "OgreHlmsPbs.h"
 #include <QDebug>
 
 class BKCell;
-class PbsCommonTextureCard : public BKCard
+class PbsCommonTextureCard : public ResetResourceSup
 {
     CREATE_CARD_FACTORY(PbsCommonTextureCard)
 
@@ -34,9 +35,6 @@ public:
     PbsCommonTextureCard();
     virtual QVariant getCurrentCardValue() override;
 
-private:
-    void resetResourceDir(const Ogre::String& filepath);
-     
 private:
     Info mTextureInfo;
 };

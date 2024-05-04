@@ -182,6 +182,9 @@ public:
             });
 
         setZValue(2.0f);
+
+
+        mpView->installEventFilter(this);
     }
 
 public:
@@ -217,6 +220,17 @@ protected:
     {
         super::focusOutEvent(event);
         resetBind();
+    }
+
+    bool eventFilter(QObject* object, QEvent* event) override
+    {
+        if (object == mpView && event->type() == QEvent::Wheel)
+        {
+            event->accept();
+            return true;
+        }
+
+        return super::eventFilter(object, event);
     }
 
 private:

@@ -9,6 +9,28 @@
 #include "unit/BKColorSelectorEx.h"
 #include "BlueprintEditor.h"
 
+#include "OgreResourceManager.h"
+
+#include <QFileInfo>
+
+const QMap<QString, Ogre::TextureAddressingMode> name2TextureAddrMode = {
+    { "Unknow", Ogre::TAM_UNKNOWN },
+    { "Wrap", Ogre::TAM_WRAP },
+    { "Mirror", Ogre::TAM_MIRROR },
+    { "Clamp", Ogre::TAM_CLAMP },
+    { "Border", Ogre::TAM_BORDER },
+};
+
+const QMap<QString, Ogre::PbsTextureTypes> name2TextureType = {
+    {"diffuse_map", Ogre::PbsTextureTypes::PBSM_DIFFUSE },
+    {"normal_map", Ogre::PbsTextureTypes::PBSM_NORMAL },
+    {"specular_map", Ogre::PbsTextureTypes::PBSM_SPECULAR },
+    {"roughness_map", Ogre::PbsTextureTypes::PBSM_ROUGHNESS },
+    {"emissive_map", Ogre::PbsTextureTypes::PBSM_EMISSIVE },
+    {"detail_weight_map", Ogre::PbsTextureTypes::PBSM_DETAIL_WEIGHT },
+    {"reflection_map", Ogre::PbsTextureTypes::PBSM_REFLECTION },
+};
+
 PbsMapCard::PbsMapCard()
 {
     setTitle("Pbs贴图");
@@ -23,25 +45,21 @@ PbsMapCard::PbsMapCard()
         ->getAnchor(BKAnchor::AnchorType::Output)
         ->redirectToCard();
 
-    static const QMap<QString, Ogre::PbsTextureTypes> validSupport = {
-        {"diffuse_map", Ogre::PbsTextureTypes::PBSM_DIFFUSE },
-        {"normal_map", Ogre::PbsTextureTypes::PBSM_NORMAL },
-        {"specular_map", Ogre::PbsTextureTypes::PBSM_SPECULAR },
-        {"roughness_map", Ogre::PbsTextureTypes::PBSM_ROUGHNESS },
-        {"emissive_map", Ogre::PbsTextureTypes::PBSM_EMISSIVE },
-        {"detail_weight_map", Ogre::PbsTextureTypes::PBSM_DETAIL_WEIGHT },
-        {"reflection_map", Ogre::PbsTextureTypes::PBSM_REFLECTION },
-    };
+    QStringList textureTypeNames = name2TextureType.keys();
+    int initTextureTypeIndex = textureTypeNames.indexOf(name2TextureType.key(mTextureInfo.type));
+
+    QStringList textureAddrMode = name2TextureAddrMode.keys();
+    int initTextureAddrModeIndex = textureAddrMode.indexOf(name2TextureAddrMode.key(Ogre::TAM_WRAP));
 
     _pack({
         mpOutputCell,
 
          BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图类型")),
          BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
-            ->setItems(validSupport.keys())
-            ->setCurrentIndex(0, false)
+            ->setItems(textureTypeNames)
+            ->setCurrentIndex(initTextureTypeIndex, false)
             ->setDataChangeCallback([this](const QVariant& param) -> bool {
-                mTextureInfo.type = validSupport[param.toString()];
+                mTextureInfo.type = name2TextureType[param.toString()];
                 mpOutputCell->valueChanged(mTextureInfo);
                 return true;
                 })
@@ -53,20 +71,66 @@ PbsMapCard::PbsMapCard()
             ->append(BKCreator::create<BKPixmap>()
                 ->setFixedSize({100, 100})
                 ->setDataChangeCallback([this](const QVariant& param) -> bool {
-                    mTextureInfo.texture = param.toString().toStdString();
+                    Ogre::String texturePath = param.toString().toStdString();
+                    resetResourceDir(texturePath);
+
+
+
+                    mTextureInfo.texture = QFileInfo(param.toString()).fileName().toStdString();
                     mpOutputCell->valueChanged(mTextureInfo);
                     return true;
                     })
             ),
 
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("纹理寻址模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)
+                ->append({
+                    BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("U"),
+                    BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("V"),
+                    BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("W"),
+                }),
+        BKCreator::create(BKAnchor::AnchorType::None)
+                ->append({
+                    BKCreator::create<BKComboBox>()
+                    ->setMinWidth(60)
+                    ->setItems(textureAddrMode)
+                    ->setCurrentIndex(initTextureAddrModeIndex, false)
+                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                        mTextureInfo.sampler.mU = name2TextureAddrMode[param.toString()];
+                        mpOutputCell->valueChanged(mTextureInfo);
+                        return true;
+                        }),
+
+                    BKCreator::create<BKComboBox>()
+                    ->setMinWidth(60)
+                    ->setItems(textureAddrMode)
+                    ->setCurrentIndex(initTextureAddrModeIndex, false)
+                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                        mTextureInfo.sampler.mV = name2TextureAddrMode[param.toString()];
+                        mpOutputCell->valueChanged(mTextureInfo);
+                        return true;
+                        }),
+
+                    BKCreator::create<BKComboBox>()
+                    ->setMinWidth(60)
+                    ->setItems(textureAddrMode)
+                    ->setCurrentIndex(initTextureAddrModeIndex, false)
+                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                        mTextureInfo.sampler.mW = name2TextureAddrMode[param.toString()];
+                        mpOutputCell->valueChanged(mTextureInfo);
+                        return true;
+                        }),
+
+                }),
+
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("UV")),
         BKCreator::create(BKAnchor::AnchorType::None)
             ->append(BKCreator::create<BKComboBox>()
-                ->setItems(QStringList() << "0" << "1" << "2" << "3" << "4" << "5" << "6" << "7")
-                ->setCurrentItem("", false)
+                ->setItems(QStringList() << "" << "0" << "1" << "2" << "3" << "4" << "5" << "6" << "7")
+                ->setCurrentItem(0, false)
                 ->setDataChangeCallback([this](const QVariant& param) -> bool {
                     QString si = param.toString();
-                    mTextureInfo.uv = si.toInt();
+                    mTextureInfo.uv = si.isEmpty() ? -1 : si.toInt();
                     mpOutputCell->valueChanged(mTextureInfo);
                     return true;
                     })
@@ -77,4 +141,36 @@ PbsMapCard::PbsMapCard()
 QVariant PbsMapCard::getCurrentCardValue()
 {
     return mTextureInfo;
+}
+
+void PbsMapCard::resetResourceDir(const Ogre::String& filepath)
+{
+    auto groupMgr = Ogre::ResourceGroupManager::getSingletonPtr();
+    static const Ogre::String snowResourceGroupName = "ResourceGroup.Snow";
+
+    if (!groupMgr->resourceGroupExists(snowResourceGroupName))
+        groupMgr->createResourceGroup(snowResourceGroupName);
+
+
+    QFileInfo fileInfo(filepath.c_str());
+    Ogre::String dir = fileInfo.absolutePath().toStdString();
+    Ogre::String name = fileInfo.fileName().toStdString();
+
+    if (!groupMgr->resourceLocationExists(dir, snowResourceGroupName))
+        groupMgr->addResourceLocation(dir, "FileSystem", snowResourceGroupName);
+
+    bool needDeclare = true;
+    for (const Ogre::ResourceGroupManager::ResourceDeclaration& rd : groupMgr->getResourceDeclarationList(snowResourceGroupName))
+    {
+        if (rd.resourceName.compare(name) == 0)
+        {
+            needDeclare = false;
+            break;
+        }
+    }
+
+    if (needDeclare)
+        groupMgr->declareResource(name, "Texture", snowResourceGroupName);
+    
+    groupMgr->loadResourceGroup(snowResourceGroupName);
 }

@@ -28,7 +28,9 @@ private:
     Ogre::HlmsPbsDatablock* mpDatablock = nullptr;
     Ogre::HlmsMacroblock mMacroblock;
     Ogre::HlmsBlendblock mBlendblock;
-    std::vector<PbsMapCard::TexInfo> mTextureInfoVec;
+    std::set<PbsMapCard::TexInfo> mTextureInfoSet;
+    std::set<PbsDetailCard::DetailInfo> mDetailInfoSet;
+    PbsTransparentCard::Info mTransparentInfo;
 
     QColor mBackgroundColor;
     QColor mDiffuse;

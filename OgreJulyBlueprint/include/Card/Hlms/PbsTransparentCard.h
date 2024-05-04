@@ -15,20 +15,17 @@ public:
         Ogre::HlmsPbsDatablock::TransparencyModes mode = Ogre::HlmsPbsDatablock::Transparent;
         bool alphaFromTex = true;
 
-        operator QVariant() const
-        {
+        operator QVariant() const {
             return QVariant::fromValue(*this);
         }
     };
 
 public:
     PbsTransparentCard();
-
     virtual QVariant getCurrentCardValue() override;
      
 private:
     Info mInfo;
-    BKCell* mpOutputCell = nullptr;
 };
 
 Q_DECLARE_METATYPE(PbsTransparentCard::Info)

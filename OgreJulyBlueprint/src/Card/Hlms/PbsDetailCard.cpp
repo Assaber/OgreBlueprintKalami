@@ -11,44 +11,56 @@
 #include "unit/BKVectorEditor.h"
 #include "BlueprintEditor.h"
 
-#define PBS_TEXTURE_NAME(x) #x
-
-// https://zhuanlan.zhihu.com/p/688689323
-// 优雅
-#define PBS_BLEND_MODES \
-    PBM_ITEM(NORMAL_NON_PREMUL) \
-    PBM_ITEM(NORMAL_PREMUL) \
-    PBM_ITEM(ADD) \
-    PBM_ITEM(SUBTRACT) \
-    PBM_ITEM(MULTIPLY) \
-    PBM_ITEM(MULTIPLY2X) \
-    PBM_ITEM(SCREEN) \
-    PBM_ITEM(OVERLAY) \
-    PBM_ITEM(LIGHTEN) \
-    PBM_ITEM(DARKEN) \
-    PBM_ITEM(GRAIN_EXTRACT) \
-    PBM_ITEM(GRAIN_MERGE) \
-    PBM_ITEM(DIFFERENCE)
-
-#define PBM_ITEM(x) x = Ogre::PbsBlendModes::PBSM_BLEND_##x,
-enum ShadowPbsBlendModes {
-    PBS_BLEND_MODES  PBSM_BLEND_COUNT
+const QMap<QString, Ogre::PbsBlendModes> name2PbsBlendModes = {
+    { "NormalNonPremul", Ogre::PBSM_BLEND_NORMAL_NON_PREMUL },
+    { "NormalPremul"   ,  Ogre::PBSM_BLEND_NORMAL_PREMUL },
+    { "Add",  Ogre::PBSM_BLEND_ADD },
+    { "Subtract",  Ogre::PBSM_BLEND_SUBTRACT },
+    { "Multiply",  Ogre::PBSM_BLEND_MULTIPLY },
+    { "Multiply2x",  Ogre::PBSM_BLEND_MULTIPLY2X },
+    { "Screen",  Ogre::PBSM_BLEND_SCREEN },
+    { "Overlay",  Ogre::PBSM_BLEND_OVERLAY },
+    { "Lighten",  Ogre::PBSM_BLEND_LIGHTEN },
+    { "Darken",  Ogre::PBSM_BLEND_DARKEN },
+    { "GrainExtract",  Ogre::PBSM_BLEND_GRAIN_EXTRACT },
+    { "GrainMerge",  Ogre::PBSM_BLEND_GRAIN_MERGE },
+    { "Difference",  Ogre::PBSM_BLEND_DIFFERENCE }
 };
-#undef PBM_ITEM
 
-#define PBM_ITEM(x) #x,
-static constexpr const char* ShadowPbsBlendModesName[] = { PBS_BLEND_MODES "" };
-#undef  PBM_ITEM
+const QMap<QString, Ogre::PbsTextureTypes> name2PbsDetailTextureType = {
+    { "Detail0", Ogre::PBSM_DETAIL0 },
+    { "Detail1", Ogre::PBSM_DETAIL1 },
+    { "Detail2", Ogre::PBSM_DETAIL2 },
+    { "Detail3", Ogre::PBSM_DETAIL3 },
+    { "Detail0_NM", Ogre::PBSM_DETAIL0_NM },
+    { "Detail1_NM", Ogre::PBSM_DETAIL1_NM },
+    { "Detail2_NM", Ogre::PBSM_DETAIL2_NM },
+    { "Detail3_NM", Ogre::PBSM_DETAIL3_NM },
+};
 
-extern const Ogre::String c_pbsBlendModes[];
+const QMap<QString, Ogre::TextureAddressingMode> name2TextureAddrMode = {
+    { "Unknow", Ogre::TAM_UNKNOWN },
+    { "Wrap", Ogre::TAM_WRAP },
+    { "Mirror", Ogre::TAM_MIRROR },
+    { "Clamp", Ogre::TAM_CLAMP },
+    { "Border", Ogre::TAM_BORDER },
+};
 
 PbsDetailCard::PbsDetailCard()
 {
     setTitle("Pbs细节");
 
-    QStringList blendModes;
-    for (int i = 0; i <= ShadowPbsBlendModes::PBSM_BLEND_COUNT; ++i)
-        blendModes << ShadowPbsBlendModesName[i];
+    QStringList blendModes = name2PbsBlendModes.keys();
+    int initBlendModeIndex = blendModes.indexOf(name2PbsBlendModes.key(Ogre::PBSM_BLEND_NORMAL_NON_PREMUL));
+
+    Ogre::PbsTextureTypes tt = Ogre::PBSM_DETAIL0;
+    QStringList textureTypes = name2PbsDetailTextureType.keys();
+    int initTextureTypeIndex = textureTypes.indexOf(name2PbsDetailTextureType.key(tt));
+    mDetailInfo.indexOffset = getOffsetByTextureType(tt);
+
+    QStringList textureAddrMode = name2TextureAddrMode.keys();
+    int initTextureAddrModeIndex = textureAddrMode.indexOf(name2TextureAddrMode.key(Ogre::TAM_WRAP));
+
 
     mpOutputCell = BKCreator::create(BKAnchor::AnchorType::Output);
     mpOutputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsDetailCard::DetailInfo>::qt_metatype_id())
@@ -65,12 +77,11 @@ PbsDetailCard::PbsDetailCard()
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("纹理类型")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
-        ->setItems(QStringList() << PBS_TEXTURE_NAME(PBSM_DETAIL0)      << PBS_TEXTURE_NAME(PBSM_DETAIL1)       << PBS_TEXTURE_NAME(PBSM_DETAIL2)       << PBS_TEXTURE_NAME(PBSM_DETAIL3)
-                                 << PBS_TEXTURE_NAME(PBSM_DETAIL0_NM)   << PBS_TEXTURE_NAME(PBSM_DETAIL1_NM)    << PBS_TEXTURE_NAME(PBSM_DETAIL2_NM)    << PBS_TEXTURE_NAME(PBSM_DETAIL3_NM))
-        ->setCurrentIndex(0, false)
-        ->setCallbackParamType(BKComboBox::CallbackParamType::Index)
+        ->setItems(textureTypes)
+        ->setCurrentIndex(initTextureTypeIndex, false)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
-            mDetailInfo.textureType = static_cast<Ogre::PbsTextureTypes>(param.toInt() + Ogre::PbsTextureTypes::PBSM_DETAIL0);
+            mDetailInfo.type = name2PbsDetailTextureType[param.toString()];
+            mDetailInfo.indexOffset = getOffsetByTextureType(mDetailInfo.type);
             mpOutputCell->valueChanged(mDetailInfo);
             return true;
             })
@@ -96,44 +107,42 @@ PbsDetailCard::PbsDetailCard()
                 ->append({
                     BKCreator::create<BKComboBox>()
                     ->setMinWidth(60)
-                    ->setItems(QStringList() << "UNKNOWN" << "WRAP" << "MIRROR" << "CLAMP" << "BORDER")
-                    ->setCurrentIndex(0)
+                    ->setItems(textureAddrMode)
+                    ->setCurrentIndex(initTextureAddrModeIndex, false)
                     ->setDataChangeCallback([this](const QVariant& param) -> bool {
-                        mDetailInfo.sampler.mU = getTAMByName(param.toString().toStdString().c_str());
+                        mDetailInfo.sampler.mU = name2TextureAddrMode[param.toString()];
                         mpOutputCell->valueChanged(mDetailInfo);
                         return true;
                         }),
 
                     BKCreator::create<BKComboBox>()
                     ->setMinWidth(60)
-                    ->setItems(QStringList() << "UNKNOWN" << "WRAP" << "MIRROR" << "CLAMP" << "BORDER")
-                    ->setCurrentIndex(0)
+                    ->setItems(textureAddrMode)
+                    ->setCurrentIndex(initTextureAddrModeIndex, false)
                     ->setDataChangeCallback([this](const QVariant& param) -> bool {
-                        mDetailInfo.sampler.mV = getTAMByName(param.toString().toStdString().c_str());
+                        mDetailInfo.sampler.mV = name2TextureAddrMode[param.toString()];
                         mpOutputCell->valueChanged(mDetailInfo);
                         return true;
                         }),
 
                     BKCreator::create<BKComboBox>()
                     ->setMinWidth(60)
-                    ->setItems(QStringList() << "UNKNOWN" << "WRAP" << "MIRROR" << "CLAMP" << "BORDER")
-                    ->setCurrentIndex(0)
+                    ->setItems(textureAddrMode)
+                    ->setCurrentIndex(initTextureAddrModeIndex, false)
                     ->setDataChangeCallback([this](const QVariant& param) -> bool {
-                        mDetailInfo.sampler.mW = getTAMByName(param.toString().toStdString().c_str());
+                        mDetailInfo.sampler.mW = name2TextureAddrMode[param.toString()];
                         mpOutputCell->valueChanged(mDetailInfo);
                         return true;
                         }),
 
                 }),
 
-
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("环绕模式")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendModes)
-            ->setCurrentIndex(ShadowPbsBlendModes::PBSM_BLEND_COUNT)
-            ->setCallbackParamType(BKComboBox::CallbackParamType::Index)
+            ->setCurrentIndex(initBlendModeIndex, false)
             ->setDataChangeCallback([this](const QVariant& param) -> bool {
-                mDetailInfo.blendMode = static_cast<Ogre::PbsBlendModes>(param.toInt());
+                mDetailInfo.blendMode = name2PbsBlendModes[param.toString()];
                 mpOutputCell->valueChanged(mDetailInfo);
                 return true;
                 })
@@ -162,19 +171,18 @@ PbsDetailCard::PbsDetailCard()
                 })
             ),
 
-         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKVectorEditor>(BKVectorEditor::Type::Int, 1)
-             ->setNames({ "绑定资源" })
-             ->setValue(QVariant::fromValue(BKVectorEditor::IntegerVec{ -1 }))
-             ->setRange(0, { -1, 7 })
-             ->setDataChangeCallback([this](const QVariant& param) -> bool {
-                BKVectorEditor::IntegerVec data = param.value<BKVectorEditor::IntegerVec>();
-                if (data.size() == 1 && mDetailInfo.offsetScaleEnable)
-                {
-                    mDetailInfo.uv = data[0];
-                    mpOutputCell->valueChanged(mDetailInfo);
-                }
-                return true;
-             })
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("UV")),
+            BKCreator::create(BKAnchor::AnchorType::None)
+                ->append(BKCreator::create<BKComboBox>()
+                    ->setItems(QStringList() << "" << "0" << "1" << "2" << "3" << "4" << "5" << "6" << "7")
+                    ->setCurrentItem(0, false)          // 对应-1
+                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                        QString si = param.toString();
+                        mDetailInfo.uv = si.isEmpty() ? -1 : si.toInt();
+                        mpOutputCell->valueChanged(mDetailInfo);
+                        return true;
+                        }
+                    )
          ),
 
     });
@@ -185,18 +193,13 @@ QVariant PbsDetailCard::getCurrentCardValue()
     return mDetailInfo;
 }
 
-Ogre::TextureAddressingMode PbsDetailCard::getTAMByName(const char* name) const
+static_assert(Ogre::PBSM_DETAIL1 < Ogre::PBSM_DETAIL0_NM, "This comparison relates to calculating 'indexOffset'");
+int8_t PbsDetailCard::getOffsetByTextureType(Ogre::PbsTextureTypes type)
 {
-    if (!strcmp(name, "UNKNOWN"))
-        return Ogre::TAM_UNKNOWN;
-    else if (!strcmp(name, "WRAP"))
-        return Ogre::TAM_WRAP;
-    else if (!strcmp(name, "MIRROR"))
-        return Ogre::TAM_MIRROR;
-    else if (!strcmp(name, "CLAMP"))
-        return Ogre::TAM_CLAMP;
-    else if (!strcmp(name, "BORDER"))
-        return Ogre::TAM_BORDER;
+    if (mDetailInfo.type >= Ogre::PBSM_DETAIL0 && mDetailInfo.type <= Ogre::PBSM_DETAIL3)
+        return mDetailInfo.type - Ogre::PBSM_DETAIL0;
+    else if (mDetailInfo.type >= Ogre::PBSM_DETAIL0_NM && mDetailInfo.type <= Ogre::PBSM_DETAIL3_NM)
+        return mDetailInfo.type - Ogre::PBSM_DETAIL0_NM;
 
-    return Ogre::TAM_UNKNOWN;
+    return -1;
 }

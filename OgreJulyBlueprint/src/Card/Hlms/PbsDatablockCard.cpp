@@ -16,8 +16,13 @@
 #include "OgreHlmsManager.h"
 #include "OgreHlmsPbs.h"
 
+#include "Card/Hlms/BlendblockCard.h"
+#include "Card/Hlms/MacroblockCard.h"
+
 #include <QMessageBox>
 #include <QUuid>
+
+#define CHANGE_DATABLOCK_NAME_HAS_NOTIFY 0
 
 PbsDatablockCard::PbsDatablockCard()
     : mpPbs(reinterpret_cast<Ogre::HlmsPbs*>(Ogre::Root::getSingletonPtr()->getHlmsManager()->getHlms(Ogre::HLMS_PBS)))
@@ -46,18 +51,20 @@ PbsDatablockCard::PbsDatablockCard()
 
     auto texMapInputCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
     texMapInputCell->append(BKCreator::create<BKLabel>()
-        ->setText("材质组", true)
+        ->setText("材质", true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
             std::vector<QVariant> items;
             if (mpTextureMapInputAnchor->getBindOutputData(items) < 0)
                 return true;
 
-                mTextureInfoVec.clear();
-                for (const auto& item : items)
-                    mTextureInfoVec.push_back(item.value<PbsMapCard::TexInfo>());
+            mTextureInfoSet.clear();
+            for (const auto& item : items)
+                mTextureInfoSet.insert(item.value<PbsMapCard::TexInfo>());
 
-                // createHlms(true);
-                return true;
+            // 这里是需要重建材质的...吗？
+            // todo...
+            createHlms(true);
+            return true;
             })
         );
     mpTextureMapInputAnchor = texMapInputCell->getAnchor(BKAnchor::Input);
@@ -65,34 +72,46 @@ PbsDatablockCard::PbsDatablockCard()
 
     auto texDetailCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
     texDetailCell->append(BKCreator::create<BKLabel>()
-        ->setText("细节组", true)
+        ->setText("细节", true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
             std::vector<QVariant> items;
             if (mpTextureDetailAnchor->getBindOutputData(items) < 0)
                 return true;
 
+            mDetailInfoSet.clear();
+            for (const auto& item : items)
+                mDetailInfoSet.insert(item.value<PbsDetailCard::DetailInfo>());
+
+            // 这里是需要重建材质的...吗？
             // todo...
+            createHlms(true);
             return true;
             })
     );
     mpTextureDetailAnchor = texDetailCell->getAnchor(BKAnchor::Input);
     mpTextureDetailAnchor->setDateType(QMetaTypeId<PbsDetailCard::DetailInfo>::qt_metatype_id());
 
-    auto transparentCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
-    transparentCell->append(BKCreator::create<BKLabel>()
-        ->setText("细节组", true)
+    BKCell* blendblockCell = BKCreator::create(BKAnchor::Input);
+    blendblockCell->append(BKCreator::create<BKLabel>()
+        ->setText("混合", true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
-            std::vector<QVariant> items;
-            if (mpTextureDetailAnchor->getBindOutputData(items) < 0)
-                return true;
-
-            // todo...
+            mBlendblock = param.value<Ogre::HlmsBlendblock>();
+            createHlms(true);
             return true;
             })
     );
-    mpTextureDetailAnchor = texDetailCell->getAnchor(BKAnchor::Input);
-    mpTextureDetailAnchor->setDateType(QMetaTypeId<PbsDetailCard::DetailInfo>::qt_metatype_id());
+    blendblockCell->getAnchor(BKAnchor::Input)->setDateType(QMetaTypeId<Ogre::HlmsBlendblock>::qt_metatype_id());
 
+    BKCell* macroblockCell = BKCreator::create(BKAnchor::Input);
+    macroblockCell->append(BKCreator::create<BKLabel>()
+        ->setText("宏", true)
+        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            mMacroblock = param.value<Ogre::HlmsMacroblock>();
+            createHlms(true);
+            return true;
+            })
+    );
+    macroblockCell->getAnchor(BKAnchor::Input)->setDateType(QMetaTypeId<Ogre::HlmsMacroblock>::qt_metatype_id());
 
     _pack({
         mpOutputCell,
@@ -159,14 +178,17 @@ PbsDatablockCard::PbsDatablockCard()
         texMapInputCell,
         texDetailCell,
 
+        blendblockCell,
+        macroblockCell,
+
         BKCreator::create(BKAnchor::AnchorType::Input)->append(
             BKCreator::create<BKLabel>()->setText("透明", true)
                 ->setDataChangeCallback([this](const QVariant& param) -> bool {
                     if (!param.canConvert<PbsTransparentCard::Info>())
                         return true;
 
-                    PbsTransparentCard::Info info = param.value<PbsTransparentCard::Info>();
-                    // todo...
+                    mTransparentInfo = param.value<PbsTransparentCard::Info>();
+                    createHlms();
                     return true;
                 }))
             ->setDataType(BKAnchor::Input, QMetaTypeId<PbsTransparentCard::Info>::qt_metatype_id())
@@ -200,19 +222,19 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
     {
         mpDatablock = reinterpret_cast<Ogre::HlmsPbsDatablock*>(mpPbs->getDatablock(mstrName));
 
-        Ogre::String suffix = "";
+        Ogre::String uuid = "";
         while (mpDatablock)
         {
-            suffix = QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();
-            mpDatablock = reinterpret_cast<Ogre::HlmsPbsDatablock*>(mpPbs->getDatablock(mstrName + suffix));
+            uuid = QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();
+            mpDatablock = reinterpret_cast<Ogre::HlmsPbsDatablock*>(mpPbs->getDatablock(uuid));
         }
 
-        if (!suffix.empty())
+        if (!uuid.empty())
         {
-            Ogre::String name = mstrName + suffix;
+#if CHANGE_DATABLOCK_NAME_HAS_NOTIFY
             int ret = QMessageBox::warning(nullptr, "警告", QString("存在重名数据块，名称存在更新：\n%1->%2\n确定将完成此更换，否则将推出数据块创建")
                 .arg(mstrName.c_str())
-                .arg(name.c_str()), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+                .arg(uuid.c_str()), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
             if (ret == QMessageBox::Cancel)
             {
                 mstrName = mstrOldName;
@@ -221,11 +243,13 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
             }
             else
             {
-                mstrName += suffix;
+#endif
+                mstrName = uuid;
                 mpNameLineEdit->setText(mstrName.c_str());
+#if CHANGE_DATABLOCK_NAME_HAS_NOTIFY
             }
+#endif
         }
-
         mstrOldName = mstrName;
     }
 
@@ -251,9 +275,36 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
     }
     mpDatablock->setRoughness(mRoughness);
     mpDatablock->setEmissive(mEmissive.isValid() ? BlueprintEditor::toVec3f(mEmissive) : Ogre::Vector3(1.0f, 1.0f, 1.0f));
-
     mpDatablock->setFresnel(mFresnel.isValid() ? BlueprintEditor::toVec3f(mFresnel) : Ogre::Vector3(1.0f, 1.0f, 1.0f), true);
 
+    for (const PbsMapCard::TexInfo& item : mTextureInfoSet)
+    {
+        if (item.texture.empty())
+            continue;
+
+        mpDatablock->setTexture(item.type, item.texture, &item.sampler);
+        if(item.uv > -1)
+            mpDatablock->setTextureUvSource(item.type, item.uv);
+    }
+
+    for (const PbsDetailCard::DetailInfo item : mDetailInfoSet)
+    {
+        if (item.texture.empty() || item.indexOffset < 0)
+            continue;
+
+        mpDatablock->setTexture(item.type, item.texture, &item.sampler);
+        if (item.uv > -1)
+            mpDatablock->setTextureUvSource(item.type, item.uv);
+
+        mpDatablock->setDetailMapBlendMode(item.indexOffset, item.blendMode);
+        if(item.offsetScaleEnable)
+            mpDatablock->setDetailMapOffsetScale(item.indexOffset, { item.offsetScale[0], item.offsetScale[1], item.offsetScale[2], item.offsetScale[3] });
+    }
+
+    if (mTransparentInfo.enable)
+        mpDatablock->setTransparency(mTransparentInfo.transparency, mTransparentInfo.mode, mTransparentInfo.alphaFromTex);
+    else
+        mpDatablock->setTransparency(1.0f, Ogre::HlmsPbsDatablock::None, true);
 
     if (notify)
         mpOutputCell->valueChanged(QString(mstrName.c_str()));

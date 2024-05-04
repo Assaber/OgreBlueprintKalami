@@ -23,8 +23,8 @@ PbsTransparentCard::PbsTransparentCard()
 {
     setTitle("Pbs透明");
 
-    mpOutputCell = BKCreator::create(BKAnchor::AnchorType::Output);
-    mpOutputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsTransparentCard::Info>::qt_metatype_id())
+    BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
+    outputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsTransparentCard::Info>::qt_metatype_id())
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
             ->setText("输出")
@@ -34,16 +34,16 @@ PbsTransparentCard::PbsTransparentCard()
         ->redirectToCard();
 
     _pack({
-        mpOutputCell,
+        outputCell,
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             {
                 BKCreator::create<BKLabel>()->setText("使能"),
                 BKCreator::create<BKCheckBox>()
                     ->setEnable(mInfo.enable)
-                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                         mInfo.enable = param.toBool();
-                        mpOutputCell->valueChanged(mInfo);
+                        outputCell->valueChanged(mInfo);
                         return true;
                     })
             }),
@@ -53,9 +53,9 @@ PbsTransparentCard::PbsTransparentCard()
             ->setMinimum(0)
             ->setMaximum(1.0f)
             ->setCurrentValue(mInfo.transparency)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                 mInfo.transparency = param.toFloat();
-                mpOutputCell->valueChanged(mInfo);
+                outputCell->valueChanged(mInfo);
                 return true;
                 })),
 
@@ -64,7 +64,7 @@ PbsTransparentCard::PbsTransparentCard()
             ->setItems(QStringList() << "None" << "Transparent" << "Fade")
             ->setCurrentIndex(1)
             ->setCallbackParamType(BKComboBox::CallbackParamType::Index)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                 int mode = param.toInt();
                 if (mode == 0)
                     mInfo.mode = Ogre::HlmsPbsDatablock::None;
@@ -72,7 +72,7 @@ PbsTransparentCard::PbsTransparentCard()
                     mInfo.mode = Ogre::HlmsPbsDatablock::Transparent;
                 else if (mode == 2)
                     mInfo.mode = Ogre::HlmsPbsDatablock::Fade;
-                mpOutputCell->valueChanged(mInfo);
+                outputCell->valueChanged(mInfo);
                 return true;
                 })
             ),
@@ -81,13 +81,12 @@ PbsTransparentCard::PbsTransparentCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKCheckBox>()
                 ->setEnable(mInfo.alphaFromTex)
-                ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                     mInfo.alphaFromTex = param.toBool();
-                    mpOutputCell->valueChanged(mInfo);
+                    outputCell->valueChanged(mInfo);
                     return true;
                     })
             ),
-        
         });
 }
 

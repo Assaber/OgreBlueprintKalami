@@ -41,8 +41,8 @@ public:
     {
         QString path = QFileDialog::getOpenFileName(nullptr, "", "./", "Images (*.png *.xpm *.jpg);;All files (*.*)");
         if (!path.isEmpty())
-            mpHandle->setSource(path);
-
+            mpHandle->dataChanged(path);
+          
         event->accept();
     }
 

@@ -44,6 +44,8 @@ if(NOT EXISTS ${RAPID_JSON_IN_ORGR})
         ${OGRE_DIR}/OgreMain/include/rapidjson)
     message("拷贝rapidjson到OgreMain")
 endif()
+## 更正rapidjson目录结构
+set(Rapidjson_INC_SEARCH_PATH "${OGRE_DIR}/OgreMain/include")
 
 # 设置c++版本
 # 5555 FreeImage中使用了auto_ptr，而这个在c++17被砍掉了

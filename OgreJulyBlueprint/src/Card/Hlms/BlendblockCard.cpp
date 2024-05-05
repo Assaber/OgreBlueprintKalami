@@ -9,9 +9,13 @@
 #include "BlueprintEditor.h"
 #include <QDebug>
 
-#define SBT_ITEM(x) #x,
-static constexpr const char* shadowSceneBlendTypeNames[] = { SCENE_BLEND_TYPES };
-#undef  SBT_ITEM
+const QMap<QString, Ogre::SceneBlendType> name2SceneBlendType = {
+    {"Transparent Alpha", Ogre::SceneBlendType::SBT_TRANSPARENT_ALPHA },
+    {"Transparent Color", Ogre::SceneBlendType::SBT_TRANSPARENT_COLOUR },
+    {"Add", Ogre::SceneBlendType::SBT_ADD },
+    {"Modulate", Ogre::SceneBlendType::SBT_MODULATE },
+    {"Replace", Ogre::SceneBlendType::SBT_REPLACE },
+};
 
 BlendblockCard::BlendblockCard()
 {
@@ -63,10 +67,8 @@ BlendblockCard::BlendblockCard()
         return true;
         });
 
-    QStringList blendTypeList;
-    for(int i = 0; i < sizeof(shadowSceneBlendTypeNames) / sizeof(char*); ++i)
-        blendTypeList << shadowSceneBlendTypeNames[i];
-      
+    QStringList blendTypeList = name2SceneBlendType.keys();
+
     _pack({
         output,
 
@@ -110,10 +112,9 @@ BlendblockCard::BlendblockCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("混合类型")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendTypeList)
-            ->setCurrentIndex(mBlendType)
-            ->setCallbackParamType(BKComboBox::CallbackParamType::Index)
+            ->setCurrentIndex(blendTypeList.indexOf(name2SceneBlendType.key(mBlendType)))
             ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
-                mBlendType = static_cast<ShadowSceneBlendType>(param.toInt());
+                mBlendType = name2SceneBlendType[param.toString()];
                 updateBlendType();
                 output->valueChanged(getCurrentCardValue());
                 return true;
@@ -133,10 +134,9 @@ BlendblockCard::BlendblockCard()
             }),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendTypeList)
-            ->setCurrentIndex(mAlphaBlendType)
-            ->setCallbackParamType(BKComboBox::CallbackParamType::Index)
+            ->setCurrentIndex(blendTypeList.indexOf(name2SceneBlendType.key(mAlphaBlendType)))
             ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
-                mAlphaBlendType = static_cast<ShadowSceneBlendType>(param.toInt());
+                mAlphaBlendType = name2SceneBlendType[param.toString()];
                 updateBlendType();
                 output->valueChanged(getCurrentCardValue());
                 return true;

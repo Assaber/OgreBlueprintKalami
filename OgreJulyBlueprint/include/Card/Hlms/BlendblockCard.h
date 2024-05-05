@@ -3,19 +3,6 @@
 #include "OgreHlmsDatablock.h"
 #include <array>
 
-#define SCENE_BLEND_TYPES \
-    SBT_ITEM(TRANSPARENT_ALPHA) \
-    SBT_ITEM(TRANSPARENT_COLOUR) \
-    SBT_ITEM(ADD) \
-    SBT_ITEM(MODULATE) \
-    SBT_ITEM(REPLACE)
-   
-#define SBT_ITEM(x) x = Ogre::SceneBlendType::SBT_##x,
-enum ShadowSceneBlendType {
-    SCENE_BLEND_TYPES
-};
-#undef SBT_ITEM
-
 class BKCell;
 class BKCheckBox;
 class BlendblockCard : public BKCard
@@ -46,11 +33,11 @@ private:
     // 绑定块结构体
     Ogre::HlmsBlendblock mBlendblock;
     // 混合类型
-    ShadowSceneBlendType mBlendType = ShadowSceneBlendType::REPLACE;
+    Ogre::SceneBlendType mBlendType = Ogre::SceneBlendType::SBT_REPLACE;
     // 透明混合类型使能
     bool mbAlphaBlendTypeEnable = true;
     // 透明混合类型
-    ShadowSceneBlendType mAlphaBlendType = ShadowSceneBlendType::REPLACE;
+    Ogre::SceneBlendType mAlphaBlendType = Ogre::SceneBlendType::SBT_REPLACE;
 };
 
 Q_DECLARE_METATYPE(Ogre::HlmsBlendblock)

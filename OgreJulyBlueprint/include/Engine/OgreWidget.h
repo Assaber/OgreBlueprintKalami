@@ -3,6 +3,7 @@
 #include "OgreTimer.h"
 #include "OgreRoot.h"
 #include "OgreCameraMan.h"
+#include <time.h>
 
 class OgreWidget : public QWidget
 {
@@ -53,6 +54,9 @@ private:
     Ogre::Log* mpLogHandle = nullptr;
     // 资源路径
     std::set<std::string> mExtraRecPath;
+    // 帧间隔毫秒数
+    int mFrameDelta = 1000 / 60;
+    clock_t mLastRenderTime = 0;
 
 public:
     static constexpr const char* strSceneMgrName = "DefaultSceneManager";

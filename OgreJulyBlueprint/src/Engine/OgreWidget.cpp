@@ -67,6 +67,14 @@ OgreWidget::OgreWidget(QWidget* parent/* = nullptr*/)
 
 void OgreWidget::updateFrame()
 {
+    static clock_t  currentClock;
+    currentClock = clock();
+
+    if (currentClock - mLastRenderTime < mFrameDelta)
+        return;
+
+    mLastRenderTime = currentClock;
+
     try
     {
         mpRoot->renderOneFrame();
@@ -105,6 +113,10 @@ void OgreWidget::loadPlugin()
 
 bool OgreWidget::selectRenderSystem()
 {
+    // todo...
+    // 添加一个窗口来选择阵营
+
+
     static constexpr char* rsList[] = {
         "OpenGL 3+ Rendering Subsystem",
         "Direct3D11 Rendering Subsystem",

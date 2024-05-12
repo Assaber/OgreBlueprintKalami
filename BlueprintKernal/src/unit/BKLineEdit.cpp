@@ -198,17 +198,33 @@ BKLineEdit::~BKLineEdit()
     mpImpl = nullptr;
 }
 
-QJsonValue BKLineEdit::getValue()
-{
-    L_IMPL(BKLineEdit);
-
-    return l->mstrText;
-}
-
-bool BKLineEdit::setValue(const QJsonValue& val)
+bool BKLineEdit::loadFromJson(const QJsonValue& val)
 {
     setText(val.toString());
     return true;
+}
+
+QVariant BKLineEdit::data()
+{
+    L_IMPL(BKLineEdit);
+    return l->mstrText;
+}
+
+BKLineEdit::operator QJsonValue() const
+{
+    L_IMPL(BKLineEdit);
+    return l->mstrText;
+}
+
+BKUnit* BKLineEdit::copy()
+{
+    L_IMPL(BKLineEdit);
+    BKLineEdit* target = BKCreator::create<BKLineEdit>();
+
+    BKLineEdit::Impl* dstImpl = target->mpImpl;
+    dstImpl->mstrText = l->mstrText;
+    _copyBasicAttributeTo(target);
+    return target;
 }
 
 BKLineEdit* BKLineEdit::setText(const QString& text)

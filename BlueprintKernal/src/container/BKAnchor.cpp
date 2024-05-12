@@ -113,16 +113,31 @@ std::map<uint32_t, QColor> BKAnchor::Impl::mDataType2Color = {
     { BKAnchor::DataType::Custom,       0xFFBF6074 },
 };
 
-
-QJsonValue BKAnchor::getValue()
+BKUnit* BKAnchor::copy()
 {
-    __debugbreak();
-    return 0;
+    L_IMPL(BKAnchor);
+    BKAnchor* target = BKCreator::create<BKAnchor>(l->mAnchorType, l->mpCell);
+
+    BKAnchor::Impl* dstImpl = target->mpImpl;
+    dstImpl->mColor = l->mColor;
+    dstImpl->mFilledBrush = l->mFilledBrush;
+    dstImpl->mBorderPen = l->mBorderPen;
+    _copyBasicAttributeTo(target);
+    return target;
 }
 
-bool BKAnchor::setValue(const QJsonValue& val)
+bool BKAnchor::loadFromJson(const QJsonValue& val)
 {
-    __debugbreak();
+    return true;
+}
+
+QVariant BKAnchor::data()
+{
+    return true;
+}
+
+BKAnchor::operator QJsonValue() const
+{
     return true;
 }
 

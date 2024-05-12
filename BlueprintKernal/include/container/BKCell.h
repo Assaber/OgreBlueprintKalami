@@ -11,13 +11,19 @@
 
 class _BlueprintKernalExport BKCell
 {
+public:
+    enum class Type : uint8_t
+    {
+        SingleLine,
+        ListGroup,
+    };
 
 public:
-    BKCell(BKAnchor::AnchorType type = BKAnchor::AnchorType::Both);
-    BKCell(uint32_t l, uint32_t r);
+    BKCell(BKAnchor::AnchorType anchor = BKAnchor::AnchorType::Both, Type type = Type::SingleLine);
+    BKCell(uint32_t l, uint32_t r, Type type = Type::SingleLine);
     ~BKCell();
 
-public:
+public:                 // 单行
     /**
      * @brief:                                              追加单元对象
      * @param: BKUnit* unit                                 单元对象
@@ -34,10 +40,20 @@ public:
      */
     BKCell* append(BKUnit* units, bool regist = true);
 
+
+public:                 // 成组
+    using GroupMemberChangedFunc = std::function<void(size_t, const QVariantList&)>;        // size_t: 总共的行数; const QVariantList& 全量成员data
+    BKCell* setTemplate(std::initializer_list<BKUnit*> units);
+    BKCell* setMemberDataChangedCallback(GroupMemberChangedFunc function);
+    BKCell* setMemberCountChangedCallback(GroupMemberChangedFunc function);
+    bool push();
+    bool pop();
+
+public:
     /**
      * @brief:                                              设置锚点数据类型
      * @param: BKAnchor::AnchorType anchor                  锚点位置
-     * @param: uint32_t data                      锚点数据类型
+     * @param: uint32_t data                                锚点数据类型
      * @return: BKCell*                                     自身指针
      * @remark: 
      */
@@ -101,6 +117,8 @@ public:
 private:
     void dispatchPositionChanged();
     void bindCard(BKCard* card, int row);
+
+    QGraphicsItem* getGraphicsItem();
 
 private:
     friend class BKCard;

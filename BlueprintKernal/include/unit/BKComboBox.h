@@ -20,8 +20,11 @@ public:
     ~BKComboBox();
 
 public:
-    virtual QJsonValue getValue() override;
-    virtual bool setValue(const QJsonValue& val) override;
+    virtual BKUnit* copy() override;
+    virtual bool loadFromJson(const QJsonValue& val) override;
+    // 固定返回当前文本(QString)，如果当前索引<0则返回""，不受CallbackParamType影响
+    virtual QVariant data() override;
+    virtual operator QJsonValue() const;
 
 public:
     BKComboBox* setCurrentIndex(int index, bool notify = true);

@@ -21,8 +21,12 @@ public:
     ~BKColorSelectorEx();
 
 public:
-    virtual QJsonValue getValue() override;
-    virtual bool setValue(const QJsonValue& val) override;
+    virtual BKUnit* copy() override;
+    virtual bool loadFromJson(const QJsonValue& val) override;
+    virtual operator QJsonValue() const;
+    //返回QColor类型对象
+    virtual QVariant data() override;
+
 
 public:
     BKColorSelectorEx* setColor(const Color4f& color);

@@ -99,6 +99,8 @@ public:
         }
     }
 
+    void reCalcSelf();
+
 protected:
     virtual QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value) override
     {
@@ -118,6 +120,37 @@ protected:
         return QGraphicsItemGroup::itemChange(change, value);
     }
 };
+
+void BKCard::Impl::reCalcSelf()
+{
+    std::vector<qreal> heights;
+    heights.reserve(mItems.size());
+
+    qreal width = 0, height = mnHeaderHeight;
+    for (auto& item : mItems)
+    {
+        auto size = item->getTheorySize();
+        width = std::max(size.width(), width);
+        heights.push_back(size.height());
+    }
+
+    int index = 0;
+    for (int i = 0; i < mItems.size(); ++i)
+    {
+        BKCell* cell = mItems[i];
+
+        QGraphicsItem* pItem =cell->getGraphicsItem();
+        cell->updateActualSize({ width, heights[i] });
+        cell->bindCard(mpHandle, index++);
+        
+        addToGroup(pItem);
+        pItem->setPos({ 0, height });
+        height += heights[i];
+    }
+
+
+    mSize = { width, height };
+}
 
 BKCard::BKCard()
     : StandAloneUnit(StandAloneUnit::Type::Card)
@@ -190,42 +223,36 @@ bool BKCard::isStillAlive()
     return !(l->mbImmortal);
 }
 
+void BKCard::rePackage()
+{
+    L_IMPL(BKCard);
+
+    for (BKCell* cell : l->mItems) {
+        QGraphicsItem* gi = cell->getGraphicsItem();
+        l->removeFromGroup(gi);
+        gi->setParentItem(nullptr);
+    }
+    l->reCalcSelf();
+
+    for (BKCell* cell : l->mItems) {
+        cell->dispatchPositionChanged();
+    }
+}
+
 void BKCard::_pack(std::initializer_list<BKCell*> cells)
 {
     L_IMPL(BKCard)
 
     // 清除
     for (auto& item : l->mItems)
-        l->removeFromGroup(reinterpret_cast<QGraphicsItem*>(item->mpImpl));
+        l->removeFromGroup(reinterpret_cast<QGraphicsItem*>(item->getGraphicsItem()));
     l->mItems.clear();
 
-    std::vector<qreal> heights;
-    heights.reserve(cells.size());
+    // 添加新单元，但是不进入到组
+    for(auto cell : cells)
+        l->mItems.push_back(cell);
 
-    qreal width = 0, height = l->mnHeaderHeight;
-    for (auto& item : cells)
-    {
-        l->mItems.push_back(item);
-
-        auto size = item->getTheorySize();
-        width = std::max(size.width(), width);
-        heights.push_back(size.height());
-    }
-
-    int index = 0;
-    for (int i = 0; i < l->mItems.size(); ++i)
-    {
-        BKCell* cell = l->mItems[i];
-        cell->updateActualSize({ width, heights[i] });
-        cell->bindCard(this, index++);
-
-        QGraphicsItem* pItem = reinterpret_cast<QGraphicsItem*>(cell->mpImpl);
-        pItem->setY(height);
-        l->addToGroup(pItem);
-        height += heights[i];
-    }
-
-    l->mSize = { width, height };
+    l->reCalcSelf();
 }
 
 QGraphicsItem* BKCard::getBindItem()

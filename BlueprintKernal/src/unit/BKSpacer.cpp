@@ -1,4 +1,5 @@
 ﻿#include "unit/BKSpacer.h"
+#include "BKCreator.h"
 
 class BKSpacer::Impl : public QGraphicsItem
 {
@@ -35,14 +36,25 @@ BKSpacer::~BKSpacer()
     mpImpl = nullptr;
 }
 
-QJsonValue BKSpacer::getValue()
-{
-    return 0;
-}
-
-bool BKSpacer::setValue(const QJsonValue& val)
+bool BKSpacer::loadFromJson(const QJsonValue& val)
 {
     return true;
+}
+
+QVariant BKSpacer::data()
+{
+    return true;
+}
+
+BKSpacer::operator QJsonValue() const
+{
+    return true;
+}
+
+BKUnit* BKSpacer::copy()
+{
+    BKSpacer* target = BKCreator::create<BKSpacer>();
+    return target;
 }
 
 QGraphicsItem* BKSpacer::getGraphicsItem()

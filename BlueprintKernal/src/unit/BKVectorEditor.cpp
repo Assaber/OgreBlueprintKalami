@@ -391,6 +391,22 @@ void BKVectorEditor::Impl::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event
     event->accept();
 }
 
+BKUnit* BKVectorEditor::copy()
+{
+    L_IMPL(BKVectorEditor);
+    BKVectorEditor* target = BKCreator::create<BKVectorEditor>(l->mType, l->mVecName.size());
+
+    BKVectorEditor::Impl* dstImpl = target->mpImpl;
+    dstImpl->miVector = l->miVector;
+    dstImpl->mfVector = l->mfVector;
+    dstImpl->mVecName = l->mVecName;
+    dstImpl->mItemsInLine = l->mItemsInLine;
+    dstImpl->mLineEditWidth = l->mLineEditWidth;
+    _copyBasicAttributeTo(target);
+    return target;
+}
+
+
 BKVectorEditor::BKVectorEditor(BKVectorEditor::Type type, uint32_t count)
     : mpImpl(new Impl(this, type, count))
 {
@@ -403,7 +419,60 @@ BKVectorEditor::~BKVectorEditor()
     mpImpl = nullptr;
 }
 
-QJsonValue BKVectorEditor::getValue()
+bool BKVectorEditor::loadFromJson(const QJsonValue& val)
+{
+    L_IMPL(BKVectorEditor);
+    if (!val.isArray())
+        return false;
+
+    QJsonArray rec = val.toArray();
+    if (rec.count() == 0)
+        return true;
+
+    switch (l->mType)
+    {
+    case Type::Int:
+        for (int i = 0; i < std::min((int)l->miVector.size(), rec.count()); ++i)
+            std::get<0>(l->miVector[i]) = rec[i].toInt();
+        break;
+    case Type::Float:
+        for (int i = 0; i < std::min((int)l->mfVector.size(), rec.count()); ++i)
+            std::get<0>(l->mfVector[i]) = rec[i].toDouble();
+        break;
+    }
+
+    return true;
+}
+
+QVariant BKVectorEditor::data()
+{
+    L_IMPL(BKVectorEditor);
+
+    switch (l->mType)
+    {
+    case Type::Int:
+    {
+        BKIntegerVector ret;
+        for (const auto& item : l->miVector)
+            ret.push_back(std::get<0>(item));
+
+        return QVariant::fromValue(ret);
+    }
+    
+    case Type::Float:
+    {
+        BKFloatVector ret;
+        for (const auto& item : l->mfVector)
+            ret.push_back(std::get<0>(item));
+
+        return QVariant::fromValue(ret);
+    }
+    }
+
+    return QVariant();
+}
+
+BKVectorEditor::operator QJsonValue() const
 {
     L_IMPL(BKVectorEditor);
 
@@ -422,31 +491,6 @@ QJsonValue BKVectorEditor::getValue()
     }
 
     return ret;
-}
-
-bool BKVectorEditor::setValue(const QJsonValue& val)
-{
-    L_IMPL(BKVectorEditor);
-    if (!val.isArray())
-        return false;
-
-    QJsonArray rec = val.toArray();
-    if (rec.count() == 0)
-        return true;
-
-    switch (l->mType)
-    {
-    case Type::Int:
-        for(int i = 0; i < std::min((int)l->miVector.size(), rec.count()); ++i)
-            std::get<0>(l->miVector[i]) = rec[i].toInt();
-        break;
-    case Type::Float:
-        for (int i = 0; i < std::min((int)l->mfVector.size(), rec.count()); ++i)
-            std::get<0>(l->mfVector[i]) = rec[i].toDouble();
-        break;
-    }
-
-    return true;
 }
 
 BKVectorEditor* BKVectorEditor::setValue(const QVariant& value)
@@ -587,3 +631,4 @@ void BKVectorEditor::dataChanged(const QVariant& data)
             mpRightAnchor->dataChanged(data);
     }
 }
+

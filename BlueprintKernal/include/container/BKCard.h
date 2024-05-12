@@ -21,7 +21,7 @@ public:
      * @brief:                  获取当前卡片的绑定值
      * @return: QVariant
      * @remark:                 原则上只有当子输出锚点在所在的Cell中无法找到绑定对象时(nullptr)，才会调用该方法获取整个卡片的值
-     * 如果有需要请重写该函数，默认为缺省QVariant
+     * 如果有需要请重写该函数，缺省返回无效QVariant
      */
     virtual QVariant getCurrentCardValue();
 
@@ -41,6 +41,8 @@ public:
      * @brief:                                      是否持续可被使用
      */
     bool isStillAlive();
+
+    void rePackage();
 
 protected:
     void _pack(std::initializer_list<BKCell*> cells);

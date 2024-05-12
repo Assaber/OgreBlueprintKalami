@@ -12,8 +12,10 @@ public:
     };
 
 public:
-    virtual QJsonValue getValue() override;
-    virtual bool setValue(const QJsonValue& val) override;
+    virtual BKUnit* copy() override;
+    virtual bool loadFromJson(const QJsonValue& val) override;
+    virtual QVariant data() override;
+    virtual operator QJsonValue() const override;
 
 public:
     using super = BKUnitBasic<BKSliderBar>;
@@ -24,6 +26,7 @@ public:
     BKSliderBar* setCurrentValue(const QVariant& value);
     BKSliderBar* setMaximum(const QVariant& max);
     BKSliderBar* setMinimum(const QVariant& min);
+   
 
 private:
     friend class BKSliderBarEditor;

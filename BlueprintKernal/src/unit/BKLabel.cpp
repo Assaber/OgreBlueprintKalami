@@ -75,18 +75,37 @@ BKLabel::~BKLabel()
     mpImpl = nullptr;
 }
 
-QJsonValue BKLabel::getValue()
-{
-    L_IMPL(BKLabel);
-
-    return l->mstrText;
-}
-
-bool BKLabel::setValue(const QJsonValue& val)
+bool BKLabel::loadFromJson(const QJsonValue& val)
 {
     setText(val.toString());
     return true;
 }
+
+QVariant BKLabel::data()
+{
+    L_IMPL(BKLabel);
+    return l->mstrText;
+}
+
+BKLabel::operator QJsonValue() const
+{
+    L_IMPL(BKLabel);
+    return l->mstrText;
+}
+
+BKUnit* BKLabel::copy()
+{
+    L_IMPL(BKLabel);
+    BKLabel* target = BKCreator::create<BKLabel>();
+
+    BKLabel::Impl* dstImpl = target->mpImpl;
+    dstImpl->mstrText = l->mstrText;
+    dstImpl->mAlignment = l->mAlignment;
+    dstImpl->mbDontUpdate = l->mbDontUpdate;
+    _copyBasicAttributeTo(target);
+    return target;
+}
+
 
 BKLabel* BKLabel::setText(const QString& text, bool dontUpdate/* = false*/)
 {

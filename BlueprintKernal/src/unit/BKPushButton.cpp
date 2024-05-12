@@ -2,6 +2,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QFontMetrics>
+#include "BKCreator.h"
 
 class BKPushButton::Impl : public QGraphicsItem
 {
@@ -67,8 +68,7 @@ protected:
         {
             if (mButtonArea.contains(event->pos().toPoint()))
             {
-                // 触发
-                // todo...
+                mpHandle->dataChanged(QVariant());
             }
             mbPressed = false;
             update();
@@ -98,14 +98,30 @@ BKPushButton::BKPushButton()
 {
 }
 
-QJsonValue BKPushButton::getValue()
-{   // 嗨嗨嗨
+bool BKPushButton::loadFromJson(const QJsonValue& val)
+{
     return true;
 }
 
-bool BKPushButton::setValue(const QJsonValue& val)
-{   // 嗨嗨嗨
+QVariant BKPushButton::data()
+{
     return true;
+}
+
+BKPushButton::operator QJsonValue() const 
+{
+    return true;
+}
+
+BKUnit* BKPushButton::copy()
+{
+    L_IMPL(BKPushButton);
+    BKPushButton* target = BKCreator::create<BKPushButton>();
+
+    BKPushButton::Impl* dstImpl = target->mpImpl;
+    dstImpl->mstrButtonText = l->mstrButtonText;
+    _copyBasicAttributeTo(target);
+    return target;
 }
 
 BKPushButton* BKPushButton::setText(const QString& text, bool comfy/* = false*/)
@@ -139,8 +155,5 @@ void BKPushButton::resized()
 
 void BKPushButton::dataChanged(const QVariant& data)
 {
-    L_IMPL(BKPushButton);
-
-    if (!data.isNull())
-        mCallbackFunc(true);
+    mCallbackFunc(true);
 }

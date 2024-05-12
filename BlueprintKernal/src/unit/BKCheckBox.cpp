@@ -89,18 +89,33 @@ BKCheckBox::~BKCheckBox()
 }
 
 
-QJsonValue BKCheckBox::getValue()
-{
-    L_IMPL(BKCheckBox);
-    return { l->mbEnable };
-}
-
-bool BKCheckBox::setValue(const QJsonValue& val)
+bool BKCheckBox::loadFromJson(const QJsonValue& val)
 {
     L_IMPL(BKCheckBox);
     setEnable(val.toBool());
 
     return true;
+}
+
+BKCheckBox::operator QJsonValue() const
+{
+    L_IMPL(BKCheckBox);
+    return { l->mbEnable };
+}
+
+QVariant BKCheckBox::data()
+{
+    L_IMPL(BKCheckBox);
+    return { l->mbEnable };
+}
+
+BKUnit* BKCheckBox::copy()
+{
+    L_IMPL(BKCheckBox);
+    BKCheckBox* target = BKCreator::create<BKCheckBox>();
+    _copyBasicAttributeTo(target);
+
+    return target;
 }
 
 BKCheckBox* BKCheckBox::setEnable(bool enable)

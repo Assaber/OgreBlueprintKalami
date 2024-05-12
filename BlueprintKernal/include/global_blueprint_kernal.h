@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <QEvent>
+#include <vector>
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
 #   if defined( BK_STATIC_LIB )
@@ -55,3 +56,6 @@ public: \
 }; \
 
 #define L_IMPL(x) x::Impl* l = mpImpl;
+
+using BKIntegerVector = std::vector<int>;
+using BKFloatVector = std::vector<float>;

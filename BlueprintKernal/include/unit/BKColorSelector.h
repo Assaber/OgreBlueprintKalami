@@ -10,12 +10,22 @@ public:
     using super = BKUnitBasic<BKColorSelector>;
     using Color4f = std::array<float, 4>;     // rgba
     using Color3f = std::array<float, 3>;     // rgb a=1
-    BKColorSelector();
+
+    enum class Type : uint8_t {
+        Vector3,
+        Vector4,
+    };
+
+public:
+    BKColorSelector(Type type = Type::Vector3);
     ~BKColorSelector();
 
 public:
-    virtual QJsonValue getValue() override;
-    virtual bool setValue(const QJsonValue& val) override;
+    virtual bool loadFromJson(const QJsonValue& val) override;
+    virtual operator QJsonValue() const override;
+    //返回QColor类型对象
+    virtual QVariant data() override;
+    virtual BKUnit* copy() override;
 
 public:
     BKColorSelector* setColor(const Color4f& color);

@@ -53,11 +53,16 @@ public:
         String,                     ///< 字符串类型
         Float,                      ///< 小数类型
         Double,                     ///< 双精度浮点数
-        VecInteger,                 ///< 整型容器：vector<int>
-        VecFloat,                   ///< 浮点型容器：vector<float>
+        VecInteger,                 ///< 整型容器：BKIntegerVector
+        VecFloat,                   ///< 浮点型容器：BKFloatVector
         
         Custom = 0x0100,            ///< 自定义部分：这里注册时沿用Qt MetaType的ID，理论上是1024往后，但是感觉预制类型也用不上就缩啦
     };
+
+
+    virtual bool loadFromJson(const QJsonValue& val) override;
+    virtual QVariant data() override;
+    virtual operator QJsonValue() const override;
 
 public:
     using super = BKUnitBasic<BKAnchor>;
@@ -68,6 +73,7 @@ public:
     BKAnchor* setDateType(uint32_t type);
     BKAnchor* setMinSize(const QSizeF& size) = delete;
     BKAnchor* setSizePolicy(SizePolicy policy) = delete;
+    virtual BKUnit* copy() override;
 
 public:
     uint32_t getAnchorType();
@@ -159,6 +165,4 @@ protected:
 public:
     virtual QRectF boundingRect() const override;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
-    virtual QJsonValue getValue() override;
-    virtual bool setValue(const QJsonValue& val) override;
 };

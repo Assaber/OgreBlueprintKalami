@@ -15,10 +15,13 @@ public:
     /// 大小策略
     enum class SizePolicy : uint8_t
     {
-        Fixed,            ///< 固定大小
-        Adaptive,        ///< 自适应
+        Fixed,                  ///< 固定大小
+        Adaptive,               ///< 自适应
     };
 
+    /// 数据更新回调函数
+    // - @param： param 控件值
+    // - @return: bool 若为true则停止传递，否则依照锚点绑定传递到下一个结点
     using DataChangeCallback = std::function<bool(const QVariant& param)>;
 
 public:
@@ -26,28 +29,45 @@ public:
     virtual ~BKUnit();
 
 public:
+    /**
+     * @brief:                          获取绑定的卡片
+     * @return: BKCard*
+     * @remark:                         如果未绑定将返回nullptr
+     */
     BKCard* getBindCard() const;
+
+    /**
+     * @brief:                          默认的数据更新回调函数  
+     * @param: const QVariant & param   控件值
+     * @return: bool                    若为true则停止传递，否则依照锚点绑定传递到下一个结点
+     * @remark: 
+     */
     static bool defaultDataChangeCallback(const QVariant& param);
 
 public:
-    /**
-     * @brief:                          获取当前值
-     * @return: QJsonValue      
-     * @remark:                         导出Json时使用
-     */
-    virtual QJsonValue getValue() = 0;
+    virtual operator QJsonValue() const = 0;
+    virtual bool loadFromJson(const QJsonValue& val) = 0;
 
     /**
-     * @brief:                          获取当前值
-     * @param: const QJsonValue & val   
-     * @return: bool                    是否获取成功
-     * @remark:                         导入Json时使用
+     * @brief:                          控件当前值
+     * @return: QVariant                
+     * @remark: 
      */
-    virtual bool setValue(const QJsonValue& val) = 0;
+    virtual QVariant data() = 0;
 
-    virtual void registOutputAnchor(BKAnchor* anchor);
+    /**
+     * @brief:                          组元复制
+     * @return: BKUnit*                 新对象指针
+     * @remark:                         可只深度拷贝部分成员属性，大体上是在可扩展单元中使用
+     */
+    virtual BKUnit* copy() = 0;
 
 protected:
+    /**
+     * @brief:                          获取绑定的QGraphics对象
+     * @return: QGraphicsItem*          对象指针
+     * @remark: 
+     */
     virtual QGraphicsItem* getGraphicsItem() = 0;
     /**
      * @brief:                          更新数据
@@ -56,7 +76,18 @@ protected:
      * @remark:                         当变量为空，则视为使用当前值触发后续更新，否则使用传入值进行更新
      */
     virtual void dataChanged(const QVariant& data) = 0;
+    /**
+     * @brief:                          组元大小变更后的主动回调
+     */
     virtual void resized();
+
+    /**
+     * @brief:                          复制基础组元信息
+     * @param: BKUnit * dst             靶对象
+     * @return: void
+     * @remark: 
+     */
+    void _copyBasicAttributeTo(BKUnit* dst);
 
 protected:
     friend class BKCell;
@@ -76,6 +107,7 @@ protected:
     DataChangeCallback mCallbackFunc;
 
 public:
+    // 最小组元高度
     static constexpr int minUnitHeight = 20;
 };
 
@@ -108,7 +140,6 @@ public:
         return static_cast<T*>(this);
     }
 
-    // 返回true，则停止传递；返回false则根据右锚点继续传递
     inline T* setDataChangeCallback(DataChangeCallback function) {
         mCallbackFunc = function;
         return static_cast<T*>(this);

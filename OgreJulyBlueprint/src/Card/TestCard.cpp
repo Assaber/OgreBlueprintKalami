@@ -14,20 +14,41 @@
 #include "unit/BKPixmap.h"
 #include "unit/BKVectorEditor.h"
 
+#include <QDebug>
+
 TestCard::TestCard()
     : BKCard()
 {
     _pack({
         BKCreator::create(BKAnchor::AnchorType::None)
-            ->append({ BKCreator::create<BKLabel>()
-                            ->setText("嘻嘻嘻嘻嘻嘻嘻嘻")
-                            ->setAlignment(Qt::AlignCenter)
+            ->append({
+            BKCreator::create<BKLabel>()
+                ->setText("嘻嘻嘻嘻嘻嘻嘻嘻")
+                ->setAlignment(Qt::AlignCenter),
+            BKCreator::create<BKColorSelector>()
             }),
-        BKCreator::create()
-            ->append({ BKCreator::create<BKLabel>()
-                            ->setText("Hello world")
-                            ->setAlignment(Qt::AlignLeft | Qt::AlignVCenter)
-            }),
+        BKCreator::create(BKAnchor::AnchorType::Input, BKCell::Type::ListGroup)
+            ->setTemplate({ 
+                BKCreator::create<BKLabel>()
+                    ->setText("Hello world")
+                    ->setAlignment(Qt::AlignLeft | Qt::AlignVCenter),
+                BKCreator::create<BKComboBox>()
+                    ->setItems(QStringList() << "焚我残躯" << "熊熊圣火" << "生亦何欢" << "死亦何苦" << "为善除恶" << "为光明故" << "喜乐悲愁" << "皆归尘土")
+                    ->setCurrentIndex(1, false)
+            })
+            ->setMemberCountChangedCallback([](size_t count, const QVariantList& vl) {
+                    qDebug() << "size:" << count;
+                })
+            ->setMemberDataChangedCallback([](size_t count, const QVariantList& vl) {
+                    count = 0;      // 兄弟，你好香
+                    for (QVariantList::const_iterator itor = vl.begin(); itor != vl.end(); ++itor)
+                    {
+                        if ((++count % 2) == 0)
+                        {
+                            qDebug() << itor->toString();
+                        }
+                    }
+                }),
         BKCreator::create()
             ->append({ BKCreator::create<BKLabel>()
                             ->setText("看我！")

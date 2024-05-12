@@ -13,9 +13,10 @@
 class BKColorSelector::Impl : public QGraphicsItem
 {
 public:
-    Impl(BKColorSelector* handle)
+    Impl(BKColorSelector* handle, BKColorSelector::Type type)
         : QGraphicsItem()
         , mpHandle(handle)
+        , mType(type)
     {
         syncColor();
     }
@@ -35,14 +36,20 @@ public:
     }
 
     QString getCurrentColor() {
-        return QString("%1 %2 %3 %4")
-            .arg(QString::number(mColorData[0], 'f', 4))
-            .arg(QString::number(mColorData[1], 'f', 4))
-            .arg(QString::number(mColorData[2], 'f', 4))
-            .arg(QString::number(mColorData[3], 'f', 4));
+        if (mType == Type::Vector3)
+            return QString("%1 %2 %3").arg(QString::number(mColorData[0], 'f', 3))
+            .arg(QString::number(mColorData[1], 'f', 3))
+            .arg(QString::number(mColorData[2], 'f', 3));
+        else if (mType == Type::Vector4)
+            return QString("%1 %2 %3 %4").arg(QString::number(mColorData[0], 'f', 3))
+            .arg(QString::number(mColorData[1], 'f', 3))
+            .arg(QString::number(mColorData[2], 'f', 3))
+            .arg(QString::number(mColorData[3], 'f', 3));
+
+        return "";
     }
 
-    void loadFromColorString(const QString& color) 
+    bool loadFromColorString(const QString& color) 
     {
         QStringList split;
         if (color.indexOf(',') < 0)     // 空格分隔
@@ -59,13 +66,15 @@ public:
         else
         {
             qWarning() << "颜色解析戳啦，戳啦！";
-            return;
+            return false;
         }
         
         if (split.count() > 3)
             mColorData[3] = split[3].toFloat();
         
         syncColor();
+
+        return true;
     }
 
     void syncColor(bool vec2color = true) 
@@ -117,11 +126,13 @@ public:
     // 当前颜色
     Color4f mColorData = {1.0f, 1.0f, 1.0f, 1.0f};
     QColor mColor;
+    // 颜色格式
+    BKColorSelector::Type mType;
 };
 
-BKColorSelector::BKColorSelector()
+BKColorSelector::BKColorSelector(Type type)
     : super()
-    , mpImpl(new Impl(this))
+    , mpImpl(new Impl(this, type))
 {
     setFixedSize({ 35, 20 });
 }
@@ -132,18 +143,34 @@ BKColorSelector::~BKColorSelector()
     mpImpl = nullptr;
 }
 
-QJsonValue BKColorSelector::getValue()
+bool BKColorSelector::loadFromJson(const QJsonValue& val)
+{
+    L_IMPL(BKColorSelector);
+    return l->loadFromColorString(val.toString());
+}
+
+QVariant BKColorSelector::data()
+{
+    L_IMPL(BKColorSelector);
+    return l->mColor;
+}
+
+BKColorSelector::operator QJsonValue() const
 {
     L_IMPL(BKColorSelector);
     return  l->getCurrentColor();
 }
 
-bool BKColorSelector::setValue(const QJsonValue& val)
+BKUnit* BKColorSelector::copy()
 {
     L_IMPL(BKColorSelector);
-    l->loadFromColorString(val.toString());
+    BKColorSelector* target = BKCreator::create<BKColorSelector>(l->mType);
 
-    return true;
+    BKColorSelector::Impl* dstImpl = target->mpImpl;
+    dstImpl->mColor = l->mColor;
+    dstImpl->mColorData = l->mColorData;
+    _copyBasicAttributeTo(target);
+    return target;
 }
 
 BKColorSelector* BKColorSelector::setColor(const Color4f& color)
@@ -160,6 +187,7 @@ BKColorSelector* BKColorSelector::setColor(const Color3f& color)
 {
     L_IMPL(BKColorSelector);
     memcpy(l->mColorData.data(), color.data(), 3 * sizeof(float));
+    l->mColorData[3] = 1.0f;
     l->syncColor();
     l->update();
 

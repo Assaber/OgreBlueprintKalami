@@ -70,16 +70,35 @@ BKPixmap::~BKPixmap()
     mpImpl = nullptr;
 }
 
-QJsonValue BKPixmap::getValue()
+BKUnit* BKPixmap::copy()
+{
+    L_IMPL(BKPixmap);
+    BKPixmap* target = BKCreator::create<BKPixmap>();
+
+    BKPixmap::Impl* dstImpl = target->mpImpl;
+    dstImpl->mstrSource = l->mstrSource;
+    dstImpl->mPixmap = l->mPixmap;
+    _copyBasicAttributeTo(target);
+    return target;
+}
+
+
+bool BKPixmap::loadFromJson(const QJsonValue& val)
+{
+    setSource(val.toString());
+    return true;
+}
+
+QVariant BKPixmap::data()
 {
     L_IMPL(BKPixmap);
     return l->mstrSource;
 }
 
-bool BKPixmap::setValue(const QJsonValue& val)
+BKPixmap::operator QJsonValue() const
 {
-    setSource(val.toString());
-    return true;
+    L_IMPL(BKPixmap);
+    return l->mstrSource;
 }
 
 BKPixmap* BKPixmap::setSource(const QString& path)

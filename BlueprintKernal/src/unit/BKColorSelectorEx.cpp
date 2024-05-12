@@ -335,6 +335,38 @@ void BKColorSelectorEx::Impl::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* ev
     }
 }
 
+BKUnit* BKColorSelectorEx::copy()
+{
+    L_IMPL(BKColorSelectorEx);
+    BKColorSelectorEx* target = BKCreator::create<BKColorSelectorEx>(l->mType);
+
+    BKColorSelectorEx::Impl* dstImpl = target->mpImpl;
+    dstImpl->mColor = l->mColor;
+    dstImpl->mColorData = l->mColorData;
+    dstImpl->mstrColor = l->mstrColor;
+    dstImpl->mOption = l->mOption;
+    _copyBasicAttributeTo(target);
+    return target;
+}
+
+bool BKColorSelectorEx::loadFromJson(const QJsonValue& val)
+{
+    L_IMPL(BKColorSelectorEx);
+    return l->loadFromColorString(val.toString());
+}
+
+QVariant BKColorSelectorEx::data()
+{
+    L_IMPL(BKColorSelectorEx);
+    return l->mColor;
+}
+
+BKColorSelectorEx::operator QJsonValue() const
+{
+    L_IMPL(BKColorSelectorEx);
+    return  l->getCurrentColor();
+}
+
 BKColorSelectorEx::BKColorSelectorEx(Type type /*= Type::Vector3*/)
     : super()
     , mpImpl(new Impl(this, type))
@@ -347,20 +379,6 @@ BKColorSelectorEx::~BKColorSelectorEx()
 {
     delete mpImpl;
     mpImpl = nullptr;
-}
-
-QJsonValue BKColorSelectorEx::getValue()
-{
-    L_IMPL(BKColorSelectorEx);
-    return  l->getCurrentColor();
-}
-
-bool BKColorSelectorEx::setValue(const QJsonValue& val)
-{
-    L_IMPL(BKColorSelectorEx);
-    l->loadFromColorString(val.toString());
-
-    return true;
 }
 
 BKColorSelectorEx* BKColorSelectorEx::setColor(const Color4f& color)
@@ -377,6 +395,7 @@ BKColorSelectorEx* BKColorSelectorEx::setColor(const Color3f& color)
 {
     L_IMPL(BKColorSelectorEx);
     memcpy(l->mColorData.data(), color.data(), 3 * sizeof(float));
+    l->mColorData[3] = 1.0f;
     l->syncColor(true, true);
     l->update();
 

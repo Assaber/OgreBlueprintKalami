@@ -23,8 +23,11 @@ public:
     ~BKVectorEditor();
 
 public:
-    virtual QJsonValue getValue() override;
-    virtual bool setValue(const QJsonValue& val) override;
+    virtual BKUnit* copy() override;
+    virtual bool loadFromJson(const QJsonValue& val) override;
+    // std::vector<int> 或std::vector<float>
+    virtual QVariant data() override;
+    virtual operator QJsonValue() const override;
 
 public:
     BKVectorEditor* setNames(const std::vector<QString>& names);

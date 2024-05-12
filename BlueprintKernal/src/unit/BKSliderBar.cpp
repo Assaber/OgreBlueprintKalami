@@ -268,7 +268,45 @@ void BKSliderBar::Impl::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 }
 
 
-QJsonValue BKSliderBar::getValue()
+BKUnit* BKSliderBar::copy()
+{
+    L_IMPL(BKSliderBar);
+    BKSliderBar* target = BKCreator::create<BKSliderBar>();
+
+    BKSliderBar::Impl* dstImpl = target->mpImpl;
+    dstImpl->mDataType = l->mDataType;
+    dstImpl->miCurrentValue = l->miCurrentValue;
+    memcpy(dstImpl->mIntRange, l->mIntRange, sizeof(l->mIntRange));
+    dstImpl->mdCurrentValue = l->mdCurrentValue;
+    memcpy(dstImpl->mDoubleRange, l->mDoubleRange, sizeof(l->mDoubleRange));
+    _copyBasicAttributeTo(target);
+    return target;
+}
+
+bool BKSliderBar::loadFromJson(const QJsonValue& val)
+{
+    L_IMPL(BKSliderBar);
+
+    if (l->mDataType == DateType::Int)
+        setCurrentValue(val.toInt());
+    else
+        setCurrentValue(val.toDouble());
+
+    return true;
+}
+
+QVariant BKSliderBar::data()
+{
+    L_IMPL(BKSliderBar);
+    if (l->mDataType == DateType::Int)
+        return l->miCurrentValue;
+    else
+        return l->mdCurrentValue;
+
+    return 0;
+}
+
+BKSliderBar::operator QJsonValue() const
 {
     L_IMPL(BKSliderBar);
 
@@ -280,17 +318,6 @@ QJsonValue BKSliderBar::getValue()
     return 0;
 }
 
-bool BKSliderBar::setValue(const QJsonValue& val)
-{
-    L_IMPL(BKSliderBar);
-
-    if (l->mDataType == DateType::Int)
-        setCurrentValue(val.toInt());
-    else
-        setCurrentValue(val.toDouble());
-
-    return true;
-}
 
 BKSliderBar::BKSliderBar(DateType type/* = DateType::Int*/)
     : super()

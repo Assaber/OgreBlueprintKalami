@@ -24,7 +24,12 @@ bool BKUnit::defaultDataChangeCallback(const QVariant& param)
 
 void BKUnit::resized() {}
 
-void BKUnit::registOutputAnchor(BKAnchor* anchor)
+void BKUnit::_copyBasicAttributeTo(BKUnit* dst)
 {
-    mpRightAnchor = anchor;
+    dst->mSize = this->mSize;
+    dst->mMinSize = this->mMinSize;
+    dst->mSizePolicy = this->mSizePolicy;
+    dst->mpBindCard = this->mpBindCard;
+
+    // 绑定相关的需要重新绑定
 }

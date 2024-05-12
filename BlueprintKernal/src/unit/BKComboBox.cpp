@@ -279,6 +279,38 @@ void BKComboBox::Impl::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     event->accept();
 }
 
+BKUnit* BKComboBox::copy()
+{
+    L_IMPL(BKComboBox);
+    BKComboBox* target = BKCreator::create<BKComboBox>();
+
+    BKComboBox::Impl* dstImpl = target->mpImpl;
+    dstImpl->mItems = l->mItems;
+    dstImpl->mCbType = l->mCbType;
+    dstImpl->mCurrentIndex = l->mCurrentIndex;
+    _copyBasicAttributeTo(target);
+    return target;
+}
+
+BKComboBox::operator QJsonValue() const
+{
+    L_IMPL(BKComboBox);
+    return (l->mCurrentIndex < 0 || l->mItems.size() == 0) ? "" : l->mItems.at(l->mCurrentIndex);
+}
+
+bool BKComboBox::loadFromJson(const QJsonValue& val)
+{
+    L_IMPL(BKComboBox);
+    setCurrentItem(val.toString());
+    return true;
+}
+
+QVariant BKComboBox::data()
+{
+    L_IMPL(BKComboBox);
+    return QJsonValue(*this).toString();
+}
+
 BKComboBox::BKComboBox()
     : super()
     , mpImpl(new Impl(this))
@@ -289,19 +321,6 @@ BKComboBox::~BKComboBox()
 {
     delete mpImpl;
     mpImpl = nullptr;
-}
-
-QJsonValue BKComboBox::getValue()
-{
-    L_IMPL(BKComboBox);
-    return (l->mCurrentIndex < 0 || l->mItems.size() == 0) ? "" : l->mItems.at(l->mCurrentIndex);
-}
-
-bool BKComboBox::setValue(const QJsonValue& val)
-{
-    L_IMPL(BKComboBox);
-    setCurrentItem(val.toString());
-    return true;
 }
 
 BKComboBox* BKComboBox::setCurrentIndex(int index, bool notify /*= true*/)

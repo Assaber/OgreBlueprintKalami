@@ -3,22 +3,19 @@
 #include <QGraphicsItemGroup>
 #include <stdexcept>
 #include <QDebug>
+#include <QPainter>
 #include "BKCreator.h"
 #include "unit/BKSpacer.h"
-
-static constexpr const int target = 5;
-static constexpr const int all = 3;
-static constexpr const int l = 1;
-static constexpr const int r = 2;
-static constexpr const int r2 = ~r;
-static constexpr const int merge = target & ~r;
+#include "unit/BKPushButton.h"
+#include "container/BKCard.h"
 
 class BKCell::Impl : public QGraphicsItemGroup
 {
 public:
-    Impl(BKCell* handle, uint32_t l, uint32_t r)
+    Impl(BKCell* handle, uint32_t l, uint32_t r, BKCell::Type type)
         : QGraphicsItemGroup()
         , mpHandle(handle)
+        , mType(type)
     {
         // 支持让子组件可以处理自己的事件，比如combobox
         setHandlesChildEvents(false);
@@ -28,6 +25,48 @@ public:
 
         if(r != BKAnchor::None)         //输出锚点自带多重绑定
             mAnchorArray[1] = new BKAnchor((r & (~BKAnchor::AnchorType::Input)) | BKAnchor::MultiConn, mpHandle);
+
+        if (type == Type::ListGroup)
+        {
+            mUnitOffset = 3;            // 尽量不要改此处的3， 他影响到宽度的计算
+
+            mUnits.push_back(BKCreator::create<BKSpacer>());
+            BKPushButton* pushBtn = BKCreator::create<BKPushButton>();
+            pushBtn->setText("+");
+            pushBtn->setFixedSize({ mnGroupBtnWidth, mnGroupBtnWidth });
+            pushBtn->setDataChangeCallback([this](const QVariant& data) ->bool {
+                if (mpHandle->push() && mMenberCountChangedFunc) {
+                    QVariantList ret;
+                    for (int i = mUnitOffset; i < mUnits.size(); ++i)
+                    {
+                        BKUnit* unit = mUnits[i];
+                        ret.push_back(unit->data());
+                    }
+                    mMenberCountChangedFunc(getGroupRows(), ret);
+                }
+                return true;
+                });
+
+            mUnits.push_back(pushBtn);
+
+            BKPushButton* popBtn = BKCreator::create<BKPushButton>();
+            popBtn->setText("-");
+            popBtn->setFixedSize({ mnGroupBtnWidth, mnGroupBtnWidth });
+            popBtn->setDataChangeCallback([this](const QVariant& data) ->bool {
+                if (mpHandle->pop() && mMenberCountChangedFunc) {
+                    QVariantList ret;
+                    for (int i = mUnitOffset; i < mUnits.size(); ++i)
+                    {
+                        BKUnit* unit = mUnits[i];
+                        ret.push_back(unit->data());
+                    }
+                    mMenberCountChangedFunc(getGroupRows(), ret);
+                }
+                return true;
+                });
+
+            mUnits.push_back(popBtn);
+        }
     }
 
     ~Impl()
@@ -36,7 +75,8 @@ public:
         // 不通过Qt的GraphicsItem释放机制，解组后分批释放
 
         destroyAnchorBall();
-        removeAll(true);
+        removeAll();
+        destroyUnits();
     }
 
 public:
@@ -45,16 +85,22 @@ public:
      * @return: void
      * @remark: 
      */
-    void removeAll(bool destroy = false) {
+    void removeAll() {
         for (auto& item : mUnits)
         {
             removeFromGroup(item->getGraphicsItem());
-            if (destroy)
-                delete item;
         }
+    }
 
-        if (destroy)
-            mUnits.clear();
+    void destroyUnits() {
+        for (auto& item : mUnits)
+            delete item;
+        
+        for (auto& item : mTemplateUnits)
+            delete item;
+
+        mUnits.clear();
+        mTemplateUnits.clear();
     }
 
     void destroyAnchorBall() {
@@ -70,15 +116,22 @@ public:
         }
     }
 
-public:
-    QSizeF getTheorySize();
-    void updateActualSize(const QSizeF& aim);
-    void dispatchPositionChanged();
+    size_t getGroupRows() const 
+    {
+        size_t templateUnitCount = mTemplateUnits.size();
+        size_t realUnitCount = mUnits.size() - mUnitOffset;
 
+        return (templateUnitCount == 0) ? 0 : realUnitCount / templateUnitCount;
+    }
 public:
     BKCell* mpHandle = nullptr;
     // 单元列表
     std::vector<BKUnit*> mUnits;
+    // 列表偏移：
+    // 对于Group来讲，会内置三个控件：水平弹簧 +按钮 -按钮
+    int mUnitOffset = 0;
+    // 模板列表
+    std::vector<BKUnit*> mTemplateUnits;
     // 组元最小间隔
     static constexpr int mnSpacing = 5;
     // 锚点
@@ -89,18 +142,28 @@ public:
     static constexpr float mnAnchorFixedWidth = (mnAnchorBallPadding + BKAnchor::mnAnchorBallRadius) * 2;
     // 在卡片的行数
     int mRow = -1;
+    // 类型
+    BKCell::Type mType;
+    // 成组按钮大小
+    static constexpr int mnGroupBtnWidth = 30;
+    // 绑定的卡片
+    BKCard* mpBindCard = nullptr;
+    // 成组单元个数改变的回调
+    GroupMemberChangedFunc mMenberCountChangedFunc = nullptr;
+    GroupMemberChangedFunc mMenberDataChangedFunc = nullptr;
 };
 
-BKCell::BKCell(BKAnchor::AnchorType type)
+BKCell::BKCell(BKAnchor::AnchorType anchor, Type type)
     : mpImpl(new Impl(this, 
-        static_cast<BKAnchor::AnchorType>(type & BKAnchor::AnchorType::Input), 
-        static_cast<BKAnchor::AnchorType>(type & BKAnchor::AnchorType::Output)))
+        static_cast<BKAnchor::AnchorType>(anchor& BKAnchor::AnchorType::Input),
+        static_cast<BKAnchor::AnchorType>(anchor& BKAnchor::AnchorType::Output),
+        type))
 {
 
 }
 
-BKCell::BKCell(uint32_t l, uint32_t r)
-    : mpImpl(new Impl(this, l, r))
+BKCell::BKCell(uint32_t l, uint32_t r, Type type)
+    : mpImpl(new Impl(this, l, r, type))
 {
 
 }
@@ -113,6 +176,9 @@ BKCell::~BKCell()
 
 BKCell* BKCell::append(std::initializer_list<BKUnit*> units)
 {
+    L_IMPL(BKCell);
+    assert(l->mType == BKCell::Type::SingleLine && "This method can only be used in single-line mode");
+
     for (auto item : units)
         append(item);
         
@@ -121,7 +187,8 @@ BKCell* BKCell::append(std::initializer_list<BKUnit*> units)
 
 BKCell* BKCell::append(BKUnit* unit, bool regist/* = true*/)
 {
-    L_IMPL(BKCell)
+    L_IMPL(BKCell);
+    assert(l->mType == BKCell::Type::SingleLine && "This method can only be used in single-line mode");
 
     if (regist && l->mAnchorArray[0])
         l->mAnchorArray[0]->appendRegist(unit);
@@ -130,11 +197,111 @@ BKCell* BKCell::append(BKUnit* unit, bool regist/* = true*/)
 
     if (regist && l->mAnchorArray[1])
     {
-        unit->registOutputAnchor(l->mAnchorArray[1]);
+        unit->mpRightAnchor = l->mAnchorArray[1];
         l->mAnchorArray[1]->appendRegist(unit);
     }
         
     return this;
+}
+
+BKCell* BKCell::setTemplate(std::initializer_list<BKUnit*> units)
+{
+    L_IMPL(BKCell);
+    assert(l->mType == BKCell::Type::ListGroup && "This method can only be used in list-group mode");
+
+    if (units.size() == 0)
+        throw std::logic_error("Aha ? Why is an empty list passed in");
+
+    l->mTemplateUnits.clear(); 
+    for (BKUnit* unit : units)
+        l->mTemplateUnits.push_back(unit);
+
+    return this;
+}
+
+BKCell* BKCell::setMemberDataChangedCallback(GroupMemberChangedFunc function)
+{
+    L_IMPL(BKCell);
+    assert(l->mType == BKCell::Type::ListGroup && "This method can only be used in list-group mode");
+
+    l->mMenberDataChangedFunc = function;
+    return this;
+}
+
+BKCell* BKCell::setMemberCountChangedCallback(GroupMemberChangedFunc function)
+{
+    L_IMPL(BKCell);
+    assert(l->mType == BKCell::Type::ListGroup && "This method can only be used in list-group mode");
+
+    l->mMenberCountChangedFunc = function;
+    return this;
+}
+
+bool BKCell::push()
+{
+    L_IMPL(BKCell);
+    assert(l->mType == BKCell::Type::ListGroup && "This method can only be used in list-group mode");
+
+    for (auto unit : l->mTemplateUnits)
+    {
+        BKUnit* copyItem = unit->copy();
+        QGraphicsItem* gi = copyItem->getGraphicsItem();
+        l->addToGroup(gi);
+
+        copyItem->mCallbackFunc = [this, l](const QVariant& param) ->bool {
+            if (l->mMenberDataChangedFunc)
+            {
+                QVariantList ret;
+                for (int i = l->mUnitOffset; i < l->mUnits.size(); ++i)
+                {
+                    BKUnit* unit = l->mUnits[i];
+                    ret.push_back(unit->data());
+                }
+
+                l->mMenberDataChangedFunc(l->getGroupRows(), ret);
+            }
+        
+            return true;        // 不给传递 TBD
+        };
+
+        l->mUnits.push_back(copyItem);
+    }
+
+    // 触发卡片重新计算
+    if (l->mpBindCard)
+        l->mpBindCard->rePackage();
+
+    return true;
+}
+
+bool BKCell::pop()
+{
+    L_IMPL(BKCell);
+    assert(l->mType == BKCell::Type::ListGroup && "This method can only be used in list-group mode");
+
+    int count = l->mTemplateUnits.size();
+    int size = l->mUnits.size();
+
+    if (size == l->mUnitOffset)
+        return false;
+
+    auto itor = l->mUnits.begin();
+    itor = std::next(itor, size - count);
+    while (itor != l->mUnits.end())
+    {
+        BKUnit* unit = *itor;
+        itor = l->mUnits.erase(itor);
+
+        l->removeFromGroup(unit->getGraphicsItem());
+        delete unit;
+        unit = nullptr;
+    }
+
+    // 触发卡片重新计算
+    if (l->mpBindCard)
+        l->mpBindCard->rePackage();
+
+    return true;
 }
 
 BKCell* BKCell::setDataType(BKAnchor::AnchorType anchor, uint32_t data)
@@ -152,114 +319,220 @@ BKCell* BKCell::setDataType(BKAnchor::AnchorType anchor, uint32_t data)
     return this;
 }
 
-void BKCell::updateActualSize(const QSizeF& aim) { mpImpl->updateActualSize(aim); }
-void BKCell::Impl::updateActualSize(const QSizeF& aim)
-{
-    removeAll();
+void BKCell::updateActualSize(const QSizeF& aim) 
+{ 
+    L_IMPL(BKCell);
+    if(l->mType == BKCell::Type::ListGroup && l->mTemplateUnits.size() == 0)
+        throw std::logic_error("已经抛一次异常了，为什么还会到这儿？！");
 
-    if (mUnits.size() == 0) //一行中至少拥有一个控件，如果为空就用BKSpacer顶
-        mpHandle->append(BKCreator::create<BKSpacer>());
+    if (l->mType == BKCell::Type::SingleLine && l->mUnits.size() == 0)   //一行中至少拥有一个控件，如果为空就用BKSpacer顶
+        append(BKCreator::create<BKSpacer>());         
 
-    /* 对于自适应的宽度
-    *    组元宽度 = (总宽度 - 全部固定宽度 - 总间隔 - 左右锚点占位) / 自适应组元个数;
-    */
+    // 先把锚点抛掉，之后再算
+    float fixedWidth = Impl::mnAnchorFixedWidth;
+    float adaptiveWidth = 0;
+    int columns = 0;
+    std::list<BKUnit*> adaptItems;
 
-    float fixed = 0;
-    float adaptive = 0;
-    std::vector<BKUnit*> aus;
-    auto update_unit_y = [&](BKUnit* unit) {
-        if (unit->mSizePolicy == BKUnit::SizePolicy::Fixed)
-            fixed += unit->mMinSize.width();
-        else
-            aus.push_back(unit);
+    // 更新垂直部分的位置
+    auto loop_y = [&](BKUnit* unit, float uh, float offset = 0, int row = 0) {
+        if (row == 0)
+        {
+            if (unit->mSizePolicy == BKUnit::SizePolicy::Fixed)
+                fixedWidth += unit->mMinSize.width();
+            else
+                adaptItems.push_back(unit);
+        }
 
         QGraphicsItem* pItem = unit->getGraphicsItem();
+
         if (unit->mSizePolicy == BKUnit::SizePolicy::Adaptive)        //非固定组元撑起高度
         {
-            unit->mSize.setHeight(aim.height());
-            pItem->setY(0);
+            unit->mSize.setHeight(uh);
+            pItem->setY(offset);
         }
         else                                                        //自适应的组元拷贝高度
         {
             unit->mSize.setHeight(unit->mMinSize.height());
-            pItem->setY((aim.height() - unit->mMinSize.height()) / 2);
+            pItem->setY((uh - unit->mMinSize.height()) / 2 + offset);
         }
     };
 
-
-    if (mAnchorArray[0])
+    if (l->mType == BKCell::Type::SingleLine)
     {
-        fixed += 2 * mnAnchorBallPadding;
-        update_unit_y(mAnchorArray[0]);
+        float unitHeight = aim.height();
+        columns = l->mUnits.size();
+        for (BKUnit* unit : l->mUnits)
+            loop_y(unit, aim.height());
     }
-    else
-        fixed += mnAnchorFixedWidth;
-        
-
-    for (auto& unit : mUnits)
-        update_unit_y(unit);
-
-    if (mAnchorArray[1])
+    else if (l->mType == BKCell::Type::ListGroup)
     {
-        fixed += 2 * mnAnchorBallPadding;
-        update_unit_y(mAnchorArray[1]);
-    }
-    else
-        fixed += mnAnchorFixedWidth;
+        columns = l->mTemplateUnits.size();
+        int group = l->getGroupRows();
+        float unitHeight = (group == 0) ? 0 : (aim.height() - l->mnGroupBtnWidth) / group - l->mnSpacing;
 
-    if (aus.size())
+        if (group == 0 && l->mUnitOffset != l->mUnits.size())
+            throw std::logic_error("组数与偏移不匹配");
+
+        for (int i = l->mUnitOffset, j = 0; i < l->mUnits.size(); ++i, ++j)
+        {
+            BKUnit* unit = l->mUnits[i];
+            int row = j / l->mTemplateUnits.size();
+            loop_y(unit, unitHeight, (unitHeight + l->mnSpacing) * row , row);
+        }
+
+        for (int i = 0; i < l->mUnitOffset; ++i)
+        {
+            BKUnit* unit = l->mUnits[i];
+            loop_y(unit, l->mnGroupBtnWidth, (unitHeight + l->mnSpacing) * group, group);
+        }
+
+        // 按钮组的宽度和X在此计算
+        assert(l->mUnitOffset == 3 && "Hegemony!!");
+        int btnOffset = Impl::mnAnchorFixedWidth;
+        float spacerWidth = aim.width() - 2.0 * Impl::mnAnchorFixedWidth - 2.0 * l->mnGroupBtnWidth - l->mnSpacing;
+        l->mUnits[0]->getGraphicsItem()->setX(btnOffset);
+        l->mUnits[0]->mSize.setWidth(spacerWidth);
+        btnOffset += spacerWidth;
+
+        l->mUnits[1]->getGraphicsItem()->setX(btnOffset);
+        // l->mUnits[1]->mSize = l->mUnits[1]->mMinSize;
+        btnOffset += l->mnGroupBtnWidth + l->mnSpacing;
+
+        l->mUnits[2]->getGraphicsItem()->setX(btnOffset);
+        // l->mUnits[2]->mSize = l->mUnits[2]->mMinSize;
+
+        // for(int i = 0; i < l->mUnitOffset; ++i)
+        //     mpImpl->addToGroup(l->mUnits[i]->getGraphicsItem());
+    }
+
+    // 再补一个锚点
+    fixedWidth += Impl::mnAnchorFixedWidth;
+
+    // 计算均摊宽度
+    if (adaptItems.size())
     {
-        adaptive = aim.width() - fixed - (mUnits.size() > 1 ? mnSpacing * (mUnits.size() - 1) : 0);
-        adaptive /= aus.size();
+        adaptiveWidth = aim.width() - fixedWidth - (columns > 1 ? l->mnSpacing * (columns - 1) : 0);
+        adaptiveWidth /= adaptItems.size();
     }
 
-
-    auto update_unit_x = [this, adaptive](BKUnit* unit, int offset, int& begin) {
-        begin += offset;
+    // 更新水平部分的位置
+    float x = Impl::mnAnchorFixedWidth;
+    auto loop_x = [this, adaptiveWidth, &x](BKUnit* unit, int offset) {
+        x += offset;
 
         if (unit->mSizePolicy == BKUnit::SizePolicy::Fixed)
             unit->mSize.setWidth(unit->mMinSize.width());
         else
-            unit->mSize.setWidth(adaptive);
+            unit->mSize.setWidth(adaptiveWidth);
 
-        unit->getGraphicsItem()->setX(begin);
-        begin += unit->mSize.width();
-
-        //加入到组
-        addToGroup(unit->getGraphicsItem());
+        unit->getGraphicsItem()->setX(x);
+        x += unit->mSize.width();
     };
 
-    int begin = 0;
-    if (mAnchorArray[0])
+    x -= l->mnSpacing;
+    if (l->mType == BKCell::Type::SingleLine)
     {
-        begin += mnAnchorBallPadding;
-        update_unit_x(mAnchorArray[0], 0, begin);
-        begin += mnAnchorBallPadding;
+        for (BKUnit* unit : l->mUnits)
+            loop_x(unit, l->mnSpacing);
     }
-    else
-        begin += mnAnchorFixedWidth;
+    else if (l->mType == BKCell::Type::ListGroup)
+    {
+        float initX = x;
+        for (int i = l->mUnitOffset, j = 1; i < l->mUnits.size(); ++i, ++j)
+        {
+            BKUnit* unit = l->mUnits[i];
+            loop_x(unit, l->mnSpacing);
 
-    begin -= mnSpacing;
-    for (auto& item : mUnits)
-    {
-        update_unit_x(item, mnSpacing, begin);
-        item->resized();
+            if (j % columns == 0)
+                x = initX;
+        }
     }
-        
 
-    if (mAnchorArray[1])
+    for (BKUnit* unit : l->mUnits)
     {
-        begin += mnAnchorBallPadding;
-        update_unit_x(mAnchorArray[1], 0, begin);
-        begin += mnAnchorBallPadding;
+        unit->resized();
+
+        QGraphicsItem* gi = unit->getGraphicsItem();
+        if(!gi->group())
+            mpImpl->addToGroup(gi);
     }
-    else
-        begin += mnAnchorFixedWidth;
+
+    // 更新锚点位置
+    BKAnchor* la = l->mAnchorArray[0];
+    BKAnchor* ra = l->mAnchorArray[1];
+
+    float anchorY = aim.height() / 2 - BKAnchor::mnAnchorBallRadius;
+    if (la)
+    {
+        la->setX(l->mnAnchorBallPadding);
+        la->setY(anchorY);
+        la->mSize = la->mMinSize;
+        mpImpl->addToGroup(la->getGraphicsItem());
+    }
+
+    if (ra)
+    {
+        ra->setX(aim.width() - l->mnAnchorBallPadding - 2 * BKAnchor::mnAnchorBallRadius);
+        ra->setY(anchorY);
+        ra->mSize = ra->mMinSize;
+        mpImpl->addToGroup(ra->getGraphicsItem());
+    }
 }
 
 
-QSizeF BKCell::getTheorySize() { return mpImpl->getTheorySize(); }
+QSizeF BKCell::getTheorySize() 
+{
+    L_IMPL(BKCell);
+    float width = 0, height = BKUnit::minUnitHeight;
 
+    // 根据锚点设置更新最小高度
+    bool hasAnchor = l->mAnchorArray[0] || l->mAnchorArray[1];
+    if (hasAnchor)
+        height = std::max(height, BKAnchor::mnAnchorBallRadius * 2);
+
+    if (l->mType == BKCell::Type::SingleLine)
+    {
+        for (auto& item : l->mUnits)
+        {
+            if (height < item->mMinSize.height())
+                height = item->mMinSize.height();
+
+            width += item->mMinSize.width();
+        }
+
+        size_t column = l->mUnits.size();
+        if (column > 1)
+            width += l->mnSpacing * (column - 1);
+    }
+    else if(l->mType == BKCell::Type::ListGroup)
+    {
+        if (l->mTemplateUnits.size() == 0)
+            throw std::logic_error("Start calc theory size, but have no template in ListGroup cell");
+
+        for (auto& item : l->mTemplateUnits)
+        {
+            if (height < item->mMinSize.height())
+                height = item->mMinSize.height();
+
+            width += item->mMinSize.width();
+        }
+
+        size_t column = l->mTemplateUnits.size();
+        if (column > 1)
+            width += l->mnSpacing * (column - 1);                                       // 按照模板计算的满配宽度
+
+        width = std::max(2.0f * Impl::mnGroupBtnWidth + Impl::mnSpacing, width);        // 2.0为两个按钮，弹簧可以忽略不计
+
+        int group = l->getGroupRows();
+        height =  (l->mnSpacing + height) * group + l->mnGroupBtnWidth;
+    }
+
+    //左右锚点占位
+    width += 2 * l->mnAnchorFixedWidth;
+
+    return { width, height };
+}
 
 bool BKCell::hasAnchor(BKAnchor* anchor)
 {
@@ -300,8 +573,8 @@ bool BKCell::exportUnitToJson(QJsonArray& obj)
 
     // 先导出锚点类型
     QJsonArray dst;
-    for (auto unit : l->mUnits)
-        dst.append(unit->getValue());
+    for (BKUnit* unit : l->mUnits)
+        dst.append(*unit);
 
     obj.append(dst);
     return true;
@@ -317,8 +590,11 @@ bool BKCell::updateUnitFromJson(const QJsonValue& value)
         throw std::logic_error("逻辑错误，应该已经对组元为空做了补对象的处理...");
 
     for (int i = 0; i < count; ++i)
-        l->mUnits[i]->setValue(info[i]);
-    
+    {
+        BKUnit* unit = l->mUnits[i];
+        unit->loadFromJson(info[i]);
+    }
+
     return true;
 }
 
@@ -331,13 +607,12 @@ int BKCell::getMemberRow(BKAnchor* anchor)
     return l->mRow;
 }
 
-void BKCell::dispatchPositionChanged() { return mpImpl->dispatchPositionChanged(); }
-
 void BKCell::bindCard(BKCard* card, int index)
 {
     L_IMPL(BKCell)
 
     l->mRow = index;
+    l->mpBindCard = card;
     for (auto anchor : l->mAnchorArray)
     {
         if (anchor)
@@ -348,38 +623,18 @@ void BKCell::bindCard(BKCard* card, int index)
         unit->mpBindCard = card;
 }
 
-void BKCell::Impl::dispatchPositionChanged()
+QGraphicsItem* BKCell::getGraphicsItem()
 {
-    for (const auto& anchor : mAnchorArray)
+    return mpImpl;
+}
+
+void BKCell::dispatchPositionChanged()
+{
+    L_IMPL(BKCell);
+
+    for (const auto& anchor : l->mAnchorArray)
     {
         if (anchor)
             anchor->dispatchCellPositionChanged();
     }
-}
-
-QSizeF BKCell::Impl::getTheorySize()
-{
-    float width = 0, height = BKUnit::minUnitHeight;
-
-    // 根据锚点设置更新最小高度
-    bool hasAnchor = mAnchorArray[0] || mAnchorArray[1];
-    if (hasAnchor)
-        height = std::max(height, BKAnchor::mnAnchorBallRadius * 2);
-
-    for (auto& item : mUnits)
-    {
-        if (height < item->mMinSize.height())
-            height = item->mMinSize.height();
-
-        width += item->mMinSize.width();
-    }
-
-    size_t count = mUnits.size();
-    if (count > 1)
-        width += mnSpacing * (count - 1);
-
-    //左右锚点占位
-    width += 2 * mnAnchorFixedWidth;
-
-    return { width, height };
 }

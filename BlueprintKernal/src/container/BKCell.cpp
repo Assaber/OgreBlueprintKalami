@@ -193,6 +193,20 @@ BKCell* BKCell::append(BKUnit* unit, bool regist/* = true*/)
     if (regist && l->mAnchorArray[0])
         l->mAnchorArray[0]->appendRegist(unit);
 
+    // 保险起见还是遍历一遍看是否存在重复传入的
+    // 因为自己就传错了
+    bool hasRepead = false;
+    for (BKUnit* ui : l->mUnits)
+    {
+        if (ui == unit)
+        {
+            hasRepead = true;
+            break;
+        }
+    }
+    assert(!hasRepead && "There are duplicates in the incoming object");
+
+
     l->mUnits.push_back(unit);
 
     if (regist && l->mAnchorArray[1])

@@ -15,9 +15,12 @@ public:
     virtual QVariant data() override;
     virtual operator QJsonValue() const override;
 
-
 public:
     BKLineEdit* setText(const QString& text);
+    BKLineEdit* setEditable(bool enable);
+
+public:
+    QString getCurrentText();
     
 private:
     friend class BKLineEditor;

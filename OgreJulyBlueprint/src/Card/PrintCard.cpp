@@ -19,6 +19,7 @@ PrintCard::PrintCard()
 
     _pack({
         BKCreator::create(BKAnchor::AnchorType::Input)
+            ->setDataType(BKAnchor::Input, BKAnchor::String)
             ->append({ BKCreator::create<BKLineEdit>()
                             ->setText("嘻嘻嘻嘻嘻嘻嘻嘻")
             })

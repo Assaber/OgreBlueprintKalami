@@ -9,6 +9,7 @@
 #include "container/BKCard.h"
 #include <QCoreApplication>
 #include "BKEvent.h"
+#include <QToolTip>
 
 class BKComboBox::Impl : public QGraphicsItem
 {
@@ -185,6 +186,10 @@ public:
 
 
         mpView->installEventFilter(this);
+        mpView->setMouseTracking(true);
+        QObject::connect(mpView, &QListWidget::entered, mpView, [=](const QModelIndex& item) {
+            QToolTip::showText(QCursor::pos(), item.data().toString());
+            });
     }
 
 public:

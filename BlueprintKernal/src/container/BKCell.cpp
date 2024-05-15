@@ -344,7 +344,7 @@ void BKCell::updateActualSize(const QSizeF& aim)
 
     // 先把锚点抛掉，之后再算
     float fixedWidth = Impl::mnAnchorFixedWidth;
-    float adaptiveWidth = 0;
+    float adaptiveOffsetWidth = 0;
     int columns = 0;
     std::list<BKUnit*> adaptItems;
 
@@ -355,7 +355,10 @@ void BKCell::updateActualSize(const QSizeF& aim)
             if (unit->mSizePolicy == BKUnit::SizePolicy::Fixed)
                 fixedWidth += unit->mMinSize.width();
             else
+            {
+                fixedWidth += unit->mMinSize.width();
                 adaptItems.push_back(unit);
+            }
         }
 
         QGraphicsItem* pItem = unit->getGraphicsItem();
@@ -423,22 +426,22 @@ void BKCell::updateActualSize(const QSizeF& aim)
     // 再补一个锚点
     fixedWidth += Impl::mnAnchorFixedWidth;
 
-    // 计算均摊宽度
+    // 计算均摊宽度补偿
     if (adaptItems.size())
     {
-        adaptiveWidth = aim.width() - fixedWidth - (columns > 1 ? l->mnSpacing * (columns - 1) : 0);
-        adaptiveWidth /= adaptItems.size();
+        adaptiveOffsetWidth = aim.width() - fixedWidth - (columns > 1 ? l->mnSpacing * (columns - 1) : 0);
+        adaptiveOffsetWidth /= adaptItems.size();
     }
 
     // 更新水平部分的位置
     float x = Impl::mnAnchorFixedWidth;
-    auto loop_x = [this, adaptiveWidth, &x](BKUnit* unit, int offset) {
+    auto loop_x = [this, adaptiveOffsetWidth, &x](BKUnit* unit, int offset) {
         x += offset;
 
         if (unit->mSizePolicy == BKUnit::SizePolicy::Fixed)
             unit->mSize.setWidth(unit->mMinSize.width());
         else
-            unit->mSize.setWidth(adaptiveWidth);
+            unit->mSize.setWidth(adaptiveOffsetWidth + unit->mMinSize.width());
 
         unit->getGraphicsItem()->setX(x);
         x += unit->mSize.width();

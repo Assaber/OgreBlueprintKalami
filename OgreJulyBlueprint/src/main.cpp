@@ -13,7 +13,7 @@
 #include "Card/Hlms/MacroblockCard.h"
 #include "Card/Hlms/UnlitDatablockCard.h"
 #include "Card/Hlms/UnlitDiffuseMapCard.h"
-// #include "Card/Material/MaterialCard.h"
+#include "Card/Material/SimpleMaterialCard.h"
 #include "Card/ReadFileCard.h"
 #include <functional>
 #include <QDateTime>
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     BKCreator::registCard<MacroblockCard>();
     BKCreator::registCard<UnlitDatablockCard>();
     BKCreator::registCard<UnlitDiffuseMapCard>();
-    // BKCreator::registCard<MaterialCard>();
+    BKCreator::registCard<SimpleMaterialCard>();
     BKCreator::registCard<ReadFileCard>();
 
     // 注册自定义结构体的锚点识别及颜色

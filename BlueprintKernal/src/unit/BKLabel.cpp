@@ -24,24 +24,6 @@ public:
     bool mbDontUpdate = false;
 
 public:
-    BKLabel* setAlignment(Qt::Alignment alignment)
-    {
-        mAlignment = alignment;
-        return mpHandle;
-    }
-
-    BKLabel* setText(const QString& text, bool donotUpdate)
-    {
-        mstrText = text;
-        mbDontUpdate = donotUpdate;
-
-        QFont defaultFont;
-        QFontMetrics fm(defaultFont);        //assaber: 需要更新到系统字体
-                                            //todo...
-        mpHandle->mMinSize = { 1.0f * fm.horizontalAdvance(text), 1.0f * fm.height() };
-        return mpHandle;
-    }
-
     QRectF boundingRect() const override
     {
         return { 0, 0, mpHandle->mSize.width(), mpHandle->mSize.height() };
@@ -107,14 +89,32 @@ BKUnit* BKLabel::copy()
 }
 
 
-BKLabel* BKLabel::setText(const QString& text, bool dontUpdate/* = false*/)
+BKLabel* BKLabel::setText(const QString& text)
 {
-    return mpImpl->setText(text, dontUpdate);
+    L_IMPL(BKLabel);
+    l->mstrText = text;
+
+    QFont defaultFont;
+    QFontMetrics fm(defaultFont);        //assaber: 需要更新到系统字体
+                                        //todo...
+    mMinSize = { 1.0f * fm.horizontalAdvance(text), 1.0f * fm.height() };
+    return this;
+}
+
+BKLabel* BKLabel::setTitleNeverChanges(bool enable)
+{
+    L_IMPL(BKLabel);
+    l->mbDontUpdate = enable;
+
+    return this;
 }
 
 BKLabel* BKLabel::setAlignment(Qt::Alignment alignment)
 {
-    return mpImpl->setAlignment(alignment);
+    L_IMPL(BKLabel);
+
+    l->mAlignment = alignment;
+    return this;
 }
 
 QGraphicsItem* BKLabel::getGraphicsItem()

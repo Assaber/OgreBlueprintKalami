@@ -58,7 +58,8 @@ UnlitDatablockCard::UnlitDatablockCard()
     BKAnchor* textureInputAnchor = textureInputCell->getAnchor(BKAnchor::Input);
     textureInputAnchor->setDateType(QMetaTypeId<UnlitDiffuseMapCard::Info>::qt_metatype_id());
     textureInputCell->append(BKCreator::create<BKLabel>()
-        ->setText("材质", true)
+        ->setText("材质")
+        ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this, textureInputAnchor](const QVariant& param) -> bool {
             std::vector<QVariant> items;
             if (textureInputAnchor->getBindOutputData(items) < 0)
@@ -92,7 +93,8 @@ UnlitDatablockCard::UnlitDatablockCard()
 
     BKCell* blendblockCell = BKCreator::create(BKAnchor::Input);
     blendblockCell->append(BKCreator::create<BKLabel>()
-        ->setText("混合", true)
+        ->setText("混合")
+        ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
             mBlendblock = param.value<Ogre::HlmsBlendblock>();
             createHlms(true);
@@ -103,7 +105,8 @@ UnlitDatablockCard::UnlitDatablockCard()
 
     BKCell* macroblockCell = BKCreator::create(BKAnchor::Input);
     macroblockCell->append(BKCreator::create<BKLabel>()
-        ->setText("宏", true)
+        ->setText("宏")
+        ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
             mMacroblock = param.value<Ogre::HlmsMacroblock>();
             createHlms(true);

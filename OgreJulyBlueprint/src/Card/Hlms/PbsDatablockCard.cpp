@@ -54,7 +54,8 @@ PbsDatablockCard::PbsDatablockCard()
 
     auto texMapInputCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
     texMapInputCell->append(BKCreator::create<BKLabel>()
-        ->setText("材质", true)
+        ->setText("材质")
+        ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
             std::vector<QVariant> items;
             if (mpTextureMapInputAnchor->getBindOutputData(items) < 0)
@@ -75,7 +76,8 @@ PbsDatablockCard::PbsDatablockCard()
 
     auto texDetailCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
     texDetailCell->append(BKCreator::create<BKLabel>()
-        ->setText("细节", true)
+        ->setText("细节")
+        ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
             std::vector<QVariant> items;
             if (mpTextureDetailAnchor->getBindOutputData(items) < 0)
@@ -96,7 +98,8 @@ PbsDatablockCard::PbsDatablockCard()
 
     BKCell* blendblockCell = BKCreator::create(BKAnchor::Input);
     blendblockCell->append(BKCreator::create<BKLabel>()
-        ->setText("混合", true)
+        ->setText("混合")
+        ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
             mBlendblock = param.value<Ogre::HlmsBlendblock>();
             createHlms(true);
@@ -107,7 +110,8 @@ PbsDatablockCard::PbsDatablockCard()
 
     BKCell* macroblockCell = BKCreator::create(BKAnchor::Input);
     macroblockCell->append(BKCreator::create<BKLabel>()
-        ->setText("宏", true)
+        ->setText("宏")
+        ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
             mMacroblock = param.value<Ogre::HlmsMacroblock>();
             createHlms(true);
@@ -185,7 +189,8 @@ PbsDatablockCard::PbsDatablockCard()
         macroblockCell,
 
         BKCreator::create(BKAnchor::AnchorType::Input)->append(
-            BKCreator::create<BKLabel>()->setText("透明", true)
+            BKCreator::create<BKLabel>()->setText("透明")
+                ->setTitleNeverChanges(true)
                 ->setDataChangeCallback([this](const QVariant& param) -> bool {
                     if (!param.canConvert<PbsTransparentCard::Info>())
                         return true;

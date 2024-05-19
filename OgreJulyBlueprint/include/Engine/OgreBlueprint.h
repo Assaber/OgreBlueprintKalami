@@ -14,6 +14,7 @@ public:
 
 private:
     void initWindowMenuBar();
+    void initFileMenuBar();
 
 protected:
     virtual void closeEvent(QCloseEvent* event) override;

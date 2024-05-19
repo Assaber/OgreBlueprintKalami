@@ -11,6 +11,9 @@ class ReadFileCard : public QObject, public BKCard
 public:
     ReadFileCard(QObject* parent = nullptr);
 
+
+    virtual QVariant getCurrentCardValue() override;
+
 private:
     bool openFile(const QVariant& data);
     bool reloadFile(const QVariant& data);
@@ -29,4 +32,6 @@ private:
     bool mbWatchEnable = false;
     // 最后一个打开的文件路径
     QString mstrLastFilepath = "";
+    // 文件内容
+    QString mstrData = "";
 };

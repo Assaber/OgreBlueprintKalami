@@ -141,6 +141,14 @@ public:
      */
     static void registDataType(uint32_t type, const QColor& color = QColor(qrand() % 255, qrand() % 255, qrand() % 255));
 
+    /**
+     * @brief:                              通过数据类型返回注册的颜色
+     * @param: uint32_t type                注册类型
+     * @return: QColor                      注册颜色
+     * @remark:                             白嫖就给默认颜色
+     */
+    static QColor getColorByDataType(uint32_t type);
+
 private:
     void dispatchCellPositionChanged();
     std::vector<BKAnchor*> getRegistAnchors();

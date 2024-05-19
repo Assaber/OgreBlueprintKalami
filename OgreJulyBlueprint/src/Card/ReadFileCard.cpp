@@ -69,6 +69,11 @@ ReadFileCard::ReadFileCard(QObject* parent)
     QObject::connect(&mWatcher, &QFileSystemWatcher::fileChanged, this, &ReadFileCard::fileChanged);
 }
 
+QVariant ReadFileCard::getCurrentCardValue()
+{
+    return mstrData;
+}
+
 bool ReadFileCard::openFile(const QVariant& data)
 {
     QString filepath = QFileDialog::getOpenFileName();
@@ -100,6 +105,9 @@ bool ReadFileCard::reloadFile(const QVariant& data)
     }
 
     loadFile(filepath);
+    mpOutputAnchor->dataChanged(getCurrentCardValue());
+
+    return true;
 }
 
 void ReadFileCard::loadFile(const QString& path)
@@ -110,8 +118,7 @@ void ReadFileCard::loadFile(const QString& path)
         qDebug() << "文件打开失败..." << path;
     }
 
-    mpOutputAnchor->dataChanged(QString::fromUtf8(file.readAll()));
-
+    mstrData = QString::fromUtf8(file.readAll());
     file.close();
 }
 
@@ -127,6 +134,7 @@ void ReadFileCard::fileChanged(const QString& path)
     {
         if (mbWatchEnable) {
             loadFile(path);
+            mpOutputAnchor->dataChanged(getCurrentCardValue());
         }
     }
     else

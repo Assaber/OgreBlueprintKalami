@@ -92,7 +92,8 @@ PbsDetailTextureCard::PbsDetailTextureCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKPixmap>()
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
-            Ogre::String texturePath = param.toString().toStdString();
+                QString qtexturePath = param.toString();
+            Ogre::String texturePath = qtexturePath.toStdString();
             resetResourceDir(texturePath);
 
             mDetailInfo.texture = QFileInfo(param.toString()).fileName().toStdString();

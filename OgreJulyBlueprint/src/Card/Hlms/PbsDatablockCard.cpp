@@ -35,7 +35,8 @@ PbsDatablockCard::PbsDatablockCard()
     mpNameLineEdit = BKCreator::create<BKLineEdit>();
     mpNameLineEdit->setText(mstrName.c_str())
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
-        std::string name = param.toString().toStdString();
+        QString qname = param.toString();
+        std::string name = qname.toStdString();
         if (name != mstrOldName)
         {
             mstrName = name;

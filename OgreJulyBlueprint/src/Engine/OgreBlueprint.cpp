@@ -24,6 +24,7 @@ OgreBlueprint::OgreBlueprint(QWidget* parent/* = nullptr*/)
     
     resizeDocks({ mpEditorDock }, { 1000 }, Qt::Orientation::Horizontal);
 
+    initFileMenuBar();
     initWindowMenuBar();
 }
 
@@ -34,14 +35,11 @@ void OgreBlueprint::drive()
 
 void OgreBlueprint::initWindowMenuBar()
 {
-    QMenuBar* mb = menuBar();
-    QMenu* windowMenu = new QMenu(tr("窗口"), mb);
-    auto add_window_action = [mb, windowMenu, this](const QString& text, QDockWidget* bind) {
+    QMenu* windowMenu = new QMenu(tr("窗口"));
+    auto add_window_action = [windowMenu, this](const QString& text, QDockWidget* bind) {
         QAction* action = new QAction(text, windowMenu);
         action->setCheckable(true);
         windowMenu->addAction(action);
-
-        mb->addMenu(windowMenu);
 
         QObject::connect(windowMenu, &QMenu::aboutToShow, action, [this, action, bind]() {
             action->setChecked(bind->isVisible());
@@ -54,6 +52,23 @@ void OgreBlueprint::initWindowMenuBar()
     
     add_window_action(tr("编辑器"), mpEditorDock);
     add_window_action(tr("引擎视口"), mpEngineDock);
+
+    menuBar()->addMenu(windowMenu);
+}
+
+void OgreBlueprint::initFileMenuBar()
+{
+    QMenu* fileMenu = new QMenu(tr("文件"));
+
+    QAction* exportAction = new QAction("导出", fileMenu);
+    fileMenu->addAction(exportAction);
+    QObject::connect(exportAction, &QAction::triggered, mpEditor, &BlueprintEditor::exportScene);
+
+    QAction* importAction = new QAction("导入", fileMenu);
+    fileMenu->addAction(importAction);
+    QObject::connect(importAction, &QAction::triggered, mpEditor, &BlueprintEditor::importScene);
+
+    menuBar()->addMenu(fileMenu);
 }
 
 void OgreBlueprint::closeEvent(QCloseEvent* event)

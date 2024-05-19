@@ -366,7 +366,8 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
     for (const auto& item : cards)
     {
         auto card = item.toObject();
-        std::string name = card["name"].toString().toStdString();
+        QString qname = card["name"].toString();
+        std::string name = qname.toStdString();
         
         auto creator = BKCreator::getCreator(name.c_str());
         if (!creator)
@@ -396,10 +397,7 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
             auto lAnchor = get_card(connect["card1"].toInt(), connect["row1"].toInt(), BKAnchor::AnchorType::Input);
             auto rAnchor = get_card(connect["card2"].toInt(), connect["row2"].toInt(), BKAnchor::AnchorType::Output);
 
-            // assaber
-            // 这里的颜色是不对的，应该按照类型进行修改
-            // todo...
-            createUnit<BKConnectingLine>(QColor(255, 128, 0), lAnchor, rAnchor);
+            createUnit<BKConnectingLine>(BKAnchor::getColorByDataType(lAnchor->getDataType()), lAnchor, rAnchor);
         }
     }
 
@@ -497,12 +495,7 @@ void BlueprintLoader::keyPressEvent(QKeyEvent* event)
         return;
 
     if (event->key() == Qt::Key_Delete)
-        mpImpl->deleteSelectedBKObject();
-    else if (event->key() == Qt::Key_S && (event->modifiers() & Qt::ControlModifier))
-    {
-        exportSceneToJson(qApp->applicationDirPath() + "/" + "scene.json");
-    }
-        
+        mpImpl->deleteSelectedBKObject();       
 }
 
 bool BlueprintLoader::event(QEvent* event)

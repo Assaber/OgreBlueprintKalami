@@ -37,7 +37,8 @@ UnlitDatablockCard::UnlitDatablockCard()
     mpNameLineEdit = BKCreator::create<BKLineEdit>();
     mpNameLineEdit->setText(mstrName.c_str())
         ->setDataChangeCallback([this](const QVariant& param) -> bool {
-        std::string name = param.toString().toStdString();
+        QString qparam = param.toString();
+        std::string name = qparam.toStdString();
         if (name != mstrOldName)
         {
             mstrName = name;

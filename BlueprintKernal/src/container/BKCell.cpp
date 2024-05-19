@@ -251,34 +251,37 @@ BKCell* BKCell::setMemberCountChangedCallback(GroupMemberChangedFunc function)
     return this;
 }
 
-bool BKCell::push()
+bool BKCell::push(uint32_t count/* = 1*/)
 {
     L_IMPL(BKCell);
     assert(l->mType == BKCell::Type::ListGroup && "This method can only be used in list-group mode");
 
-    for (auto unit : l->mTemplateUnits)
+    while (count--)
     {
-        BKUnit* copyItem = unit->copy();
-        QGraphicsItem* gi = copyItem->getGraphicsItem();
-        l->addToGroup(gi);
+        for (auto unit : l->mTemplateUnits)
+        {
+            BKUnit* copyItem = unit->copy();
+            QGraphicsItem* gi = copyItem->getGraphicsItem();
+            l->addToGroup(gi);
 
-        copyItem->mCallbackFunc = [this, l](const QVariant& param) ->bool {
-            if (l->mMenberDataChangedFunc)
-            {
-                QVariantList ret;
-                for (int i = l->mUnitOffset; i < l->mUnits.size(); ++i)
+            copyItem->mCallbackFunc = [this, l](const QVariant& param) ->bool {
+                if (l->mMenberDataChangedFunc)
                 {
-                    BKUnit* unit = l->mUnits[i];
-                    ret.push_back(unit->data());
+                    QVariantList ret;
+                    for (int i = l->mUnitOffset; i < l->mUnits.size(); ++i)
+                    {
+                        BKUnit* unit = l->mUnits[i];
+                        ret.push_back(unit->data());
+                    }
+
+                    l->mMenberDataChangedFunc(l->getGroupRows(), ret);
                 }
 
-                l->mMenberDataChangedFunc(l->getGroupRows(), ret);
-            }
-        
-            return true;        // 不给传递 TBD
-        };
+                return true;        // 不给传递 TBD
+            };
 
-        l->mUnits.push_back(copyItem);
+            l->mUnits.push_back(copyItem);
+        }
     }
 
     // 触发卡片重新计算
@@ -600,10 +603,24 @@ bool BKCell::exportUnitToJson(QJsonArray& obj)
 bool BKCell::updateUnitFromJson(const QJsonValue& value)
 {
     L_IMPL(BKCell);
+
+    if (l->mType == Type::ListGroup)
+    {
+        QJsonArray info = value.toArray();
+        size_t count = info.size() - l->mUnitOffset;
+
+        size_t templateCount = l->mTemplateUnits.size();
+        if (templateCount == 0 || count % templateCount != 0)
+            return false;
+
+        int group = count / templateCount;
+        push(group);
+    }
+
     size_t count = l->mUnits.size();
     QJsonArray info = value.toArray();
 
-    if (count == 0)  
+    if (count == 0)
         throw std::logic_error("逻辑错误，应该已经对组元为空做了补对象的处理...");
 
     for (int i = 0; i < count; ++i)

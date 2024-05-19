@@ -72,7 +72,8 @@ PbsCommonTextureCard::PbsCommonTextureCard()
             ->append(BKCreator::create<BKPixmap>()
                 ->setFixedSize({100, 100})
                 ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
-                    Ogre::String texturePath = param.toString().toStdString();
+                    QString qparam = param.toString();
+                    Ogre::String texturePath = qparam.toStdString();
                     resetResourceDir(texturePath);
 
                     mTextureInfo.texture = QFileInfo(param.toString()).fileName().toStdString();

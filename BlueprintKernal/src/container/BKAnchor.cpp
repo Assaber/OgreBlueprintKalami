@@ -231,6 +231,12 @@ void BKAnchor::registDataType(uint32_t type, const QColor& color /*= QColor(qran
         Impl::mDataType2Color[type] = color;
 }
 
+QColor BKAnchor::getColorByDataType(uint32_t type)
+{
+    auto itor = Impl::mDataType2Color.find(type);
+    return itor == Impl::mDataType2Color.end() ? Impl::mDataType2Color[BKAnchor::DataType::Default] : itor->second;
+}
+
 void BKAnchor::dispatchCellPositionChanged()
 {
     for (auto item : mpImpl->mRegistRecord)

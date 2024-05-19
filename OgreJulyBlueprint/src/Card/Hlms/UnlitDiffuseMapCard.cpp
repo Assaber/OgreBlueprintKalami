@@ -69,7 +69,8 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKPixmap>()
                 ->setFixedSize({100, 100})
                 ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
-                    Ogre::String texturePath = param.toString().toStdString();
+                QString qtexturePath = param.toString();
+                    Ogre::String texturePath = qtexturePath.toStdString();
                     resetResourceDir(texturePath);
 
                     mTextureInfo.texture = QFileInfo(param.toString()).fileName().toStdString();

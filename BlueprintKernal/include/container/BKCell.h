@@ -46,7 +46,7 @@ public:                 // 成组
     BKCell* setTemplate(std::initializer_list<BKUnit*> units);
     BKCell* setMemberDataChangedCallback(GroupMemberChangedFunc function);
     BKCell* setMemberCountChangedCallback(GroupMemberChangedFunc function);
-    bool push();
+    bool push(uint32_t count = 1);
     bool pop();
 
 public:

@@ -14,6 +14,7 @@
 #include "Card/Hlms/UnlitDatablockCard.h"
 #include "Card/Hlms/UnlitDiffuseMapCard.h"
 #include "Card/Material/SimpleMaterialCard.h"
+#include "Card/Material/SimpleMaterialProgramCard.h"
 #include "Card/ReadFileCard.h"
 #include <functional>
 #include <QDateTime>
@@ -38,6 +39,8 @@ int main(int argc, char** argv)
     BKCreator::registCard<UnlitDiffuseMapCard>();
     BKCreator::registCard<SimpleMaterialCard>();
     BKCreator::registCard<ReadFileCard>();
+    BKCreator::registCard<SimpleFragmentProgCard>();
+    BKCreator::registCard<SimpleVertexProgCard>();
 
     // 注册自定义结构体的锚点识别及颜色
     BKAnchor::registDataType(QMetaTypeId<PbsCommonTextureCard::Info>::qt_metatype_id());
@@ -46,6 +49,8 @@ int main(int argc, char** argv)
     BKAnchor::registDataType(QMetaTypeId<Ogre::HlmsBlendblock>::qt_metatype_id());
     BKAnchor::registDataType(QMetaTypeId<Ogre::HlmsMacroblock>::qt_metatype_id());
     BKAnchor::registDataType(QMetaTypeId<UnlitDiffuseMapCard::Info>::qt_metatype_id());
+    BKAnchor::registDataType(QMetaTypeId<SimpleFragmentProgCard::ProgramInfo>::qt_metatype_id());
+    BKAnchor::registDataType(QMetaTypeId<SimpleVertexProgCard::ProgramInfo>::qt_metatype_id());
   
     OgreBlueprint b;
     b.showMaximized();

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "container/BKCard.h"
 #include "OgreString.h"
+#include "SimpleMaterialProgramCard.h"
 
 class BKAnchor;
 class SimpleMaterialCard : public BKCard
@@ -13,15 +14,16 @@ public:
 
 private:
     void createMaterial();
-    // void createMaterial2();
+    void updateMaterial();
 
-private:
-    void recreateMaterial();
-    bool slotProgramTypeChanged(const QVariant& type);
-    void slotAutoParamCountChanged(size_t count, const QVariantList& params);
-    void slotAutoParamDataChanged(size_t count, const QVariantList& params);
+    bool slotVertexProgramUpdate(const QVariant& vd);
+    bool slotFragmentProgramUpdate(const QVariant& fd);
+
+    static void transConstantInfo2Program(const SimpleMaterialProgramCard::ConstantInfo& src, Ogre::GpuProgramParametersSharedPtr dst);
 
 private:
     BKAnchor* mpOutputAnchor = nullptr;
     Ogre::String mstrMaterialName;
+    SimpleVertexProgCard::ProgramInfo mVertexProgramInfo;
+    SimpleFragmentProgCard::ProgramInfo mFragmentProgramInfo;
 };

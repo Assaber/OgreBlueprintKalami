@@ -6,6 +6,7 @@ include(./cmake/RestoreOrDownload.cmake)
 
 # 配置选项
 option(BUILD_SHARED "Build shared library" ON)
+option(INCLUDE_INNER_PARTICLE_CARD "The particle cards in the tool are enabled" ON)
 # set(CMAKE_BUILD_TYPE Debug|Release|MinSizeRel|RelWithDebInfo)
 
 # 设置存放路径

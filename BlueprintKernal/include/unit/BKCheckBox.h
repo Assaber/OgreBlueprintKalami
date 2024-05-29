@@ -34,4 +34,7 @@ protected:
     virtual QGraphicsItem* getGraphicsItem() override;
     virtual void resized() override;
     virtual void dataChanged(const QVariant& data) override;
+
+public:
+    static constexpr int fixedWidth = 35;
 };

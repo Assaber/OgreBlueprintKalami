@@ -80,7 +80,7 @@ TestCard::TestCard()
                             ->setCurrentValue(30)
             }),
         BKCreator::create()
-            ->append({ BKCreator::create<BKSliderBar>(BKSliderBar::DateType::Double)
+            ->append({ BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)
                             ->setMinimum(0)
                             ->setMaximum(1.0f)
                             ->setCurrentValue(0.5f)

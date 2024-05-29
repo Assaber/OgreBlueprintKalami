@@ -35,6 +35,8 @@ git clone git@github.com:OGRECave/ogre-next.git
 ```
 
 
+如果INCLUDE_INNER_PARTICLE_CARD的开关进行了改变，记得清除CMakeCache.txt蛤~
+
 
 ### 关键结点记录
 <table width="95%" cellpadding="2" cellspacing="1">

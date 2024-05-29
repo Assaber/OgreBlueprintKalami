@@ -79,7 +79,7 @@ BKCheckBox::BKCheckBox()
     : super()
     , mpImpl(new Impl(this))
 {
-    setFixedSize({ 35, 20 });
+    setFixedSize({ fixedWidth, 20 });
 }
 
 BKCheckBox::~BKCheckBox()

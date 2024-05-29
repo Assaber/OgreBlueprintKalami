@@ -155,7 +155,7 @@ PbsDatablockCard::PbsDatablockCard()
                 })),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("粗糙度")),
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKSliderBar>(BKSliderBar::DateType::Double)
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)
             ->setMinimum(0)
             ->setMaximum(1.0f)
             ->setCurrentValue(mRoughness)

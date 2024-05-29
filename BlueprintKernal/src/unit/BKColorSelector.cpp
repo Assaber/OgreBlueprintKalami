@@ -105,6 +105,9 @@ protected:
         else
         {
             QColorDialog dlg(mColor);
+            if (mType == Type::Vector4)
+                dlg.setOption(QColorDialog::ShowAlphaChannel);
+
             if (dlg.exec() != QDialog::Accepted)
                 return;
 
@@ -134,7 +137,7 @@ BKColorSelector::BKColorSelector(Type type)
     : super()
     , mpImpl(new Impl(this, type))
 {
-    setFixedSize({ 35, 20 });
+    setFixedSize({ fixedWidth, 20 });
 }
 
 BKColorSelector::~BKColorSelector()

@@ -207,6 +207,7 @@ void OgreWidget::loadResource()
                 "../../media/Hlms/Common/Metal",
                 "../../media/models",
                 "../../media/material",
+                "../../media/texture",
             }
         }
     };

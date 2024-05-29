@@ -44,10 +44,34 @@ public:                 // 单行
 public:                 // 成组
     using GroupMemberChangedFunc = std::function<void(size_t, const QVariantList&)>;        // size_t: 总共的行数; const QVariantList& 全量成员data
     BKCell* setTemplate(std::initializer_list<BKUnit*> units);
+    /**
+     * @brief:                                              设置组员最大个数
+     * @param: int count                                    最大个数
+     * @return: BKCell*
+     * @remark:                                             通过新增按钮新增的条目不会超过该数
+     */
+    BKCell* setMemberMaximum(int count);
     BKCell* setMemberDataChangedCallback(GroupMemberChangedFunc function);
     BKCell* setMemberCountChangedCallback(GroupMemberChangedFunc function);
     bool push(uint32_t count = 1);
     bool pop();
+
+public:
+    /**
+     * @brief:                                              设置组元是否可见
+     * @param: bool visible
+     * @return: void
+     * @remark:                                             对于不可见的组元，将不提供连接线的使用；如果状态改变为false则会释放连接线
+     */
+    void setVisible(bool visible) = delete;
+
+    /**
+     * @brief:                                              设置成员可编辑使能
+     * @param: bool enable
+     * @return: void
+     * @remark: 
+     */
+    void setUnitEnable(bool enable) = delete;
 
 public:
     /**

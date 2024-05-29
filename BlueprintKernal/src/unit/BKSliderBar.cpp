@@ -14,7 +14,7 @@
 class BKSliderBar::Impl : public QGraphicsItem
 {
 public:
-    Impl(BKSliderBar* handle, DateType type)
+    Impl(BKSliderBar* handle, DataType type)
         : QGraphicsItem()
         , mpHandle(handle)
         , mDataType(type)
@@ -57,7 +57,7 @@ public:
             do 
             {
                 float percent = 0;
-                if (mDataType == DateType::Int)
+                if (mDataType == DataType::Int)
                     percent = (mIntRange[1] == mIntRange[0]) ? 0 : 1.0f * (mIntRange[1] - miCurrentValue) / (mIntRange[1] - mIntRange[0]);
                 else
                     percent = (mDoubleRange[1] == mDoubleRange[0]) ? 0 : 1.0f * (mDoubleRange[1] - mdCurrentValue) / (mDoubleRange[1] - mDoubleRange[0]);
@@ -75,7 +75,7 @@ public:
         {
             painter->setPen(QColor(142, 47, 0));
             painter->setBrush(Qt::NoBrush);
-            painter->drawText(mCtrlArea, mDataType == DateType::Int ? QString::number(miCurrentValue) : QString::number(mdCurrentValue), mOption);
+            painter->drawText(mCtrlArea, mDataType == DataType::Int ? QString::number(miCurrentValue) : QString::number(mdCurrentValue), mOption);
             painter->restore();
         }
     }
@@ -91,12 +91,12 @@ protected:
     {
         float x = (event->pos().x() - mCtrlArea.x()) / mCtrlArea.width();
         x = x > 1.0f ? 1.0f : (x < 0 ? 0 : x);
-        if (mDataType == DateType::Int)
+        if (mDataType == DataType::Int)
         {
             miCurrentValue = (mIntRange[1] == mIntRange[0]) ? mIntRange[0] : x * (mIntRange[1] - mIntRange[0]) + mIntRange[0];
             mpHandle->dataChanged(miCurrentValue);
         }   
-        else if (mDataType == DateType::Double)
+        else if (mDataType == DataType::Double)
         {
             mdCurrentValue = (mDoubleRange[1] == mDoubleRange[0]) ? mDoubleRange[0] : x * (mDoubleRange[1] - mDoubleRange[0]) + mDoubleRange[0];
             mpHandle->dataChanged(mdCurrentValue);
@@ -113,12 +113,12 @@ private:
         if (mbHasCorrected)
             return;
 
-        if (mDataType == DateType::Int)
+        if (mDataType == DataType::Int)
         {
             if (mIntRange[0] > mIntRange[1])
                 std::swap(mIntRange[0], mIntRange[1]);
         }
-        else if (mDataType == DateType::Double)
+        else if (mDataType == DataType::Double)
         {
             if (mDoubleRange[0] > mDoubleRange[1])
                 std::swap(mDoubleRange[0], mDoubleRange[1]);
@@ -139,7 +139,7 @@ public:
     // 编辑器
     static BKSliderBarEditor* mpPublicEditor;
     // 数据类型
-    DateType mDataType;
+    DataType mDataType;
     // Int型范围及当前值
     int miCurrentValue = 0;
     int mIntRange[2] = { 0, 100 };
@@ -197,10 +197,10 @@ public:
         this->setMinimumSize(size);
         this->setMaximumSize(size);
 
-        mpLineEdit->setValidator(mpBindItem->mDataType == BKSliderBar::DateType::Int
+        mpLineEdit->setValidator(mpBindItem->mDataType == BKSliderBar::DataType::Int
             ? &mIntValidator
             : &mDoubleValidator);
-        mpLineEdit->setText(mpBindItem->mDataType == BKSliderBar::DateType::Int 
+        mpLineEdit->setText(mpBindItem->mDataType == BKSliderBar::DataType::Int 
             ? QString::number(mpBindItem->miCurrentValue) 
             : QString::number(mpBindItem->mdCurrentValue));
         parent->setVisible(false);
@@ -222,9 +222,9 @@ private:
     {
         if (mpBindItem)
         {
-            if (mpBindItem->mDataType == BKSliderBar::DateType::Int  && mpLineEdit->text().toInt() != mpBindItem->miCurrentValue)
+            if (mpBindItem->mDataType == BKSliderBar::DataType::Int  && mpLineEdit->text().toInt() != mpBindItem->miCurrentValue)
                 mpBindItem->mpHandle->dataChanged(mpLineEdit->text().toInt());
-            else if (mpBindItem->mDataType == BKSliderBar::DateType::Double && mpLineEdit->text().toDouble() != mpBindItem->mdCurrentValue)
+            else if (mpBindItem->mDataType == BKSliderBar::DataType::Double && mpLineEdit->text().toDouble() != mpBindItem->mdCurrentValue)
                 mpBindItem->mpHandle->dataChanged(mpLineEdit->text().toDouble());
 
             mpBindItem->update();
@@ -287,7 +287,7 @@ bool BKSliderBar::loadFromJson(const QJsonValue& val)
 {
     L_IMPL(BKSliderBar);
 
-    if (l->mDataType == DateType::Int)
+    if (l->mDataType == DataType::Int)
         setCurrentValue(val.toInt());
     else
         setCurrentValue(val.toDouble());
@@ -298,7 +298,7 @@ bool BKSliderBar::loadFromJson(const QJsonValue& val)
 QVariant BKSliderBar::data()
 {
     L_IMPL(BKSliderBar);
-    if (l->mDataType == DateType::Int)
+    if (l->mDataType == DataType::Int)
         return l->miCurrentValue;
     else
         return l->mdCurrentValue;
@@ -310,7 +310,7 @@ BKSliderBar::operator QJsonValue() const
 {
     L_IMPL(BKSliderBar);
 
-    if (l->mDataType == DateType::Int)
+    if (l->mDataType == DataType::Int)
         return l->miCurrentValue;
     else
         return l->mdCurrentValue;
@@ -319,7 +319,7 @@ BKSliderBar::operator QJsonValue() const
 }
 
 
-BKSliderBar::BKSliderBar(DateType type/* = DateType::Int*/)
+BKSliderBar::BKSliderBar(DataType type/* = DateType::Int*/)
     : super()
     , mpImpl(new Impl(this, type))
 {
@@ -335,7 +335,7 @@ BKSliderBar* BKSliderBar::setCurrentValue(const QVariant& value)
 {
     L_IMPL(BKSliderBar)
 
-    if (l->mDataType == DateType::Int)
+    if (l->mDataType == DataType::Int)
         l->miCurrentValue = value.toInt();
     else
         l->mdCurrentValue = value.toDouble();
@@ -346,7 +346,7 @@ BKSliderBar* BKSliderBar::setMaximum(const QVariant& max)
 {
     L_IMPL(BKSliderBar)
 
-    if (l->mDataType == DateType::Int)
+    if (l->mDataType == DataType::Int)
         l->mIntRange[1] = max.toInt();
     else
         l->mDoubleRange[1] = max.toDouble();
@@ -359,7 +359,7 @@ BKSliderBar* BKSliderBar::setMinimum(const QVariant& min)
 {
     L_IMPL(BKSliderBar)
 
-    if (l->mDataType == DateType::Int)
+    if (l->mDataType == DataType::Int)
         l->mIntRange[0] = min.toInt();
     else
         l->mDoubleRange[0] = min.toDouble();
@@ -387,7 +387,7 @@ void BKSliderBar::dataChanged(const QVariant& data)
     if (data.isNull())
     {
         if (mpRightAnchor)
-            mpRightAnchor->dataChanged(l->mDataType == DateType::Int ? l->miCurrentValue : l->mdCurrentValue);
+            mpRightAnchor->dataChanged(l->mDataType == DataType::Int ? l->miCurrentValue : l->mdCurrentValue);
     }
     else
     {

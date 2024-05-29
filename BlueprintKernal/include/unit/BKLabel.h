@@ -7,7 +7,7 @@ class _BlueprintKernalExport BKLabel : public BKUnitBasic<BKLabel>
 {
 public:
     using super = BKUnitBasic<BKLabel>;
-    BKLabel();
+    BKLabel(const QString& text = "");
     ~BKLabel();
 
 public:
@@ -21,7 +21,7 @@ public:
      * @brief:                                              设置显示文字
      * @param: const QString & text                         文字内容
      * @return: BKLabel*                                    自身引用
-     * @remark: 
+     * @remark:                                             设置文字后会导致控件的最小宽度发生改变，改变规则为根据文字的最小宽度。所以如果需要设置最小宽度，则需要在设置文字后重新刷新一遍
      */
     BKLabel* setText(const QString& text);
     /**

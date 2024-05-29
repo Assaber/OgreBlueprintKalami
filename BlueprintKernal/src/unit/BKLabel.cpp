@@ -42,13 +42,13 @@ public:
             painter->restore();
         }
     }
-
 };
 
-BKLabel::BKLabel()
+BKLabel::BKLabel(const QString& text/* = ""*/)
     : super()
     , mpImpl(new Impl(this))
 {
+    setText(text);
 }
 
 BKLabel::~BKLabel()

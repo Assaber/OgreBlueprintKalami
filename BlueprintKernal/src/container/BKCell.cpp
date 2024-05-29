@@ -132,6 +132,8 @@ public:
     int mUnitOffset = 0;
     // 模板列表
     std::vector<BKUnit*> mTemplateUnits;
+    // 通过模板创建的最大条数
+    int mnMembersCountLimit = std::numeric_limits<int>::max();
     // 组元最小间隔
     static constexpr int mnSpacing = 5;
     // 锚点
@@ -233,6 +235,15 @@ BKCell* BKCell::setTemplate(std::initializer_list<BKUnit*> units)
     return this;
 }
 
+BKCell* BKCell::setMemberMaximum(int count)
+{
+    L_IMPL(BKCell);
+    assert(l->mType == BKCell::Type::ListGroup && "This method can only be used in list-group mode");
+
+    l->mnMembersCountLimit = count;
+    return this;
+}
+
 BKCell* BKCell::setMemberDataChangedCallback(GroupMemberChangedFunc function)
 {
     L_IMPL(BKCell);
@@ -256,7 +267,7 @@ bool BKCell::push(uint32_t count/* = 1*/)
     L_IMPL(BKCell);
     assert(l->mType == BKCell::Type::ListGroup && "This method can only be used in list-group mode");
 
-    while (count--)
+    while (count-- && (l->getGroupRows() < l->mnMembersCountLimit))
     {
         for (auto unit : l->mTemplateUnits)
         {

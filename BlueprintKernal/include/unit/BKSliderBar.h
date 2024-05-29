@@ -5,7 +5,7 @@
 class _BlueprintKernalExport BKSliderBar : public BKUnitBasic<BKSliderBar>
 {
 public:
-    enum class DateType : uint8_t
+    enum class DataType : uint8_t
     {
         Int,
         Double,
@@ -19,7 +19,7 @@ public:
 
 public:
     using super = BKUnitBasic<BKSliderBar>;
-    BKSliderBar(DateType type = DateType::Int);
+    BKSliderBar(DataType type = DataType::Int);
     ~BKSliderBar();
 
 public:

@@ -16,6 +16,23 @@
 #include "Card/Material/SimpleMaterialCard.h"
 #include "Card/Material/SimpleMaterialProgramCard.h"
 #include "Card/ReadFileCard.h"
+
+#ifdef OBK_INCLUDE_PARTICLE_PLUGIN
+#include "Card/Particle/ParticleCard.h"
+#include "Card/Particle/ParticleBillboardSettingCard.h"
+#include "Card/Particle/ParticleEmitterCard.h"
+#include "Card/Particle/ParticleEmitterTypeCard.h"
+#include "Card/Particle/Affector/ParticleColourFader2Card.h"
+#include "Card/Particle/Affector/ParticleColourFaderCard.h"
+#include "Card/Particle/Affector/ParticleColourImageCard.h"
+#include "Card/Particle/Affector/ParticleColourInterpolatorCard.h"
+#include "Card/Particle/Affector/ParticleDeflectorPlaneCard.h"
+#include "Card/Particle/Affector/ParticleDirectionRandomiserCard.h"
+#include "Card/Particle/Affector/ParticleLinearForceCard.h"
+#include "Card/Particle/Affector/ParticleRotatorCard.h"
+#include "Card/Particle/Affector/ParticleScalerCard.h"
+#endif
+
 #include <functional>
 #include <QDateTime>
 
@@ -51,6 +68,27 @@ int main(int argc, char** argv)
     BKAnchor::registDataType(QMetaTypeId<UnlitDiffuseMapCard::Info>::qt_metatype_id());
     BKAnchor::registDataType(QMetaTypeId<SimpleFragmentProgCard::ProgramInfo>::qt_metatype_id());
     BKAnchor::registDataType(QMetaTypeId<SimpleVertexProgCard::ProgramInfo>::qt_metatype_id());
+
+#ifdef OBK_INCLUDE_PARTICLE_PLUGIN
+    BKCreator::registCard<ParticleCard>();
+    BKCreator::registCard<ParticleBillboardSettingCard>();
+    BKCreator::registCard<ParticleEmitterCard>();
+    BKCreator::registCard<ParticleEmitterTypeCard>();
+    BKCreator::registCard<ParticleColourFader2Card>();
+    BKCreator::registCard<ParticleColourFaderCard>();
+    BKCreator::registCard<ParticleColourImageCard>();
+    BKCreator::registCard<ParticleColourInterpolatorCard>();
+    BKCreator::registCard<ParticleDeflectorPlaneCard>();
+    BKCreator::registCard<ParticleDirectionRandomiserCard>();
+    BKCreator::registCard<ParticleLinearForceCard>();
+    BKCreator::registCard<ParticleRotatorCard>();
+    BKCreator::registCard<ParticleScalerCard>();
+
+    BKAnchor::registDataType(QMetaTypeId<ParticleBillboardSettingCard::Data>::qt_metatype_id());
+    BKAnchor::registDataType(QMetaTypeId<ParticleEmitterCard::Data>::qt_metatype_id());
+    BKAnchor::registDataType(QMetaTypeId<ParticleEmitterTypeCard::Data>::qt_metatype_id());
+    BKAnchor::registDataType(QMetaTypeId<particle::ParticleAffector>::qt_metatype_id());
+#endif
   
     OgreBlueprint b;
     b.showMaximized();

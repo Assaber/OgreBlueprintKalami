@@ -31,7 +31,7 @@ public:
                 mfVector.resize(count);
                 for (auto& item : mfVector)
                 {
-                    std::get<1>(item) = std::numeric_limits<float>::min();
+                    std::get<1>(item) = -std::numeric_limits<float>::max();
                     std::get<2>(item) = std::numeric_limits<float>::max();
                 }
             }
@@ -410,7 +410,7 @@ BKUnit* BKVectorEditor::copy()
 BKVectorEditor::BKVectorEditor(BKVectorEditor::Type type, uint32_t count)
     : mpImpl(new Impl(this, type, count))
 {
-
+    mpImpl->recalcArea();
 }
 
 BKVectorEditor::~BKVectorEditor()

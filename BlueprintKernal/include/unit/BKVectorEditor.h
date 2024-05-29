@@ -30,6 +30,12 @@ public:
     virtual operator QJsonValue() const override;
 
 public:
+    /**
+     * @brief:                                          设置向量名称
+     * @param: const std::vector<QString> & names
+     * @return: BKVectorEditor*
+     * @remark:                                          预存6个，分别为x\y\z\u\v\w
+     */
     BKVectorEditor* setNames(const std::vector<QString>& names);
     BKVectorEditor* setValue(const QVariant& value);
     /**

@@ -31,6 +31,12 @@ include_directories(
     ${OGRE_DIR}/Components/Hlms/Unlit/include
     )
 
+if(INCLUDE_INNER_PARTICLE_CARD)
+    include_directories(${OGRE_DIR}/PlugIns/ParticleFX/include)
+    add_compile_definitions(OBK_INCLUDE_PARTICLE_PLUGIN)
+    message(STATUS "The particle cards are activated")
+endif()
+
 add_executable(${PROJECT_NAME} ${FLAGS})
 add_sources(${PROJECT_NAME} )
 
@@ -49,6 +55,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     OgreHlmsUnlit
     OgreHlmsPbs
 )
+
+if(INCLUDE_INNER_PARTICLE_CARD)
+    add_dependencies(${PROJECT_NAME} Plugin_ParticleFX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Plugin_ParticleFX)
+endif()
+
 
 if(MSVC)
     set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_ENVIRONMENT "PATH=${QT5_DIR}/bin;$\{PATH\}")
@@ -72,6 +84,10 @@ if(NOT EXISTS ${OGRE_SAMPLE_COMMON})
         ${OGRE_SAMPLE_COMMON})
     file(COPY 
         ${CMAKE_SOURCE_DIR}/media/material
+        DESTINATION 
+        ${OGRE_SAMPLE_COMMON})
+	file(COPY 
+        ${CMAKE_SOURCE_DIR}/media/texture
         DESTINATION 
         ${OGRE_SAMPLE_COMMON})
     message("拷贝必要资源")

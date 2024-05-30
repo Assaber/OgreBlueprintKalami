@@ -41,7 +41,7 @@ BKCreator::create(BKAnchor::AnchorType::None) \
     ) \
     ->append( \
         BKCreator::create<BKCheckBox>() \
-        ->setEnable(bind) \
+        ->setChecked(bind) \
         ->setDataChangeCallback([this, root](const QVariant& param) -> bool { \
             bind = param.toBool(); \
             root->valueChanged(getCurrentCardValue()); \

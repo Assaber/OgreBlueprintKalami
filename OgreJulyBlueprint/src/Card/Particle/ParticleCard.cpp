@@ -133,23 +133,23 @@ ParticleCard::ParticleCard()
 
         BKCreator::create(BKAnchor::AnchorType::None)
 			->append(BKCreator::create<BKLabel>()->setText("点渲染"))
-			->append(BKCreator::create<BKCheckBox>()->setEnable(mData.isPointRendering)->setDataChangeCallback(UpdateFunction(mData.isPointRendering = data.toBool()))),
+			->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isPointRendering)->setDataChangeCallback(UpdateFunction(mData.isPointRendering = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)
             ->append(BKCreator::create<BKLabel>()->setText("精确面"))
-            ->append(BKCreator::create<BKCheckBox>()->setEnable(mData.isAccurateFacing)->setDataChangeCallback(UpdateFunction(mData.isAccurateFacing = data.toBool()))),
+            ->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isAccurateFacing)->setDataChangeCallback(UpdateFunction(mData.isAccurateFacing = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)
             ->append(BKCreator::create<BKLabel>()->setText("裁剪"))
-            ->append(BKCreator::create<BKCheckBox>()->setEnable(mData.isCullEach)->setDataChangeCallback(UpdateFunction(mData.isCullEach = data.toBool()))),
+            ->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isCullEach)->setDataChangeCallback(UpdateFunction(mData.isCullEach = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)
             ->append(BKCreator::create<BKLabel>()->setText("排序"))
-            ->append(BKCreator::create<BKCheckBox>()->setEnable(mData.isSorted)->setDataChangeCallback(UpdateFunction(mData.isSorted = data.toBool()))),
+            ->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isSorted)->setDataChangeCallback(UpdateFunction(mData.isSorted = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)
             ->append(BKCreator::create<BKLabel>()->setText("局部空间"))
-            ->append(BKCreator::create<BKCheckBox>()->setEnable(mData.isLocalSpace)->setDataChangeCallback(UpdateFunction(mData.isLocalSpace = data.toBool()))),
+            ->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isLocalSpace)->setDataChangeCallback(UpdateFunction(mData.isLocalSpace = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKLabel>()->setText("粒子更新间隔")

@@ -24,7 +24,7 @@ public:
      * @return: BKCheckBox*             自身指针
      * @remark: 
      */
-    BKCheckBox* setEnable(bool enable);
+    BKCheckBox* setChecked(bool enable);
 
 private:
     class Impl;

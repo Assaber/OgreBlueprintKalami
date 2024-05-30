@@ -35,7 +35,7 @@ ReadFileCard::ReadFileCard(QObject* parent)
     watcherLabel->setText("自动监听");
     watcherCell->append(watcherLabel, false);
     BKCheckBox* watcherCheckBox = BKCreator::create<BKCheckBox>();
-    watcherCheckBox->setEnable(false);
+    watcherCheckBox->setChecked(false);
     watcherCheckBox->setDataChangeCallback(std::bind(&ReadFileCard::updateWatcherStatus, this, std::placeholders::_1));
     watcherCell->append(watcherCheckBox);
 

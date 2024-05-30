@@ -92,7 +92,7 @@ BKCheckBox::~BKCheckBox()
 bool BKCheckBox::loadFromJson(const QJsonValue& val)
 {
     L_IMPL(BKCheckBox);
-    setEnable(val.toBool());
+    setChecked(val.toBool());
 
     return true;
 }
@@ -118,7 +118,7 @@ BKUnit* BKCheckBox::copy()
     return target;
 }
 
-BKCheckBox* BKCheckBox::setEnable(bool enable)
+BKCheckBox* BKCheckBox::setChecked(bool enable)
 {
     L_IMPL(BKCheckBox)
 
@@ -150,7 +150,7 @@ void BKCheckBox::dataChanged(const QVariant& data)
     }
     else
     {
-        setEnable(data.toBool());
+        setChecked(data.toBool());
         l->update();
         if (!mCallbackFunc(data) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);

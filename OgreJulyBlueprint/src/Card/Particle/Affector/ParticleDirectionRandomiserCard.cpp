@@ -45,7 +45,7 @@ ParticleDirectionRandomiserCard::ParticleDirectionRandomiserCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("是否保持粒子速度")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKCheckBox>()
-                ->setEnable(mData.keepVelocity)
+                ->setChecked(mData.keepVelocity)
                 ->setDataChangeCallback([this](const QVariant& data) -> bool {
                     mData.keepVelocity = data.toBool();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());

@@ -40,7 +40,7 @@ PbsTransparentCard::PbsTransparentCard()
             {
                 BKCreator::create<BKLabel>()->setText("使能"),
                 BKCreator::create<BKCheckBox>()
-                    ->setEnable(mInfo.enable)
+                    ->setChecked(mInfo.enable)
                     ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                         mInfo.enable = param.toBool();
                         outputCell->valueChanged(mInfo);
@@ -80,7 +80,7 @@ PbsTransparentCard::PbsTransparentCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("从纹理获取透明值")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKCheckBox>()
-                ->setEnable(mInfo.alphaFromTex)
+                ->setChecked(mInfo.alphaFromTex)
                 ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
                     mInfo.alphaFromTex = param.toBool();
                     outputCell->valueChanged(mInfo);

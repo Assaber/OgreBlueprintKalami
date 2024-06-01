@@ -46,7 +46,7 @@ ReadFileCard::ReadFileCard(QObject* parent)
 
     BKCell* fileLoaderCell = BKCreator::create(BKAnchor::AnchorType::None);
     mpFilepathEdit = BKCreator::create<BKLineEdit>();
-    mpFilepathEdit->setEditable(false);
+    mpFilepathEdit->setEnable(false);
     fileLoaderCell->append(mpFilepathEdit);
     BKPushButton* openFileBtn = BKCreator::create<BKPushButton>();
     openFileBtn->setText("...");

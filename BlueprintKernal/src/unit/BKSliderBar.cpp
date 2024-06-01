@@ -83,7 +83,12 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
-        // 要接收才会响应双击和释放
+        if (!mpHandle->mbEnable)
+        {
+            event->ignore();
+            return;
+        }
+
         event->accept();
     }
 

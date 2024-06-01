@@ -75,6 +75,12 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
+        if (!mpHandle->mbEnable)
+        {
+            event->ignore();
+            return;
+        }
+
         if (event->button() == Qt::LeftButton)
         {
             if (mButtonArea.contains(event->pos().toPoint()))

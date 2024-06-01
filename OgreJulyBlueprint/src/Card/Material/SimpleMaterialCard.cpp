@@ -42,7 +42,7 @@ SimpleMaterialCard::SimpleMaterialCard()
     nameCell->append(nameLabel);
 
     BKLineEdit* nameEdit = BKCreator::create<BKLineEdit>();
-    nameEdit->setEditable(false);
+    nameEdit->setEnable(false);
     BKCell* nameEditCell = BKCreator::create(BKAnchor::AnchorType::None);
     nameEditCell->append(nameEdit);
     

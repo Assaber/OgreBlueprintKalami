@@ -17,7 +17,6 @@ public:
 
 public:
     BKLineEdit* setText(const QString& text);
-    BKLineEdit* setEditable(bool enable);
 
 public:
     QString getCurrentText();

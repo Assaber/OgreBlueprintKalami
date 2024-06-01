@@ -191,8 +191,11 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
-        if (event->button() != Qt::LeftButton)
+        if (event->button() != Qt::LeftButton || !mpHandle->mbEnable)
+        {
+            event->ignore();
             return;
+        }
 
         for (auto item : mEditorArea)
         {

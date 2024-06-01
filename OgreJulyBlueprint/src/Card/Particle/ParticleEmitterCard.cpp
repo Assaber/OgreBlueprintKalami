@@ -75,7 +75,7 @@ ParticleEmitterCard::ParticleEmitterCard()
 		BKCreator::create(BKAnchor::AnchorType::None)->append(
 			BKCreator::create<BKLineEdit>()
 				->setText(mData.name)
-				->setEditable(false)
+				->setEnable(false)
 		),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("接力发射器名称")),
@@ -83,7 +83,7 @@ ParticleEmitterCard::ParticleEmitterCard()
 			->setDataType(BKAnchor::Input, BKAnchor::String)
 			->append(BKCreator::create<BKLineEdit>()
                 ->setText(mData.nextName)
-                ->setEditable(false)
+                ->setEnable(false)
 				->setDataChangeCallback([this](const QVariant& data) -> bool {
                     mData.nextName = data.toString();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());

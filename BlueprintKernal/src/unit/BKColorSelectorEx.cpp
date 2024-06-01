@@ -171,8 +171,7 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
-        if (!mBoundingRect.contains(event->pos()))
-        {
+        if (!mpHandle->mbEnable || !mBoundingRect.contains(event->pos())) {
             event->ignore();
         }
         else

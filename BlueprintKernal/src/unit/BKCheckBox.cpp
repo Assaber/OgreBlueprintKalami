@@ -58,6 +58,12 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
+        if (!mpHandle->mbEnable)
+        {
+            event->ignore();
+            return;
+        }
+
         mpHandle->dataChanged(!mbEnable);
         update();
     }

@@ -58,6 +58,12 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
+        if (!mpHandle->mbEnable)
+        {
+            event->ignore();
+            return;
+        }
+
         event->accept();    
     }
 
@@ -77,8 +83,6 @@ public:
     static constexpr int mFixedMargin = 2;
     // 编辑器
     static BKLineEditor* mpPublicEditor;
-    // 是否可编辑
-    bool mbEditable = true;
 };
 
 BKLineEditor* BKLineEdit::Impl::mpPublicEditor = nullptr;
@@ -174,7 +178,7 @@ private:
 
 void BKLineEdit::Impl::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton && mbEditable)
+    if (event->button() == Qt::LeftButton)
     {
         TopmostCardEvent e(mpHandle->mpBindCard->getBindItem());
         qApp->sendEvent(scene(), &e);
@@ -234,13 +238,6 @@ BKLineEdit* BKLineEdit::setText(const QString& text)
     L_IMPL(BKLineEdit)
 
     l->mstrText = text;
-    return this;
-}
-
-BKLineEdit* BKLineEdit::setEditable(bool enable)
-{
-    L_IMPL(BKLineEdit);
-    l->mbEditable = enable;
     return this;
 }
 

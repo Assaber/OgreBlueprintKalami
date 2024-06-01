@@ -98,6 +98,12 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override
     {
+        if (!mpHandle->mbEnable)
+        {
+            event->ignore();
+            return;
+        }
+
         if (!mBoundingRect.contains(event->pos()))
         {
             event->ignore();

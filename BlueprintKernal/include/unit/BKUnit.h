@@ -105,6 +105,8 @@ protected:
     BKAnchor* mpRightAnchor = nullptr;
     // 数据更新回调
     DataChangeCallback mCallbackFunc;
+    // 控件使能
+    bool mbEnable = true;
 
 public:
     // 最小组元高度
@@ -142,6 +144,11 @@ public:
 
     inline T* setDataChangeCallback(DataChangeCallback function) {
         mCallbackFunc = function;
+        return static_cast<T*>(this);
+    }
+
+    inline T* setEnable(bool enable) {
+        mbEnable = enable;
         return static_cast<T*>(this);
     }
 };

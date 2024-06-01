@@ -13,19 +13,12 @@ class BKCheckBox::Impl : public QGraphicsItem
 {
 public:
     Impl(BKCheckBox* handle)
-        : QGraphicsItem()
-        , mpHandle(handle)
+        : mpHandle(handle)
     {
-    }
-
-    ~Impl()
-    {
-
     }
 
 public:
-    virtual QRectF boundingRect() const override
-    {
+    virtual QRectF boundingRect() const override {
         return mBoundingRect;
     }
 

@@ -15,20 +15,14 @@ class BKComboBox::Impl : public QGraphicsItem
 {
 public:
     Impl(BKComboBox* handle)
-        : QGraphicsItem()
-        , mpHandle(handle)
+        : mpHandle(handle)
     {
         mOption.setWrapMode(QTextOption::NoWrap);
         mOption.setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     }
 
-    ~Impl()
-    {
-    }
-
 public:
-    virtual QRectF boundingRect() const override
-    {
+    virtual QRectF boundingRect() const override {
         return mBoundingRect;
     }
 
@@ -58,12 +52,9 @@ public:
         // 绘制按钮
         painter->save();
         {
-            painter->setPen(Qt::NoPen);
-            painter->setBrush(QColor(255, 128, 64));
-            if(mbPressed)
-                painter->drawRoundedRect(mButtonArea - QMargins(2, 2, 0, 0), 1.0f, 1.0f);
-            else
-                painter->drawRoundedRect(mButtonArea - QMargins(1, 1, 1, 1), 1.0f, 1.0f);
+            painter->setPen(mDropAnchorPen);
+            painter->setBrush(Qt::NoBrush);
+            painter->drawPath(mDropAnchorPainterPath);
             painter->restore();
         }
     }
@@ -83,7 +74,7 @@ protected:
 
         if (event->button() == Qt::LeftButton)
         {
-            if (mButtonArea.contains(event->pos().toPoint()))
+            if (mCtrlArea.contains(event->pos().toPoint()))
             {
                 mbPressed = true;
 
@@ -115,6 +106,8 @@ public:
     QRect mCtrlArea;
     // 按钮区域
     QRect mButtonArea;
+    // 下拉按钮路径
+    QPainterPath mDropAnchorPainterPath;
     // 文字区域
     QRect mTextArea;
     // 是否为按下状态
@@ -125,9 +118,12 @@ public:
     static BKComboBoxItemView* mpPublicView;
     // 回调参数类型
     CallbackParamType mCbType = CallbackParamType::Data;
+    // 绘制按钮的画笔
+    static QPen mDropAnchorPen;
 };
 
 BKComboBoxItemView* BKComboBox::Impl::mpPublicView = nullptr;
+QPen BKComboBox::Impl::mDropAnchorPen = QPen(QColor("#FF8040"), 1);
 
 
 class BKComboBoxItemView : public QGraphicsProxyWidget
@@ -189,7 +185,6 @@ public:
             });
 
         setZValue(2.0f);
-
 
         mpView->installEventFilter(this);
         mpView->setMouseTracking(true);
@@ -274,7 +269,7 @@ void BKComboBox::Impl::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        if (mButtonArea.contains(event->pos().toPoint()))
+        if (mCtrlArea.contains(event->pos().toPoint()))
         {
             // 展开菜单
             if (!mpPublicView)
@@ -392,6 +387,14 @@ void BKComboBox::resized()
     int split = l->mCtrlArea.width() - l->mCtrlArea.height();
     l->mButtonArea = { split, l->mFixedMargin, l->mCtrlArea.height(), l->mCtrlArea.height() };
     l->mTextArea = { 4, l->mFixedMargin, split - 4, l->mCtrlArea.height() };        // 4 = 左侧内边距
+
+    
+    QPoint center(l->mButtonArea.topLeft() + QPoint(l->mCtrlArea.height() / 2, l->mCtrlArea.height() / 2));
+    float offset = 1.0f * l->mButtonArea.width() / 6;
+    float delta = l->mButtonArea.width() / 2 - offset;
+    l->mDropAnchorPainterPath = QPainterPath(QPointF(center.x() - delta, center.y() - offset));
+    l->mDropAnchorPainterPath.lineTo(QPointF(center.x(), center.y() + offset));
+    l->mDropAnchorPainterPath.lineTo(QPointF(center.x() + delta, center.y() - offset));
 }
 
 void BKComboBox::dataChanged(const QVariant& data)

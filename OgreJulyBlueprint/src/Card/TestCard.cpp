@@ -55,8 +55,8 @@ TestCard::TestCard()
                     BKCreator::create<BKLabel>()
                         ->setText("看我！")
                         ->setAlignment(Qt::AlignLeft | Qt::AlignVCenter),
-                    BKCreator::create<BKTooltip>()
-                        ->setTooltip("你瞅啥")
+                { BKCreator::create<BKTooltip>()
+                        ->setTooltip("你瞅啥"), true }
             }),
         BKCreator::create(BKAnchor::Input, BKAnchor::Output)
             ->append({ BKCreator::create<BKComboBox>()
@@ -69,8 +69,8 @@ TestCard::TestCard()
                             ->setCurrentIndex(1, false)
             }),
         BKCreator::create()
-            ->append({ BKCreator::create<BKPushButton>()
-                            ->setText("ooook", true),
+            ->append({ { BKCreator::create<BKPushButton>()
+                            ->setText("ooook", true), true },
                        BKCreator::create<BKSpacer>(),
                        BKCreator::create<BKTooltip>()->setTooltip(R"(噫吁嚱，危乎高哉！
 蜀道之难，难于上青天！
@@ -112,12 +112,15 @@ TestCard::TestCard()
                             ->setCurrentValue(0.5f)
             }),
         BKCreator::create()
-            ->append({ BKCreator::create<BKCheckBox>(),
-                       BKCreator::create<BKSpacer>(),
+            ->append({ 
+                { BKCreator::create<BKCheckBox>(), true },
+                BKCreator::create<BKSpacer>(),
             }),
         BKCreator::create()
-            ->append({ BKCreator::create<BKColorSelector>(),
-                BKCreator::create<BKSpacer>()}),
+            ->append({ 
+                { BKCreator::create<BKColorSelector>(), true },
+                BKCreator::create<BKSpacer>()
+                }),
         BKCreator::create()
             ->append({ BKCreator::create<BKColorSelectorEx>() }),
         BKCreator::create()

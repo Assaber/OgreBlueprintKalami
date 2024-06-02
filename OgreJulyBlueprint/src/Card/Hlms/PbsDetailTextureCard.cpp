@@ -156,11 +156,14 @@ PbsDetailTextureCard::PbsDetailTextureCard()
 
         BKCreator::create(BKAnchor::AnchorType::None)->append({
                 BKCreator::create<BKLabel>()->setText("偏移比例"),
-                BKCreator::create<BKCheckBox>()->setDataChangeCallback([this](const QVariant& param) -> bool {
-                    mDetailInfo.offsetScaleEnable = param.toBool();
-                    mpOutputCell->valueChanged(mDetailInfo);
-                    return true;
+                {
+                    BKCreator::create<BKCheckBox>()->setDataChangeCallback([this](const QVariant& param) -> bool {
+                        mDetailInfo.offsetScaleEnable = param.toBool();
+                        mpOutputCell->valueChanged(mDetailInfo);
+                        return true;
                     })
+                    , true
+                },
                 }),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKVectorEditor>(BKVectorEditor::Type::Float, 4)
             ->setItemInLine(2)

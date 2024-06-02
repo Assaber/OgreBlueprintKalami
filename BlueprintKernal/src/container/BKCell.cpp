@@ -176,13 +176,13 @@ BKCell::~BKCell()
     mpImpl = nullptr;
 }
 
-BKCell* BKCell::append(std::initializer_list<BKUnit*> units)
+BKCell* BKCell::append(std::initializer_list<RegistableUnitPair> units)
 {
     L_IMPL(BKCell);
     assert(l->mType == BKCell::Type::SingleLine && "This method can only be used in single-line mode");
 
     for (auto item : units)
-        append(item);
+        append(item.unit, item.regist);
         
     return this;
 }

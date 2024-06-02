@@ -18,6 +18,18 @@ public:
         ListGroup,
     };
 
+    struct RegistableUnitPair
+    {
+        BKUnit* unit;
+        bool regist;
+
+        RegistableUnitPair() = delete;
+        RegistableUnitPair(BKUnit* u, bool r = false) {
+            unit = u;
+            regist = r;
+        }
+    };
+
 public:
     BKCell(BKAnchor::AnchorType anchor = BKAnchor::AnchorType::Both, Type type = Type::SingleLine);
     BKCell(uint32_t l, uint32_t r, Type type = Type::SingleLine);
@@ -30,7 +42,7 @@ public:                 // 单行
      * @return: KCell*                                      自身指针
      * @remark:                                             追加的单元对象会按照追加的次序进行显示，并且会自动注册到锚点
      */
-    BKCell* append(std::initializer_list<BKUnit*> units);
+    BKCell* append(std::initializer_list<RegistableUnitPair> units);
     /**
      * @brief:                                              追加单元对象
      * @param: BKUnit * units                               单元对象

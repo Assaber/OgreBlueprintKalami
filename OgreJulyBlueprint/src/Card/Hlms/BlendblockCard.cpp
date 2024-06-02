@@ -91,10 +91,10 @@ BlendblockCard::BlendblockCard()
                 BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("透明"),
             }),
          BKCreator::create(BKAnchor::AnchorType::None)->append({
-               redChannel,
-               greenChannel,
-               blueChannel,
-               alphaChannel,
+               { redChannel },
+               { greenChannel },
+               { blueChannel },
+               { alphaChannel },
             }),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("透明选项")),
@@ -123,14 +123,14 @@ BlendblockCard::BlendblockCard()
 
         BKCreator::create(BKAnchor::AnchorType::None)->append({
                 BKCreator::create<BKLabel>()->setText("透明混合类型"),
-                BKCreator::create<BKCheckBox>()
+            { BKCreator::create<BKCheckBox>()
                     ->setChecked(mbAlphaBlendTypeEnable)
                     ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
                         mbAlphaBlendTypeEnable = param.toBool();
                         updateBlendType();
                         output->valueChanged(getCurrentCardValue());
                         return true;
-                    })
+                    }), true}
             }),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendTypeList)

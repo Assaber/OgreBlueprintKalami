@@ -81,7 +81,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
         ->setItems(textureTypes)
         ->setCurrentIndex(initTextureTypeIndex, false)
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             mDetailInfo.type = name2PbsDetailTextureType[param.toString()];
             mDetailInfo.indexOffset = getOffsetByTextureType(mDetailInfo.type);
             mpOutputCell->valueChanged(mDetailInfo);
@@ -91,7 +91,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKPixmap>()
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 QString qtexturePath = param.toString();
             Ogre::String texturePath = qtexturePath.toStdString();
             resetResourceDir(texturePath);
@@ -115,7 +115,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
                     ->setMinWidth(60)
                     ->setItems(textureAddrMode)
                     ->setCurrentIndex(initTextureAddrModeIndex, false)
-                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                         mDetailInfo.sampler.mU = name2TextureAddrMode[param.toString()];
                         mpOutputCell->valueChanged(mDetailInfo);
                         return true;
@@ -125,7 +125,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
                     ->setMinWidth(60)
                     ->setItems(textureAddrMode)
                     ->setCurrentIndex(initTextureAddrModeIndex, false)
-                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                         mDetailInfo.sampler.mV = name2TextureAddrMode[param.toString()];
                         mpOutputCell->valueChanged(mDetailInfo);
                         return true;
@@ -135,7 +135,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
                     ->setMinWidth(60)
                     ->setItems(textureAddrMode)
                     ->setCurrentIndex(initTextureAddrModeIndex, false)
-                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                         mDetailInfo.sampler.mW = name2TextureAddrMode[param.toString()];
                         mpOutputCell->valueChanged(mDetailInfo);
                         return true;
@@ -147,7 +147,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendModes)
             ->setCurrentIndex(initBlendModeIndex, false)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 mDetailInfo.blendMode = name2PbsBlendModes[param.toString()];
                 mpOutputCell->valueChanged(mDetailInfo);
                 return true;
@@ -157,7 +157,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append({
                 BKCreator::create<BKLabel>()->setText("偏移比例"),
                 {
-                    BKCreator::create<BKCheckBox>()->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    BKCreator::create<BKCheckBox>()->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                         mDetailInfo.offsetScaleEnable = param.toBool();
                         mpOutputCell->valueChanged(mDetailInfo);
                         return true;
@@ -169,7 +169,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
             ->setItemInLine(2)
             ->setNames({"U偏移", "V偏移", "U缩放", "V缩放"})
             ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{0, 0, 1.0f, 1.0f}))
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 BKVectorEditor::FloatVec data = param.value<BKVectorEditor::FloatVec>();
                 if (data.size() == 4 && mDetailInfo.offsetScaleEnable)
                 {
@@ -185,7 +185,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
                 ->append(BKCreator::create<BKComboBox>()
                     ->setItems(QStringList() << "" << "0" << "1" << "2" << "3" << "4" << "5" << "6" << "7")
                     ->setCurrentItem(0, false)          // 对应-1
-                    ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                         QString si = param.toString();
                         mDetailInfo.uv = si.isEmpty() ? -1 : si.toInt();
                         mpOutputCell->valueChanged(mDetailInfo);

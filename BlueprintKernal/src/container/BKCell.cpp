@@ -34,7 +34,7 @@ public:
             BKPushButton* pushBtn = BKCreator::create<BKPushButton>();
             pushBtn->setText("+");
             pushBtn->setFixedSize({ mnGroupBtnWidth, mnGroupBtnWidth });
-            pushBtn->setDataChangeCallback([this](const QVariant& data) ->bool {
+            pushBtn->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) ->bool {
                 if (mpHandle->push() && mMenberCountChangedFunc) {
                     QVariantList ret;
                     for (int i = mUnitOffset; i < mUnits.size(); ++i)
@@ -52,7 +52,7 @@ public:
             BKPushButton* popBtn = BKCreator::create<BKPushButton>();
             popBtn->setText("-");
             popBtn->setFixedSize({ mnGroupBtnWidth, mnGroupBtnWidth });
-            popBtn->setDataChangeCallback([this](const QVariant& data) ->bool {
+            popBtn->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) ->bool {
                 if (mpHandle->pop() && mMenberCountChangedFunc) {
                     QVariantList ret;
                     for (int i = mUnitOffset; i < mUnits.size(); ++i)
@@ -275,7 +275,7 @@ bool BKCell::push(uint32_t count/* = 1*/)
             QGraphicsItem* gi = copyItem->getGraphicsItem();
             l->addToGroup(gi);
 
-            copyItem->mCallbackFunc = [this, l](const QVariant& param) ->bool {
+            copyItem->mCallbackFunc = [this, l](BKUnit* unit, const QVariant& param) ->bool {
                 if (l->mMenberDataChangedFunc)
                 {
                     QVariantList ret;

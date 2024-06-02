@@ -338,12 +338,36 @@ void BKAnchor::dataChanged(const QVariant& data)
 {
     L_IMPL(BKAnchor)
 
-    if (l->mAnchorType & AnchorType::Input)
-        for (auto item : l->mRegistUnitSet)
+    if (l->mAnchorType & AnchorType::Input) 
+    {
+        for (BKUnit* item : l->mRegistUnitSet) {
             item->dataChanged(data);
-    else if (l->mAnchorType & AnchorType::Output)
-        for (auto item : l->mRegistRecord)
+        }
+    }
+    else if (l->mAnchorType & AnchorType::Output) 
+    {
+        for (auto item : l->mRegistRecord) {
             item.first->dataChanged(data);
+        }
+    }
+}
+
+void BKAnchor::dataChanged()
+{
+    L_IMPL(BKAnchor);
+
+    if (l->mAnchorType & AnchorType::Input)
+    {
+        for (BKUnit* item : l->mRegistUnitSet) {
+            item->dataChanged();
+        }
+    }
+    else if (l->mAnchorType & AnchorType::Output)
+    {
+        for (auto item : l->mRegistRecord) {
+            item.first->dataChanged();
+        }
+    }
 }
 
 int BKAnchor::getBindOutputData(std::vector<QVariant>& rec)

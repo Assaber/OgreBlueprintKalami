@@ -39,9 +39,9 @@ public:
 
 private:
 	void refreshParam();
-	bool updateRenderType(const QVariant& var);
-	bool updateEmitter(const QVariant& var);
-	bool updateAffector(const QVariant& var);
+	bool updateRenderType(BKUnit* unit, const QVariant& var);
+	bool updateEmitter(BKUnit* unit, const QVariant& var);
+	bool updateAffector(BKUnit* unit, const QVariant& var);
 
 	void reloadParticleToScene();
 

@@ -23,13 +23,13 @@ public:
 	virtual QVariant getCurrentCardValue() override;
 
 private:
-	bool slotEmitterTypeChanged(const QVariant& var);
-	bool slotWidthChanged(const QVariant& var);
-	bool slotHeightChanged(const QVariant& var);
-	bool slotDepthChanged(const QVariant& var);
-	bool slotInnerWidthChanged(const QVariant& var);
-	bool slotInnerHeightChanged(const QVariant& var);
-	bool slotInnerDepthChanged(const QVariant& var);
+	bool slotEmitterTypeChanged(BKUnit* unit, const QVariant& var);
+	bool slotWidthChanged(BKUnit* unit, const QVariant& var);
+	bool slotHeightChanged(BKUnit* unit, const QVariant& var);
+	bool slotDepthChanged(BKUnit* unit, const QVariant& var);
+	bool slotInnerWidthChanged(BKUnit* unit, const QVariant& var);
+	bool slotInnerHeightChanged(BKUnit* unit, const QVariant& var);
+	bool slotInnerDepthChanged(BKUnit* unit, const QVariant& var);
 
 private:
     BKAnchor* mpOutputAnchor = nullptr;

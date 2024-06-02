@@ -22,14 +22,8 @@ public:
         mOption.setAlignment(Qt::AlignCenter);
     }
 
-    ~Impl()
-    {
-
-    }
-
 public:
-    virtual QRectF boundingRect() const override
-    {
+    virtual QRectF boundingRect() const override {
         return mBoundingRect;
     }
 
@@ -238,6 +232,7 @@ BKLineEdit* BKLineEdit::setText(const QString& text)
     L_IMPL(BKLineEdit)
 
     l->mstrText = text;
+    l->update();
     return this;
 }
 
@@ -272,9 +267,8 @@ void BKLineEdit::dataChanged(const QVariant& data)
     else
     {
         setText(data.toString());
-        l->update();
 
-        if (!mCallbackFunc(data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);
     }
 }

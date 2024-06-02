@@ -24,7 +24,7 @@ ParticleRotatorCard::ParticleRotatorCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(360)
                 ->setCurrentValue(mData.speedStart)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.speedStart = data.toInt();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -35,7 +35,7 @@ ParticleRotatorCard::ParticleRotatorCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(360)
                 ->setCurrentValue(mData.speedEnd)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.speedEnd = data.toInt();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -46,7 +46,7 @@ ParticleRotatorCard::ParticleRotatorCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(360)
                 ->setCurrentValue(mData.rotStart)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.rotStart = data.toInt();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -57,7 +57,7 @@ ParticleRotatorCard::ParticleRotatorCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(360)
                 ->setCurrentValue(mData.rotEnd)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.rotEnd = data.toInt();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;

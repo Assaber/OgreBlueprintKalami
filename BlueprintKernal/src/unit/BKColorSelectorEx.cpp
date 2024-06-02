@@ -439,7 +439,7 @@ void BKColorSelectorEx::dataChanged(const QVariant& data)
     {
         setColor(data.value<QColor>());
         l->update();
-        if (!mCallbackFunc(data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);
     }
 }

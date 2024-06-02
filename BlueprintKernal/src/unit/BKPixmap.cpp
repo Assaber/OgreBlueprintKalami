@@ -136,7 +136,7 @@ void BKPixmap::dataChanged(const QVariant& data)
     {
         setSource(data.toString());
         l->update();
-        if (!mCallbackFunc(data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);
     }
 }

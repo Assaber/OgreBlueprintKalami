@@ -37,12 +37,12 @@ public:
     SimpleMaterialProgramCard();
     
 protected:
-    virtual bool slotProgramTypeChanged(const QVariant& type) = 0;
+    virtual bool slotProgramTypeChanged(BKUnit* unit, const QVariant& type) = 0;
     virtual void slotAutoConstantParamCountChanged(size_t count, const QVariantList& params) = 0;
     virtual void slotAutoConstantParamDataChanged(size_t count, const QVariantList& params) = 0;
     virtual void slotConstantParamCountChanged(size_t count, const QVariantList& params) = 0;
     virtual void slotConstantParamDataChanged(size_t count, const QVariantList& params) = 0;
-    virtual bool slotProgramChanged(const QVariant& type) = 0;
+    virtual bool slotProgramChanged(BKUnit* unit, const QVariant& type) = 0;
 
 protected:
     BKAnchor* mpOutputAnchor = nullptr;
@@ -69,12 +69,12 @@ public:
     virtual QVariant getCurrentCardValue() override;
 
 protected:
-    virtual bool slotProgramTypeChanged(const QVariant& type) override;
+    virtual bool slotProgramTypeChanged(BKUnit* unit, const QVariant& type) override;
     virtual void slotAutoConstantParamCountChanged(size_t count, const QVariantList& params) override;
     virtual void slotAutoConstantParamDataChanged(size_t count, const QVariantList& params) override;
     virtual void slotConstantParamCountChanged(size_t count, const QVariantList& params) override;
     virtual void slotConstantParamDataChanged(size_t count, const QVariantList& params) override;
-    virtual bool slotProgramChanged(const QVariant& data) override;
+    virtual bool slotProgramChanged(BKUnit* unit, const QVariant& data) override;
 
 private: 
     bool createGpuProgram(bool recreate = true);
@@ -106,12 +106,12 @@ public:
     virtual QVariant getCurrentCardValue() override;
 
 protected:
-    virtual bool slotProgramTypeChanged(const QVariant& type) override;
+    virtual bool slotProgramTypeChanged(BKUnit* unit, const QVariant& type) override;
     virtual void slotAutoConstantParamCountChanged(size_t count, const QVariantList& params) override;
     virtual void slotAutoConstantParamDataChanged(size_t count, const QVariantList& params) override;
     virtual void slotConstantParamCountChanged(size_t count, const QVariantList& params) override;
     virtual void slotConstantParamDataChanged(size_t count, const QVariantList& params) override;
-    virtual bool slotProgramChanged(const QVariant& data) override;
+    virtual bool slotProgramChanged(BKUnit* unit, const QVariant& data) override;
 
 private:
     bool createGpuProgram(bool recreate = true);

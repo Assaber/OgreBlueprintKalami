@@ -25,7 +25,7 @@ ParticleColourFader2Card::ParticleColourFader2Card()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>(BKColorSelectorEx::Type::Vector4)
                 ->setColor(mData.color1)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
 				    mData.color1 = data.value<QColor>();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -36,7 +36,7 @@ ParticleColourFader2Card::ParticleColourFader2Card()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>(BKColorSelectorEx::Type::Vector4)
                 ->setColor(mData.color2)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.color2 = data.value<QColor>();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -47,7 +47,7 @@ ParticleColourFader2Card::ParticleColourFader2Card()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(20.0f)
                 ->setCurrentValue(mData.time)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
 				    mData.time = data.toDouble();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;

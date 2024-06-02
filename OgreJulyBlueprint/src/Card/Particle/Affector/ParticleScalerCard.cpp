@@ -25,7 +25,7 @@ ParticleScalerCard::ParticleScalerCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(100.0f)          // 这里的范围应该是什么...
                 ->setCurrentValue(mData.scale)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.scale = data.toDouble();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;

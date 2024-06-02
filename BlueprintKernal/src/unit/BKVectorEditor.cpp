@@ -630,7 +630,7 @@ void BKVectorEditor::dataChanged(const QVariant& data)
     {
         setValue(data);
         l->update();
-        if (!mCallbackFunc(data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);
     }
 }

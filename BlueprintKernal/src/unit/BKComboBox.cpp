@@ -416,8 +416,8 @@ void BKComboBox::dataChanged(const QVariant& data)
         // 吉人自有天相吧
         // if (index < 0)      
         //     return;
-
-        if (!mCallbackFunc(l->mCbType == CallbackParamType::Data ? data : index) && mpRightAnchor)
+        QVariant param = l->mCbType == CallbackParamType::Data ? data : index;
+        if (!mCallbackFunc(this, param) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);
     }
 }

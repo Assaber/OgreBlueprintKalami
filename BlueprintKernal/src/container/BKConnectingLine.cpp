@@ -82,33 +82,30 @@ public:
     {
         if (!isFullyBinding())
             return;
+
+        BKAnchor* oa = mAnchorArray[0];
+        BKAnchor* ia = mAnchorArray[1];
         
-        if (regist)
-        {
-            mAnchorArray[0]->appendRegist(mAnchorArray[1], mpHandle);
-            mAnchorArray[1]->appendRegist(mAnchorArray[0], mpHandle);
+        if (regist) {
+            oa->appendRegist(ia, mpHandle); ia->appendRegist(oa, mpHandle);
         }
-        else
-        {
-            mAnchorArray[0]->removeRegist(mAnchorArray[1]);
-            mAnchorArray[1]->removeRegist(mAnchorArray[0]);
+        else {
+            ia->removeRegist(oa); oa->removeRegist(ia);
 
-            BKCard* inputCard = mAnchorArray[1]->getBindCard();
-            BKCard* outputCard = mAnchorArray[0]->getBindCard();
-            // 在移除关联关系时，判断锚点是否存在多重锚点，如果存在多重锚点则通知触发一次更新
-            bool notify = (mAnchorArray[1]->getAnchorType() & BKAnchor::AnchorType::MultiConn)          // 输入锚点挂着多重连接
-                && mAnchorArray[0]->getRegistUnits().size() == 0                                        // 输出锚点无注册单元，直接绑定的卡片
-                && inputCard->isStillAlive();                                                           // 输入锚点是否还能接收消息
-
-            if (notify)
+            BKCard *oc = oa->getBindCard(), *ic = ia->getBindCard();
+            if (ia->getAnchorType() & BKAnchor::AnchorType::MultiConn)      // 多锚点输入
             {
-                QVariant value = outputCard->getCurrentCardValue();
-                mAnchorArray[1]->dataChanged(value);
-            }  
+                if (oa->getRegistUnits().size() == 0                        // 输出锚点无注册单元，直接绑定的卡片
+                    && ic->isStillAlive()) {                                // 输入锚点是否还能接收消息
+                    ia->dataChanged(oc->getCurrentCardValue());
+                }
+            }
+            else {
+                ia->dataChanged();
+            }
         }
 
-        mAnchorArray[0]->update();
-        mAnchorArray[1]->update();
+        oa->update(); ia->update();
     }
 
     void standardAnchors() {
@@ -221,13 +218,14 @@ void BKConnectingLine::triggerOriginOutput()
         return;
 
     auto units = anchor->getRegistUnits();
-    if (units.size())
-    {
-        for (auto unit : units)
+    if (units.size()) {
+        for (auto unit : units) {
             unit->dataChanged(QVariant());
+        }
     }
-    else if (anchor->mpBindCard)
+    else if (anchor->mpBindCard) {
         anchor->dataChanged(anchor->mpBindCard->getCurrentCardValue());
+    }
 }
 
 QPainterPath BKConnectingLine::createPainterPath(const QPointF* begin, const QPointF* end /*= nullptr*/)

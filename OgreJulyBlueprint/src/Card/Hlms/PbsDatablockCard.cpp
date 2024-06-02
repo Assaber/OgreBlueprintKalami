@@ -34,7 +34,7 @@ PbsDatablockCard::PbsDatablockCard()
 
     mpNameLineEdit = BKCreator::create<BKLineEdit>();
     mpNameLineEdit->setText(mstrName.c_str())
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
         QString qname = param.toString();
         std::string name = qname.toStdString();
         if (name != mstrOldName)
@@ -57,7 +57,7 @@ PbsDatablockCard::PbsDatablockCard()
     texMapInputCell->append(BKCreator::create<BKLabel>()
         ->setText("材质")
         ->setTitleNeverChanges(true)
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             std::vector<QVariant> items;
             if (mpTextureMapInputAnchor->getBindOutputData(items) < 0)
                 return true;
@@ -79,7 +79,7 @@ PbsDatablockCard::PbsDatablockCard()
     texDetailCell->append(BKCreator::create<BKLabel>()
         ->setText("细节")
         ->setTitleNeverChanges(true)
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             std::vector<QVariant> items;
             if (mpTextureDetailAnchor->getBindOutputData(items) < 0)
                 return true;
@@ -101,7 +101,7 @@ PbsDatablockCard::PbsDatablockCard()
     blendblockCell->append(BKCreator::create<BKLabel>()
         ->setText("混合")
         ->setTitleNeverChanges(true)
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             mBlendblock = param.value<Ogre::HlmsBlendblock>();
             createHlms(true);
             return true;
@@ -113,7 +113,7 @@ PbsDatablockCard::PbsDatablockCard()
     macroblockCell->append(BKCreator::create<BKLabel>()
         ->setText("宏")
         ->setTitleNeverChanges(true)
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             mMacroblock = param.value<Ogre::HlmsMacroblock>();
             createHlms(true);
             return true;
@@ -130,7 +130,7 @@ PbsDatablockCard::PbsDatablockCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("漫反射背景色")}),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>(BKColorSelectorEx::Type::Vector4)
             ->setColor(QColor())
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 mBackgroundColor = param.value<QColor>();
                 createHlms();
                 return false;
@@ -139,7 +139,7 @@ PbsDatablockCard::PbsDatablockCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("漫反射")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 mDiffuse = param.value<QColor>();
                 createHlms();
                 return false;
@@ -148,7 +148,7 @@ PbsDatablockCard::PbsDatablockCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("镜面反射")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 mSpecular = param.value<QColor>();
                 createHlms();
                 return false;
@@ -159,7 +159,7 @@ PbsDatablockCard::PbsDatablockCard()
             ->setMinimum(0)
             ->setMaximum(1.0f)
             ->setCurrentValue(mRoughness)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 mRoughness = param.toFloat();
                 createHlms();
                 return false;
@@ -168,7 +168,7 @@ PbsDatablockCard::PbsDatablockCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("自发光")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 mEmissive = param.value<QColor>();
                 createHlms();
                 return false;
@@ -177,7 +177,7 @@ PbsDatablockCard::PbsDatablockCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("菲涅尔")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 mFresnel = param.value<QColor>();
                 createHlms();
                 return false;
@@ -192,7 +192,7 @@ PbsDatablockCard::PbsDatablockCard()
         BKCreator::create(BKAnchor::AnchorType::Input)->append(
             BKCreator::create<BKLabel>()->setText("透明")
                 ->setTitleNeverChanges(true)
-                ->setDataChangeCallback([this](const QVariant& param) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                     if (!param.canConvert<PbsTransparentCard::Info>())
                         return true;
 

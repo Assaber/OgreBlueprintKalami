@@ -22,7 +22,7 @@ public:
     /// 数据更新回调函数
     // - @param： param 控件值
     // - @return: bool 若为true则停止传递，否则依照锚点绑定传递到下一个结点
-    using DataChangeCallback = std::function<bool(const QVariant& param)>;
+    using DataChangeCallback = std::function<bool(BKUnit* unit, const QVariant& param)>;
 
 public:
     explicit BKUnit();
@@ -42,7 +42,7 @@ public:
      * @return: bool                    若为true则停止传递，否则依照锚点绑定传递到下一个结点
      * @remark: 
      */
-    static bool defaultDataChangeCallback(const QVariant& param);
+    static bool defaultDataChangeCallback(BKUnit* unlit, const QVariant& param);
 
 public:
     virtual operator QJsonValue() const = 0;
@@ -76,6 +76,12 @@ protected:
      * @remark:                         当变量为空，则视为使用当前值触发后续更新，否则使用传入值进行更新
      */
     virtual void dataChanged(const QVariant& data) = 0;
+    /**
+     * @brief:                          更新数据
+     * @return: void
+     * @remark:                         以QVariant::Invalid的参数触发数据改变的回调。原则上只有连接线断开后用来通知下一节点数据发生改变，不会真正意义地改变控件值，如果需要清空控件数据，则在回调中分情况处理
+     */
+    virtual void dataChanged();
     /**
      * @brief:                          组元大小变更后的主动回调
      */

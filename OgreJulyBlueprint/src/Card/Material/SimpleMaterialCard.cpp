@@ -49,7 +49,7 @@ SimpleMaterialCard::SimpleMaterialCard()
     BKLabel* vertexProgram = BKCreator::create<BKLabel>();
     vertexProgram->setText("顶点着色器程序");
     vertexProgram->setTitleNeverChanges(true);
-    vertexProgram->setDataChangeCallback(std::bind(&SimpleMaterialCard::slotVertexProgramUpdate, this, std::placeholders::_1));
+    vertexProgram->setDataChangeCallback(std::bind(&SimpleMaterialCard::slotVertexProgramUpdate, this, std::placeholders::_1, std::placeholders::_2));
     BKCell* vertexProgramCell = BKCreator::create(BKAnchor::AnchorType::Input);
     vertexProgramCell->setDataType(BKAnchor::Input, QMetaTypeId<SimpleVertexProgCard::ProgramInfo>::qt_metatype_id());
     vertexProgramCell->append(vertexProgram);
@@ -57,7 +57,7 @@ SimpleMaterialCard::SimpleMaterialCard()
     BKLabel* fragmentProgram = BKCreator::create<BKLabel>();
     fragmentProgram->setText("片段着色器程序");
     fragmentProgram->setTitleNeverChanges(true);
-    fragmentProgram->setDataChangeCallback(std::bind(&SimpleMaterialCard::slotFragmentProgramUpdate, this, std::placeholders::_1));
+    fragmentProgram->setDataChangeCallback(std::bind(&SimpleMaterialCard::slotFragmentProgramUpdate, this, std::placeholders::_1, std::placeholders::_2));
     BKCell* fragmentProgramProgramCell = BKCreator::create(BKAnchor::AnchorType::Input);
     fragmentProgramProgramCell->setDataType(BKAnchor::Input, QMetaTypeId<SimpleFragmentProgCard::ProgramInfo>::qt_metatype_id());
     fragmentProgramProgramCell->append(fragmentProgram);
@@ -120,7 +120,7 @@ void SimpleMaterialCard::updateMaterial()
     mpOutputAnchor->dataChanged(getCurrentCardValue());
 }
 
-bool SimpleMaterialCard::slotVertexProgramUpdate(const QVariant& vd)
+bool SimpleMaterialCard::slotVertexProgramUpdate(BKUnit* unit, const QVariant& vd)
 {
     if (!vd.canConvert<SimpleVertexProgCard::ProgramInfo>())
         return true;
@@ -131,7 +131,7 @@ bool SimpleMaterialCard::slotVertexProgramUpdate(const QVariant& vd)
     return true;
 }
 
-bool SimpleMaterialCard::slotFragmentProgramUpdate(const QVariant& fd)
+bool SimpleMaterialCard::slotFragmentProgramUpdate(BKUnit* unit, const QVariant& fd)
 {
     if (!fd.canConvert<SimpleFragmentProgCard::ProgramInfo>())
         return true;

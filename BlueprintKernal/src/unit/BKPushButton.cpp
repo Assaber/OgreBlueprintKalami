@@ -161,5 +161,5 @@ void BKPushButton::resized()
 
 void BKPushButton::dataChanged(const QVariant& data)
 {
-    mCallbackFunc(true);
+    mCallbackFunc(this, true);
 }

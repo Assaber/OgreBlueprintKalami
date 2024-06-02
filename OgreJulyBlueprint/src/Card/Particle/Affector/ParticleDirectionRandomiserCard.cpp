@@ -24,7 +24,7 @@ ParticleDirectionRandomiserCard::ParticleDirectionRandomiserCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(1'000.0f)
                 ->setCurrentValue(mData.randomness)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.randomness = data.toDouble();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -35,7 +35,7 @@ ParticleDirectionRandomiserCard::ParticleDirectionRandomiserCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(1.0f)
                 ->setCurrentValue(mData.scope)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.scope = data.toDouble();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -46,7 +46,7 @@ ParticleDirectionRandomiserCard::ParticleDirectionRandomiserCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKCheckBox>()
                 ->setChecked(mData.keepVelocity)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.keepVelocity = data.toBool();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;

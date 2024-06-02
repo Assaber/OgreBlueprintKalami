@@ -6,7 +6,7 @@
 #include "unit/BKComboBox.h"
 #include "unit/BKVectorEditor.h"
 
-#define UpdateFunction(x) [this](const QVariant& data) -> bool { \
+#define UpdateFunction(x) [this](BKUnit* unit, const QVariant& data) -> bool { \
 x; \
 refreshParam();\
 return true;\
@@ -73,7 +73,7 @@ ParticleBillboardSettingCard::ParticleBillboardSettingCard()
             BKCreator::create<BKVectorEditor>()
 				->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.commonUp[0], mData.commonUp[1] ,mData.commonUp[2]}))
                 ->setItemInLine(3)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
 					BKVectorEditor::FloatVec vec = data.value<BKVectorEditor::FloatVec>();
 					mData.commonUp = { vec[0], vec[1], vec[2] };
 					refreshParam();
@@ -88,7 +88,7 @@ ParticleBillboardSettingCard::ParticleBillboardSettingCard()
             BKCreator::create<BKVectorEditor>()
                 ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.commonDirection[0], mData.commonDirection[1] ,mData.commonDirection[2]}))
                 ->setItemInLine(3)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     BKVectorEditor::FloatVec vec = data.value<BKVectorEditor::FloatVec>();
                     mData.commonDirection = { vec[0], vec[1], vec[2] };
                     refreshParam();

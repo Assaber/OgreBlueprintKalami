@@ -14,7 +14,7 @@ BKCreator::create(BKAnchor::AnchorType::None)->append( \
     ->setMaximum(max) \
     ->setMinimum(min) \
     ->setCurrentValue(bind) \
-    ->setDataChangeCallback([this](const QVariant& data) -> bool { \
+    ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool { \
         bind = data.toInt(); \
         mpOutputAnchor->dataChanged(getCurrentCardValue()); \
         return true; \
@@ -28,7 +28,7 @@ BKCreator::create(BKAnchor::AnchorType::None)->append( \
     ->setMaximum(max) \
     ->setMinimum(min) \
     ->setCurrentValue(bind) \
-    ->setDataChangeCallback([this](const QVariant& data) -> bool { \
+    ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool { \
         bind = data.toDouble(); \
         mpOutputAnchor->dataChanged(getCurrentCardValue()); \
         return true; \
@@ -64,7 +64,7 @@ ParticleEmitterCard::ParticleEmitterCard()
             ->append(
                 BKCreator::create<BKLabel>("发射器类型")
                 ->setTitleNeverChanges(true)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.type = data.value<ParticleEmitterTypeCard::Data>();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -84,7 +84,7 @@ ParticleEmitterCard::ParticleEmitterCard()
 			->append(BKCreator::create<BKLineEdit>()
                 ->setText(mData.nextName)
                 ->setEnable(false)
-				->setDataChangeCallback([this](const QVariant& data) -> bool {
+				->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.nextName = data.toString();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -97,7 +97,7 @@ ParticleEmitterCard::ParticleEmitterCard()
 			->setMaximum(180)
 			->setMinimum(0)
 			->setCurrentValue(mData.degrees)
-			->setDataChangeCallback([this](const QVariant& data) -> bool {
+			->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
 					mData.degrees = data.toInt();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
 					return true;
@@ -108,7 +108,7 @@ ParticleEmitterCard::ParticleEmitterCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKVectorEditor>()
 			->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.position[0], mData.position[1], mData.position[2]}))
-            ->setDataChangeCallback([this](const QVariant& data) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
 					BKVectorEditor::FloatVec vec = data.value<BKVectorEditor::FloatVec>();
 					mData.position = { vec[0], vec[1], vec[2] };
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
@@ -120,7 +120,7 @@ ParticleEmitterCard::ParticleEmitterCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKVectorEditor>()
             ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.direction[0], mData.direction[1], mData.direction[2]}))
-            ->setDataChangeCallback([this](const QVariant& data) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     BKVectorEditor::FloatVec vec = data.value<BKVectorEditor::FloatVec>();
                     mData.direction = { vec[0], vec[1], vec[2] };
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
@@ -134,7 +134,7 @@ ParticleEmitterCard::ParticleEmitterCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>()
             ->setColor(mData.color)
-            ->setDataChangeCallback([this](const QVariant& data) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.color = data.value<QColor>();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -145,7 +145,7 @@ ParticleEmitterCard::ParticleEmitterCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>()
             ->setColor(mData.startColor)
-            ->setDataChangeCallback([this](const QVariant& data) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.startColor = data.value<QColor>();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;
@@ -156,7 +156,7 @@ ParticleEmitterCard::ParticleEmitterCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>()
             ->setColor(mData.endColor)
-            ->setDataChangeCallback([this](const QVariant& data) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.endColor = data.value<QColor>();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;

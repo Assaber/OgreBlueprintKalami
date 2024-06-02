@@ -58,7 +58,7 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
          BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(indexList)
             ->setCurrentIndex(0, false)
-            ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                 mTextureInfo.index = param.toString().toInt();
                 outputCell->valueChanged(mTextureInfo);
                 return true;
@@ -68,7 +68,7 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKPixmap>()
                 ->setFixedSize({100, 100})
-                ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+                ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                 QString qtexturePath = param.toString();
                     Ogre::String texturePath = qtexturePath.toStdString();
                     resetResourceDir(texturePath);
@@ -83,7 +83,7 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendModes)
             ->setCurrentIndex(initBlendModeIndex, false)
-            ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                 mTextureInfo.blendMode = name2UnlitBlendModes[param.toString()];
                 outputCell->valueChanged(mTextureInfo);
                 return true;
@@ -95,7 +95,7 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
             ->append(BKCreator::create<BKComboBox>()
                 ->setItems(QStringList() << "0" << "1" << "2" << "3" << "4" << "5" << "6" << "7")
                 ->setCurrentItem(0, false)
-                ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+                ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                     mTextureInfo.uv = param.toString().toInt();
                     outputCell->valueChanged(mTextureInfo);
                     return true;

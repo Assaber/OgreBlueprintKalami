@@ -15,10 +15,10 @@ public:
     virtual QVariant getCurrentCardValue() override;
 
 private:
-    bool openFile(const QVariant& data);
-    bool reloadFile(const QVariant& data);
+    bool openFile(BKUnit* unit, const QVariant& data);
+    bool reloadFile(BKUnit* unit, const QVariant& data);
     void loadFile(const QString& path);
-    bool updateWatcherStatus(const QVariant& data);
+    bool updateWatcherStatus(BKUnit* unit, const QVariant& data);
     void fileChanged(const QString& path);
 
 private:

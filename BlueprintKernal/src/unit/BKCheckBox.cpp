@@ -151,7 +151,7 @@ void BKCheckBox::dataChanged(const QVariant& data)
     {
         setChecked(data.toBool());
         l->update();
-        if (!mCallbackFunc(data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);
     }
 }

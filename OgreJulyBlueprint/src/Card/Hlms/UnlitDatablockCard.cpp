@@ -36,7 +36,7 @@ UnlitDatablockCard::UnlitDatablockCard()
 
     mpNameLineEdit = BKCreator::create<BKLineEdit>();
     mpNameLineEdit->setText(mstrName.c_str())
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
         QString qparam = param.toString();
         std::string name = qparam.toStdString();
         if (name != mstrOldName)
@@ -61,7 +61,7 @@ UnlitDatablockCard::UnlitDatablockCard()
     textureInputCell->append(BKCreator::create<BKLabel>()
         ->setText("材质")
         ->setTitleNeverChanges(true)
-        ->setDataChangeCallback([this, textureInputAnchor](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this, textureInputAnchor](BKUnit* unit, const QVariant& param) -> bool {
             std::vector<QVariant> items;
             if (textureInputAnchor->getBindOutputData(items) < 0)
                 return true;
@@ -96,7 +96,7 @@ UnlitDatablockCard::UnlitDatablockCard()
     blendblockCell->append(BKCreator::create<BKLabel>()
         ->setText("混合")
         ->setTitleNeverChanges(true)
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             mBlendblock = param.value<Ogre::HlmsBlendblock>();
             createHlms(true);
             return true;
@@ -108,7 +108,7 @@ UnlitDatablockCard::UnlitDatablockCard()
     macroblockCell->append(BKCreator::create<BKLabel>()
         ->setText("宏")
         ->setTitleNeverChanges(true)
-        ->setDataChangeCallback([this](const QVariant& param) -> bool {
+        ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             mMacroblock = param.value<Ogre::HlmsMacroblock>();
             createHlms(true);
             return true;
@@ -125,7 +125,7 @@ UnlitDatablockCard::UnlitDatablockCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("漫反射")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
-            ->setDataChangeCallback([this](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 mDiffuse = param.value<QColor>();
                 createHlms();
                 return false;

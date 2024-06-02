@@ -1,15 +1,13 @@
 ﻿#include "unit/BKUnit.h"
-#include <QDebug>
+#include "container/BKAnchor.h"
 
 BKUnit::BKUnit()
-    : mCallbackFunc(BKUnit::defaultDataChangeCallback)
+    : mCallbackFunc(BKUnit::defaultDataChangeCallback) 
 {
-    
 }
 
 BKUnit::~BKUnit()
 {
-    qDebug() << "Unit self delete";
 }
 
 BKCard* BKUnit::getBindCard() const
@@ -17,9 +15,15 @@ BKCard* BKUnit::getBindCard() const
     return mpBindCard;
 }
 
-bool BKUnit::defaultDataChangeCallback(const QVariant& param)
+bool BKUnit::defaultDataChangeCallback(BKUnit* unlit, const QVariant& param)
 {
     return false;
+}
+
+void BKUnit::dataChanged()
+{
+    if (!mCallbackFunc(this, QVariant()) && mpRightAnchor)
+        mpRightAnchor->dataChanged(data());
 }
 
 void BKUnit::resized() {}

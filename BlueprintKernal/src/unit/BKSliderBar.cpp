@@ -398,7 +398,7 @@ void BKSliderBar::dataChanged(const QVariant& data)
     {
         setCurrentValue(data);
         l->update();
-        if (!mCallbackFunc(data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);
     }
 }

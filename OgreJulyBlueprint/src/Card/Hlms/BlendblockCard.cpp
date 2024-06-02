@@ -34,7 +34,7 @@ BlendblockCard::BlendblockCard()
     BKCheckBox*& redChannel = mChannelMaskCheckBoies[0];
     redChannel = BKCreator::create<BKCheckBox>();
     redChannel->setChecked(mBlendblock.mBlendChannelMask & Ogre::HlmsBlendblock::BlendChannelRed);
-    redChannel->setDataChangeCallback([this, redChannel, output](const QVariant& param) -> bool {
+    redChannel->setDataChangeCallback([this, redChannel, output](BKUnit* unit, const QVariant& param) -> bool {
         updateBlendChannelMask(redChannel, param.toBool());
         output->valueChanged(getCurrentCardValue());
         return true;
@@ -43,7 +43,7 @@ BlendblockCard::BlendblockCard()
     BKCheckBox*& greenChannel = mChannelMaskCheckBoies[1];
     greenChannel = BKCreator::create<BKCheckBox>();
     greenChannel->setChecked(mBlendblock.mBlendChannelMask & Ogre::HlmsBlendblock::BlendChannelGreen);
-    greenChannel->setDataChangeCallback([this, greenChannel, output](const QVariant& param) -> bool {
+    greenChannel->setDataChangeCallback([this, greenChannel, output](BKUnit* unit, const QVariant& param) -> bool {
         updateBlendChannelMask(greenChannel, param.toBool());
         output->valueChanged(getCurrentCardValue());
         return true;
@@ -52,7 +52,7 @@ BlendblockCard::BlendblockCard()
     BKCheckBox*& blueChannel = mChannelMaskCheckBoies[2];
     blueChannel = BKCreator::create<BKCheckBox>();
     blueChannel->setChecked(mBlendblock.mBlendChannelMask & Ogre::HlmsBlendblock::BlendChannelBlue);
-    blueChannel->setDataChangeCallback([this, blueChannel, output](const QVariant& param) -> bool {
+    blueChannel->setDataChangeCallback([this, blueChannel, output](BKUnit* unit, const QVariant& param) -> bool {
         updateBlendChannelMask(blueChannel, param.toBool());
         output->valueChanged(getCurrentCardValue());
         return true;
@@ -61,7 +61,7 @@ BlendblockCard::BlendblockCard()
     BKCheckBox*& alphaChannel = mChannelMaskCheckBoies[3];
     alphaChannel = BKCreator::create<BKCheckBox>();
     alphaChannel->setChecked(mBlendblock.mBlendChannelMask & Ogre::HlmsBlendblock::BlendChannelAlpha);
-    alphaChannel->setDataChangeCallback([this, alphaChannel, output](const QVariant& param) -> bool {
+    alphaChannel->setDataChangeCallback([this, alphaChannel, output](BKUnit* unit, const QVariant& param) -> bool {
         updateBlendChannelMask(alphaChannel, param.toBool());
         output->valueChanged(getCurrentCardValue());
         return true;
@@ -76,7 +76,7 @@ BlendblockCard::BlendblockCard()
          BKCreator::create(BKAnchor::AnchorType::None)->append(
                 BKCreator::create<BKCheckBox>()
                     ->setChecked(mBlendblock.mAlphaToCoverageEnabled)
-                    ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, output](BKUnit* unit, const QVariant& param) -> bool {
                         mBlendblock.mAlphaToCoverageEnabled = param.toBool();
                         output->valueChanged(getCurrentCardValue());
                         return true;
@@ -102,7 +102,7 @@ BlendblockCard::BlendblockCard()
             ->setItems(QStringList() << "Not" << "Automatically" << "Forced" << "A & F")
             ->setCurrentIndex(mBlendblock.mIsTransparent)
             ->setCallbackParamType(BKComboBox::CallbackParamType::Index)
-            ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, output](BKUnit* unit, const QVariant& param) -> bool {
                 mBlendblock.mIsTransparent = param.toInt();
                 output->valueChanged(getCurrentCardValue());
                 return true;
@@ -113,7 +113,7 @@ BlendblockCard::BlendblockCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendTypeList)
             ->setCurrentIndex(blendTypeList.indexOf(name2SceneBlendType.key(mBlendType)))
-            ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, output](BKUnit* unit, const QVariant& param) -> bool {
                 mBlendType = name2SceneBlendType[param.toString()];
                 updateBlendType();
                 output->valueChanged(getCurrentCardValue());
@@ -125,7 +125,7 @@ BlendblockCard::BlendblockCard()
                 BKCreator::create<BKLabel>()->setText("透明混合类型"),
             { BKCreator::create<BKCheckBox>()
                     ->setChecked(mbAlphaBlendTypeEnable)
-                    ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, output](BKUnit* unit, const QVariant& param) -> bool {
                         mbAlphaBlendTypeEnable = param.toBool();
                         updateBlendType();
                         output->valueChanged(getCurrentCardValue());
@@ -135,7 +135,7 @@ BlendblockCard::BlendblockCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendTypeList)
             ->setCurrentIndex(blendTypeList.indexOf(name2SceneBlendType.key(mAlphaBlendType)))
-            ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, output](BKUnit* unit, const QVariant& param) -> bool {
                 mAlphaBlendType = name2SceneBlendType[param.toString()];
                 updateBlendType();
                 output->valueChanged(getCurrentCardValue());

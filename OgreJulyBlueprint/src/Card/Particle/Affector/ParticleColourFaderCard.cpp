@@ -25,7 +25,7 @@ ParticleColourFaderCard::ParticleColourFaderCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>(BKColorSelectorEx::Type::Vector4)
                 ->setColor(mData.color)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.color = data.value<QColor>();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;

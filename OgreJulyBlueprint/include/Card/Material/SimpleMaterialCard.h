@@ -16,8 +16,8 @@ private:
     void createMaterial();
     void updateMaterial();
 
-    bool slotVertexProgramUpdate(const QVariant& vd);
-    bool slotFragmentProgramUpdate(const QVariant& fd);
+    bool slotVertexProgramUpdate(BKUnit* unit, const QVariant& vd);
+    bool slotFragmentProgramUpdate(BKUnit* unit, const QVariant& fd);
 
     static void transConstantInfo2Program(const SimpleMaterialProgramCard::ConstantInfo& src, Ogre::GpuProgramParametersSharedPtr dst);
 

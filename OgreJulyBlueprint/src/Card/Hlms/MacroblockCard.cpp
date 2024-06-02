@@ -42,7 +42,7 @@ BKCreator::create(BKAnchor::AnchorType::None) \
     ->append( \
         BKCreator::create<BKCheckBox>() \
         ->setChecked(bind) \
-        ->setDataChangeCallback([this, root](const QVariant& param) -> bool { \
+        ->setDataChangeCallback([this, root](BKUnit* unit, const QVariant& param) -> bool { \
             bind = param.toBool(); \
             root->valueChanged(getCurrentCardValue()); \
             return true; \
@@ -85,7 +85,7 @@ MacroblockCard::MacroblockCard()
             ->setItems(compareFuncList)
             ->setCurrentIndex(initCompareFuncIndex)
             ->setCallbackParamType(BKComboBox::CallbackParamType::Data)
-            ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, output](BKUnit* unit, const QVariant& param) -> bool {
                 mMacroblock.mDepthFunc = name2compareFunc[param.toString()];
                 output->valueChanged(getCurrentCardValue());
                 return true;
@@ -97,7 +97,7 @@ MacroblockCard::MacroblockCard()
             ->setItems(cullingModeList)
             ->setCurrentIndex(initCullingModeIndex)
             ->setCallbackParamType(BKComboBox::CallbackParamType::Data)
-            ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, output](BKUnit* unit, const QVariant& param) -> bool {
                 mMacroblock.mCullMode = name2cullingMode[param.toString()];
                 output->valueChanged(getCurrentCardValue());
                 return true;
@@ -109,7 +109,7 @@ MacroblockCard::MacroblockCard()
             ->setItems(polygonModeList)
             ->setCurrentIndex(initPolygonModeIndex)
             ->setCallbackParamType(BKComboBox::CallbackParamType::Data)
-            ->setDataChangeCallback([this, output](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, output](BKUnit* unit, const QVariant& param) -> bool {
                 mMacroblock.mPolygonMode = name2polygonMode[param.toString()];
                 output->valueChanged(getCurrentCardValue());
                 return true;

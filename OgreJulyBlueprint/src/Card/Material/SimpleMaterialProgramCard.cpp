@@ -193,7 +193,7 @@ SimpleMaterialProgramCard::SimpleMaterialProgramCard()
     BKComboBox* typeComboBox = BKCreator::create<BKComboBox>();
     typeComboBox->setItems({"", "glsl", "hlsl", "glsles", "metal", "glslvk", "hlslvk"});
     typeComboBox->setCurrentIndex(0, false);
-    typeComboBox->setDataChangeCallback(std::bind(&SimpleMaterialProgramCard::slotProgramTypeChanged, this, std::placeholders::_1));
+    typeComboBox->setDataChangeCallback(std::bind(&SimpleMaterialProgramCard::slotProgramTypeChanged, this, std::placeholders::_1, std::placeholders::_2));
     BKCell* typeComboBoxCell = BKCreator::create(BKAnchor::AnchorType::None);
     typeComboBoxCell->append(typeComboBox);
 
@@ -267,7 +267,7 @@ SimpleMaterialProgramCard::SimpleMaterialProgramCard()
     BKLabel* programLabel = BKCreator::create<BKLabel>();
     programLabel->setText("Program");
     programLabel->setTitleNeverChanges(true);
-    programLabel->setDataChangeCallback(std::bind(&SimpleMaterialProgramCard::slotProgramChanged, this, std::placeholders::_1));
+    programLabel->setDataChangeCallback(std::bind(&SimpleMaterialProgramCard::slotProgramChanged, this, std::placeholders::_1, std::placeholders::_2));
     BKCell* programCell = BKCreator::create(BKAnchor::AnchorType::Input);
     programCell->setDataType(BKAnchor::AnchorType::Input, BKAnchor::String);
     programCell->append(programLabel);
@@ -298,7 +298,7 @@ QVariant SimpleVertexProgCard::getCurrentCardValue()
     return mInfo;
 }
 
-bool SimpleVertexProgCard::slotProgramTypeChanged(const QVariant& type)
+bool SimpleVertexProgCard::slotProgramTypeChanged(BKUnit* unit, const QVariant& type)
 {
     QString qType = type.toString();
     mInfo.type = qType.toStdString();
@@ -360,7 +360,7 @@ void SimpleVertexProgCard::slotConstantParamDataChanged(size_t count, const QVar
     slotConstantParamCountChanged(count, params);
 }
 
-bool SimpleVertexProgCard::slotProgramChanged(const QVariant& data)
+bool SimpleVertexProgCard::slotProgramChanged(BKUnit* unit, const QVariant& data)
 {
     QString program = data.toString();
     mProgram = program.toStdString();
@@ -440,7 +440,7 @@ QVariant SimpleFragmentProgCard::getCurrentCardValue()
     return mInfo;
 }
 
-bool SimpleFragmentProgCard::slotProgramTypeChanged(const QVariant& type)
+bool SimpleFragmentProgCard::slotProgramTypeChanged(BKUnit* unit, const QVariant& type)
 {
     QString qType = type.toString();
     mInfo.type = qType.toStdString();
@@ -501,7 +501,7 @@ void SimpleFragmentProgCard::slotConstantParamDataChanged(size_t count, const QV
     slotConstantParamCountChanged(count, params);
 }
 
-bool SimpleFragmentProgCard::slotProgramChanged(const QVariant& data)
+bool SimpleFragmentProgCard::slotProgramChanged(BKUnit* unit, const QVariant& data)
 {
     QString qData = data.toString();
     mProgram = qData.toStdString();

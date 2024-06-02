@@ -33,7 +33,7 @@
 #include "OgreSceneManager.h"
 #include "OgreRoot.h"
 
-#define UpdateFunction(x) [this](const QVariant& data) -> bool { \
+#define UpdateFunction(x) [this](BKUnit* unit, const QVariant& data) -> bool { \
 x; \
 refreshParam();\
 return true;\
@@ -67,7 +67,7 @@ ParticleCard::ParticleCard()
 	emitterCell->append(BKCreator::create<BKLabel>()
             ->setText("发射器")
             ->setTitleNeverChanges(true)
-            ->setDataChangeCallback(std::bind(&ParticleCard::updateEmitter, this, std::placeholders::_1))
+            ->setDataChangeCallback(std::bind(&ParticleCard::updateEmitter, this, std::placeholders::_1, std::placeholders::_2))
         );
 
     BKCell* affectorCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None)
@@ -76,7 +76,7 @@ ParticleCard::ParticleCard()
 	affectorCell->append(BKCreator::create<BKLabel>()
         ->setText("控制器")
         ->setTitleNeverChanges(true)
-        ->setDataChangeCallback(std::bind(&ParticleCard::updateAffector, this, std::placeholders::_1))
+        ->setDataChangeCallback(std::bind(&ParticleCard::updateAffector, this, std::placeholders::_1, std::placeholders::_2))
     );
 
     _pack({
@@ -88,7 +88,7 @@ ParticleCard::ParticleCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKLineEdit>()
                 ->setText(mData.material.c_str())
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     QString material = data.toString();
                     mData.material = material.toStdString();
                     refreshParam();
@@ -127,7 +127,7 @@ ParticleCard::ParticleCard()
 		->setDataType(BKAnchor::Input, GET_QT_METATYPE_ID(ParticleBillboardSettingCard::Data))
 			->append(
 				BKCreator::create<BKLabel>()->setText("渲染类型")
-					->setDataChangeCallback(std::bind(&ParticleCard::updateRenderType, this, std::placeholders::_1))
+					->setDataChangeCallback(std::bind(&ParticleCard::updateRenderType, this, std::placeholders::_1, std::placeholders::_2))
 					->setTitleNeverChanges(true)
 			),
 
@@ -208,7 +208,7 @@ void ParticleCard::refreshParam()
     reloadParticleToScene();
 }
 
-bool ParticleCard::updateRenderType(const QVariant& var)
+bool ParticleCard::updateRenderType(BKUnit* unit, const QVariant& var)
 {
 	Ogre::ParticleSystemRenderer* renderer = mpParticleSystemTemplate->getRenderer();
 	Ogre::v1::BillboardParticleRenderer* billboardRenderer = dynamic_cast<Ogre::v1::BillboardParticleRenderer*>(renderer);
@@ -225,7 +225,7 @@ bool ParticleCard::updateRenderType(const QVariant& var)
 	return true;
 }
 
-bool ParticleCard::updateEmitter(const QVariant& var)
+bool ParticleCard::updateEmitter(BKUnit* unit, const QVariant& var)
 {
     Q_UNUSED(var);
     std::vector<QVariant> items;
@@ -307,7 +307,7 @@ bool ParticleCard::updateEmitter(const QVariant& var)
 	return true;
 }
 
-bool ParticleCard::updateAffector(const QVariant& var)
+bool ParticleCard::updateAffector(BKUnit* unit, const QVariant& var)
 {
     Q_UNUSED(var);
     std::vector<QVariant> items;

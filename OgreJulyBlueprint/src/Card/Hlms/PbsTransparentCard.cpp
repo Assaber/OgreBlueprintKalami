@@ -41,7 +41,7 @@ PbsTransparentCard::PbsTransparentCard()
                 BKCreator::create<BKLabel>()->setText("使能"),
                 BKCreator::create<BKCheckBox>()
                     ->setChecked(mInfo.enable)
-                    ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                         mInfo.enable = param.toBool();
                         outputCell->valueChanged(mInfo);
                         return true;
@@ -53,7 +53,7 @@ PbsTransparentCard::PbsTransparentCard()
             ->setMinimum(0)
             ->setMaximum(1.0f)
             ->setCurrentValue(mInfo.transparency)
-            ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                 mInfo.transparency = param.toFloat();
                 outputCell->valueChanged(mInfo);
                 return true;
@@ -64,7 +64,7 @@ PbsTransparentCard::PbsTransparentCard()
             ->setItems(QStringList() << "None" << "Transparent" << "Fade")
             ->setCurrentIndex(1)
             ->setCallbackParamType(BKComboBox::CallbackParamType::Index)
-            ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                 int mode = param.toInt();
                 if (mode == 0)
                     mInfo.mode = Ogre::HlmsPbsDatablock::None;
@@ -81,7 +81,7 @@ PbsTransparentCard::PbsTransparentCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKCheckBox>()
                 ->setChecked(mInfo.alphaFromTex)
-                ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+                ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                     mInfo.alphaFromTex = param.toBool();
                     outputCell->valueChanged(mInfo);
                     return true;

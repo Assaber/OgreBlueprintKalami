@@ -59,7 +59,7 @@ PbsCommonTextureCard::PbsCommonTextureCard()
          BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(textureTypeNames)
             ->setCurrentIndex(initTextureTypeIndex, false)
-            ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+            ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                 mTextureInfo.type = name2TextureType[param.toString()];
                 outputCell->valueChanged(mTextureInfo);
                 return true;
@@ -71,7 +71,7 @@ PbsCommonTextureCard::PbsCommonTextureCard()
             ->setDataType(BKAnchor::Input, BKAnchor::String)
             ->append(BKCreator::create<BKPixmap>()
                 ->setFixedSize({100, 100})
-                ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+                ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                     QString qparam = param.toString();
                     Ogre::String texturePath = qparam.toStdString();
                     resetResourceDir(texturePath);
@@ -95,7 +95,7 @@ PbsCommonTextureCard::PbsCommonTextureCard()
                     ->setMinWidth(60)
                     ->setItems(textureAddrMode)
                     ->setCurrentIndex(initTextureAddrModeIndex, false)
-                    ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                         mTextureInfo.sampler.mU = name2TextureAddrMode[param.toString()];
                         outputCell->valueChanged(mTextureInfo);
                         return true;
@@ -105,7 +105,7 @@ PbsCommonTextureCard::PbsCommonTextureCard()
                     ->setMinWidth(60)
                     ->setItems(textureAddrMode)
                     ->setCurrentIndex(initTextureAddrModeIndex, false)
-                    ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                         mTextureInfo.sampler.mV = name2TextureAddrMode[param.toString()];
                         outputCell->valueChanged(mTextureInfo);
                         return true;
@@ -115,7 +115,7 @@ PbsCommonTextureCard::PbsCommonTextureCard()
                     ->setMinWidth(60)
                     ->setItems(textureAddrMode)
                     ->setCurrentIndex(initTextureAddrModeIndex, false)
-                    ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+                    ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                         mTextureInfo.sampler.mW = name2TextureAddrMode[param.toString()];
                         outputCell->valueChanged(mTextureInfo);
                         return true;
@@ -128,7 +128,7 @@ PbsCommonTextureCard::PbsCommonTextureCard()
             ->append(BKCreator::create<BKComboBox>()
                 ->setItems(QStringList() << "" << "0" << "1" << "2" << "3" << "4" << "5" << "6" << "7")
                 ->setCurrentItem(0, false)
-                ->setDataChangeCallback([this, outputCell](const QVariant& param) -> bool {
+                ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
                     QString si = param.toString();
                     mTextureInfo.uv = si.isEmpty() ? -1 : si.toInt();
                     outputCell->valueChanged(mTextureInfo);

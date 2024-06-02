@@ -27,7 +27,7 @@ ParticleDeflectorPlaneCard::ParticleDeflectorPlaneCard()
             BKCreator::create<BKVectorEditor>()
                 ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.point[0], mData.point[1] ,mData.point[2]}))
                 ->setItemInLine(3)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     BKVectorEditor::FloatVec vec = data.value<BKVectorEditor::FloatVec>();
                     mData.point = { vec[0], vec[1], vec[2] };
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
@@ -40,7 +40,7 @@ ParticleDeflectorPlaneCard::ParticleDeflectorPlaneCard()
             BKCreator::create<BKVectorEditor>()
                 ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.normal[0], mData.normal[1] ,mData.normal[2]}))
                 ->setItemInLine(3)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     BKVectorEditor::FloatVec vec = data.value<BKVectorEditor::FloatVec>();
                     mData.normal = { vec[0], vec[1], vec[2] };
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
@@ -52,7 +52,7 @@ ParticleDeflectorPlaneCard::ParticleDeflectorPlaneCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(1.0f)
                 ->setCurrentValue(mData.bounce)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.bounce = data.toDouble();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;

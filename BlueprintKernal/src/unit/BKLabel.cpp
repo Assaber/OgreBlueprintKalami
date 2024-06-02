@@ -139,7 +139,7 @@ void BKLabel::dataChanged(const QVariant& data)
             l->update();
         }
 
-        if (!mCallbackFunc(data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor)
             mpRightAnchor->dataChanged(data);
     }
 }

@@ -34,7 +34,7 @@ RenderItemCard::RenderItemCard()
                 ->append({ BKCreator::create<BKComboBox>()
                                 ->setItems(list)
                                 ->setMinWidth(140)
-                                ->setDataChangeCallback(std::bind(&RenderItemCard::renderItemChange, this, std::placeholders::_1))
+                                ->setDataChangeCallback(std::bind(&RenderItemCard::renderItemChange, this, std::placeholders::_1, std::placeholders::_2))
                                 ->setCurrentIndex(0)
                 }),
             BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("材质")}),
@@ -43,7 +43,7 @@ RenderItemCard::RenderItemCard()
                 // ->append({ BKCreator::create<BKLabel>()->setText("材质")->setFixedSize({60, 20})})
                 ->append({ BKCreator::create<BKComboBox>()
                                 ->setItems(QStringList() << "snow")
-                                ->setDataChangeCallback(std::bind(&RenderItemCard::materialChange, this, std::placeholders::_1))
+                                ->setDataChangeCallback(std::bind(&RenderItemCard::materialChange, this, std::placeholders::_1, std::placeholders::_2))
                                 ->setCurrentIndex(0)
                 }),
         }
@@ -55,7 +55,7 @@ RenderItemCard::~RenderItemCard()
     destroyRenderItem();
 }
 
-bool RenderItemCard::renderItemChange(const QVariant& param)
+bool RenderItemCard::renderItemChange(BKUnit* unit, const QVariant& param)
 {
     QString type = param.toString();
     auto itor = mRenderItemList.find(type);            // 应该没有调皮捣蛋的吧
@@ -72,7 +72,7 @@ bool RenderItemCard::renderItemChange(const QVariant& param)
     return true;
 }
 
-bool RenderItemCard::materialChange(const QVariant& param)
+bool RenderItemCard::materialChange(BKUnit* unit, const QVariant& param)
 {
     mLastMaterialName = param.toString();
 
@@ -93,5 +93,5 @@ void RenderItemCard::destroyRenderItem()
 
 void RenderItemCard::updateFullCard()
 {
-    materialChange(mLastMaterialName);
+    materialChange(nullptr, mLastMaterialName);
 }

@@ -12,8 +12,8 @@ public:
     ~RenderItemCard();
 
 private:
-    bool renderItemChange(const QVariant& param);
-    bool materialChange(const QVariant& param);
+    bool renderItemChange(BKUnit* unit, const QVariant& param);
+    bool materialChange(BKUnit* unit, const QVariant& param);
     void destroyRenderItem();
     void updateFullCard();
 

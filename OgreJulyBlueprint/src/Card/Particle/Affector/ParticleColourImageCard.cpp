@@ -24,7 +24,7 @@ ParticleColourImageCard::ParticleColourImageCard()
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKLineEdit>()
                 ->setText(mData.image)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.image = data.toString();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;

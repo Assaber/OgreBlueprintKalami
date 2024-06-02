@@ -99,6 +99,7 @@ public:
     /**
      * @brief:                                  锚点将以传入数据进行传递更新
      */
+    virtual void dataChanged() override;
     virtual void dataChanged(const QVariant& data) override;
 
     /**

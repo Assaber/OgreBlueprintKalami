@@ -25,7 +25,7 @@ ParticleEmitterTypeCard::ParticleEmitterTypeCard()
     BKComboBox* typeComboBox = BKCreator::create<BKComboBox>();
 	typeComboBox->setItems(particle::emitterName2Type.keys());
 	typeComboBox->setCurrentItem(mData.type);
-	typeComboBox->setDataChangeCallback(std::bind(&ParticleEmitterTypeCard::slotEmitterTypeChanged, this, std::placeholders::_1));
+	typeComboBox->setDataChangeCallback(std::bind(&ParticleEmitterTypeCard::slotEmitterTypeChanged, this, std::placeholders::_1, std::placeholders::_2));
     BKCell* typeComboBoxCell = BKCreator::create(BKAnchor::AnchorType::None);
 	typeComboBoxCell->append(typeComboBox);
 
@@ -46,12 +46,12 @@ ParticleEmitterTypeCard::ParticleEmitterTypeCard()
 		return { lc, sc };
 	};
 
-	auto widthCellPair = create_slider("宽度", mData.width, std::bind(&ParticleEmitterTypeCard::slotWidthChanged, this, std::placeholders::_1));
-	auto heightCellPair = create_slider("高度", mData.height, std::bind(&ParticleEmitterTypeCard::slotHeightChanged, this, std::placeholders::_1));
-	auto depthCellPair = create_slider("深度", mData.depth, std::bind(&ParticleEmitterTypeCard::slotDepthChanged, this, std::placeholders::_1));
-    auto innerWidthCellPair = create_slider("内部宽度", mData.innerWidth, std::bind(&ParticleEmitterTypeCard::slotInnerWidthChanged, this, std::placeholders::_1));
-    auto innerHeightCellPair = create_slider("内部高度", mData.innerHeight, std::bind(&ParticleEmitterTypeCard::slotInnerHeightChanged, this, std::placeholders::_1));
-    auto innerDepthCellPair = create_slider("内部深度", mData.innerDepth, std::bind(&ParticleEmitterTypeCard::slotInnerDepthChanged, this, std::placeholders::_1));
+	auto widthCellPair = create_slider("宽度", mData.width, std::bind(&ParticleEmitterTypeCard::slotWidthChanged, this, std::placeholders::_1, std::placeholders::_2));
+	auto heightCellPair = create_slider("高度", mData.height, std::bind(&ParticleEmitterTypeCard::slotHeightChanged, this, std::placeholders::_1, std::placeholders::_2));
+	auto depthCellPair = create_slider("深度", mData.depth, std::bind(&ParticleEmitterTypeCard::slotDepthChanged, this, std::placeholders::_1, std::placeholders::_2));
+    auto innerWidthCellPair = create_slider("内部宽度", mData.innerWidth, std::bind(&ParticleEmitterTypeCard::slotInnerWidthChanged, this, std::placeholders::_1, std::placeholders::_2));
+    auto innerHeightCellPair = create_slider("内部高度", mData.innerHeight, std::bind(&ParticleEmitterTypeCard::slotInnerHeightChanged, this, std::placeholders::_1, std::placeholders::_2));
+    auto innerDepthCellPair = create_slider("内部深度", mData.innerDepth, std::bind(&ParticleEmitterTypeCard::slotInnerDepthChanged, this, std::placeholders::_1, std::placeholders::_2));
 
 	_pack({
 		outputCell,
@@ -76,49 +76,49 @@ QVariant ParticleEmitterTypeCard::getCurrentCardValue()
     return QVariant::fromValue(mData);
 }
 
-bool ParticleEmitterTypeCard::slotEmitterTypeChanged(const QVariant& var)
+bool ParticleEmitterTypeCard::slotEmitterTypeChanged(BKUnit* unit, const QVariant& var)
 {
 	mData.type = var.toString();
 	mpOutputAnchor->dataChanged(getCurrentCardValue());
 	return true;
 }
 
-bool ParticleEmitterTypeCard::slotWidthChanged(const QVariant& var)
+bool ParticleEmitterTypeCard::slotWidthChanged(BKUnit* unit, const QVariant& var)
 {
 	mData.width = var.toInt();
 	mpOutputAnchor->dataChanged(getCurrentCardValue());
 	return true;
 }
 
-bool ParticleEmitterTypeCard::slotHeightChanged(const QVariant& var)
+bool ParticleEmitterTypeCard::slotHeightChanged(BKUnit* unit, const QVariant& var)
 {
     mData.height = var.toInt();
 	mpOutputAnchor->dataChanged(getCurrentCardValue());
     return true;
 }
 
-bool ParticleEmitterTypeCard::slotDepthChanged(const QVariant& var)
+bool ParticleEmitterTypeCard::slotDepthChanged(BKUnit* unit, const QVariant& var)
 {
     mData.depth = var.toInt();
 	mpOutputAnchor->dataChanged(getCurrentCardValue());
     return true;
 }
 
-bool ParticleEmitterTypeCard::slotInnerWidthChanged(const QVariant& var)
+bool ParticleEmitterTypeCard::slotInnerWidthChanged(BKUnit* unit, const QVariant& var)
 {
     mData.innerWidth = var.toInt();
 	mpOutputAnchor->dataChanged(getCurrentCardValue());
     return true;
 }
 
-bool ParticleEmitterTypeCard::slotInnerHeightChanged(const QVariant& var)
+bool ParticleEmitterTypeCard::slotInnerHeightChanged(BKUnit* unit, const QVariant& var)
 {
     mData.innerHeight = var.toInt();
 	mpOutputAnchor->dataChanged(getCurrentCardValue());
     return true;
 }
 
-bool ParticleEmitterTypeCard::slotInnerDepthChanged(const QVariant& var)
+bool ParticleEmitterTypeCard::slotInnerDepthChanged(BKUnit* unit, const QVariant& var)
 {
     mData.innerDepth = var.toInt();
 	mpOutputAnchor->dataChanged(getCurrentCardValue());

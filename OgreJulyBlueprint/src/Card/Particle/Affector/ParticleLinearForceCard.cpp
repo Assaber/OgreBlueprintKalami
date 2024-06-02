@@ -26,7 +26,7 @@ ParticleLinearForceCard::ParticleLinearForceCard()
             BKCreator::create<BKVectorEditor>()
                 ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.force[0], mData.force[1] ,mData.force[2]}))
                 ->setItemInLine(3)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     BKVectorEditor::FloatVec vec = data.value<BKVectorEditor::FloatVec>();
                     mData.force = { vec[0], vec[1], vec[2] };
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
@@ -40,7 +40,7 @@ ParticleLinearForceCard::ParticleLinearForceCard()
                 ->setItems(particle::linearAffectorName2Type.keys())
                 ->setCallbackParamType(BKComboBox::CallbackParamType::Data)
                 ->setCurrentItem(mData.function)
-                ->setDataChangeCallback([this](const QVariant& data) -> bool {
+                ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.function = data.toString();
                     mpOutputAnchor->dataChanged(getCurrentCardValue());
                     return true;

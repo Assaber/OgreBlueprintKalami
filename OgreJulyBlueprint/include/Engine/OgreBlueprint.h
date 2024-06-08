@@ -11,6 +11,9 @@ public:
 
 public:
     void drive();
+    inline BlueprintEditor* getBlueprintEditorPtr() {
+        return mpEditor;
+    }
 
 private:
     void initWindowMenuBar();

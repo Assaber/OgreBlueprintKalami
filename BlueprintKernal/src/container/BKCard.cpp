@@ -2,6 +2,9 @@
 #include <QGraphicsItemGroup>
 #include <QGraphicsDropShadowEffect>
 #include <QDebug>
+#include "container/BKCell.h"
+#include "BKCreator.hpp"
+#include "BlueprintLoader.h"
 
 class BKCard::Impl : public QGraphicsItemGroup
 {

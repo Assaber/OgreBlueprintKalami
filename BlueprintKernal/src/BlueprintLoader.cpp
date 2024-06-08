@@ -7,6 +7,8 @@
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QScrollBar>
+#include <QJsonArray>
+#include "CardFilterComboBox.h"
 
 class BlueprintLoader::Impl
 {
@@ -14,9 +16,8 @@ public:
     Impl(BlueprintLoader* loader, QGraphicsScene* scene)
         : mpView(loader)
         , mpScene(scene)
-        , mpCreatorMenu(new BKCreatorMenu(loader))
+        , mpCreatorComboBox(new CardFilterComboBox(loader))
     {
-        mpCreatorMenu->hide();
     }
 
     ~Impl()
@@ -62,8 +63,8 @@ public:
     BKConnectingLine* mpReadyLine = nullptr;
     // 最后一个活跃的卡片
     QGraphicsItem* mpLastActiveCard = nullptr;
-    // 右键菜单
-    BKCreatorMenu* mpCreatorMenu = nullptr;
+    // 创建框
+    CardFilterComboBox* mpCreatorComboBox  = nullptr;
 };
 
 void BlueprintLoader::Impl::init()
@@ -73,6 +74,8 @@ void BlueprintLoader::Impl::init()
 
     // 初始化连接线
     mpReadyLine = mpView->_createUnit<BKConnectingLine>();
+
+    mpCreatorComboBox->hide();
 }
 
 void BlueprintLoader::Impl::initScene()
@@ -257,6 +260,11 @@ void BlueprintLoader::Impl::destroyAllItems()
     }
 }
 
+CardFilterComboBox* BlueprintLoader::getFilterMenuPtr()
+{
+    return mpImpl->mpCreatorComboBox;
+}
+
 void BlueprintLoader::destroyUnit(StandAloneUnit* unit)
 {
     auto item = unit->getBindItem();
@@ -367,9 +375,7 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
     {
         auto card = item.toObject();
         QString qname = card["name"].toString();
-        std::string name = qname.toStdString();
-        
-        auto creator = BKCreator::getCreator(name.c_str());
+        auto creator = l->mpCreatorComboBox->getCreator(qname);
         if (!creator)
             continue;
 
@@ -467,8 +473,8 @@ void BlueprintLoader::mousePressEvent(QMouseEvent* event)
             }
         }
 
-        if (l->mpCreatorMenu->isActiveWindow())
-            l->mpCreatorMenu->hide();
+        if (l->mpCreatorComboBox->isActiveWindow())
+            l->mpCreatorComboBox->hide();
     }
 }
 
@@ -479,10 +485,9 @@ void BlueprintLoader::mouseReleaseEvent(QMouseEvent* event)
 
     if (event->button() == Qt::RightButton)
     {
-        l->mpCreatorMenu->setCurrentIndex(-1);
-        l->mpCreatorMenu->move(event->windowPos().x(), event->windowPos().y());
-        l->mpCreatorMenu->show();
-        l->mpCreatorMenu->setFocus(Qt::FocusReason::MouseFocusReason);
+        l->mpCreatorComboBox->move(event->screenPos().x(), event->screenPos().y());
+        l->mpCreatorComboBox->show();
+        l->mpCreatorComboBox->setFocus(Qt::FocusReason::MouseFocusReason);
     }
 
     viewport()->setCursor(Qt::ArrowCursor);

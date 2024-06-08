@@ -1,15 +1,14 @@
 ﻿#pragma once
+#include "global_blueprint_kernal.h"
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <memory>
 #include <map>
 #include "container/BKCard.h"
-#include "global_blueprint_kernal.h"
 
 class BKAnchor;
-class BKCard;
 class BKCreatorMenu;
-
+class CardFilterComboBox;
 class _BlueprintKernalExport BlueprintLoader : public QGraphicsView
 {
 public:
@@ -36,6 +35,13 @@ public:
         _createUnit<T>(std::forward<Args>(args)...);
     }
 
+    template<typename T, typename = std::enable_if_t<std::is_base_of_v<BKCard, T>>>
+    BKCard* create() {
+        auto ptr = _createUnit<T>();
+        return ptr;
+    }
+
+    CardFilterComboBox* getFilterMenuPtr();
     void destroyUnit(StandAloneUnit* unit);
     void exportSceneToJson(const QString& path);
     bool loadSceneFromJson(const QString& path);
@@ -68,6 +74,7 @@ private:
 private:
     // 场景
     QGraphicsScene mScene;
+   
     // 单元集
     std::map<QGraphicsItem*, _UnitItem> mUnitsRecord;
 };

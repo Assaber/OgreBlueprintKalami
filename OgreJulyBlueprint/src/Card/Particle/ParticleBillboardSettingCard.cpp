@@ -1,6 +1,6 @@
 ﻿#ifdef OBK_INCLUDE_PARTICLE_PLUGIN
 #include "Particle/ParticleBillboardSettingCard.h"
-#include "BKCreator.h"
+#include "BKCreator.hpp"
 #include "container/BKCell.h"
 #include "unit/BKLabel.h"
 #include "unit/BKComboBox.h"

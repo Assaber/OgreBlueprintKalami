@@ -37,12 +37,13 @@ class BlueprintLoader;
 #define CREATE_CARD_FACTORY(Class) \
 private: \
 friend class BlueprintLoader; \
-friend class BKCreator; \
+/*friend class BKCreator;*/ \
+friend class CardFilterComboBox; \
 class Factory \
 { \
 public: \
     static BKCard* createOne(BlueprintLoader* loader) { \
-        return BKCreator::create<Class>(loader); \
+        return loader->create<Class>(); \
     } \
     static constexpr char* _cardName = GET_CARD_NAME(Class); \
 };

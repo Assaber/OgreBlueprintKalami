@@ -1,5 +1,4 @@
 ﻿#include "Application.h"
-#include <QDebug>
 
 int Application::join(std::function<void(void)>&& loop)
 {

@@ -2,7 +2,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QFontMetrics>
-#include "BKCreator.h"
+#include "BKCreator.hpp"
 
 class BKPushButton::Impl : public QGraphicsItem
 {

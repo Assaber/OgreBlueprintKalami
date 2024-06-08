@@ -13,6 +13,8 @@
 #include <QApplication>
 #include <QGraphicsProxyWidget>
 #include <QLineEdit>
+#include <QRegExpValidator>
+#include <QJsonArray>
 
 
 class BKVectorCtrl;

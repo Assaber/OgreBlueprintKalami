@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
-#include "BKCreator.h"
+#include "BKCreator.hpp"
 #include <set>
 
 /*!

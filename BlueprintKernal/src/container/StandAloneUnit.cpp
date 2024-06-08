@@ -1,6 +1,5 @@
 ﻿#include "container/StandAloneUnit.h"
 
-
 StandAloneUnit::StandAloneUnit(Type type)
     : mUnitType(type)
 {

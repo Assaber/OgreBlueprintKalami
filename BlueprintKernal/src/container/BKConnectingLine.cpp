@@ -100,7 +100,7 @@ public:
                     ia->dataChanged(oc->getCurrentCardValue());
                 }
             }
-            else {
+            else if(ic->isStillAlive()) {                                   // 同样判断是否可以接收数据更改
                 ia->dataChanged();
             }
         }

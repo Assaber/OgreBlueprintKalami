@@ -49,13 +49,13 @@ ReadFileCard::ReadFileCard(QObject* parent)
     mpFilepathEdit->setEnable(false);
     fileLoaderCell->append(mpFilepathEdit);
     BKPushButton* openFileBtn = BKCreator::create<BKPushButton>();
-    openFileBtn->setText("...");
-    openFileBtn->setFixedSize({ 25, 25 });
+    openFileBtn->setText("打开");
+    openFileBtn->setFixedSize({ 46, 25 });
     openFileBtn->setDataChangeCallback(std::bind(&ReadFileCard::openFile, this, std::placeholders::_1, std::placeholders::_2));
     fileLoaderCell->append(openFileBtn);
     BKPushButton* reloadBtn = BKCreator::create<BKPushButton>();
-    reloadBtn->setText("○");
-    reloadBtn->setFixedSize({ 25, 25 });
+    reloadBtn->setText("加载");
+    reloadBtn->setFixedSize({ 46, 25 });
     reloadBtn->setDataChangeCallback(std::bind(&ReadFileCard::reloadFile, this, std::placeholders::_1, std::placeholders::_2));
     fileLoaderCell->append(reloadBtn);
 
@@ -86,6 +86,8 @@ bool ReadFileCard::openFile(BKUnit* unit, const QVariant& data)
     mstrLastFilepath = filepath;
     mWatcher.addPath(filepath);
     mpFilepathEdit->setText(filepath);
+
+    reloadFile(unit, data);
     return true;
 }
 
@@ -137,8 +139,7 @@ void ReadFileCard::fileChanged(const QString& path)
             mpOutputAnchor->dataChanged(getCurrentCardValue());
         }
     }
-    else
-    {
+    else {
         mWatcher.removePath(path);
     }
 }

@@ -13,7 +13,7 @@
 ``` shell
 [line 25] include_directories(${CMAKE_SOURCE_DIR}/ogre-next/Components/Hlms/Common/include)
 ```
-//todo...
+2. msvc编译的时候**OgreIrradianceField.cpp**的第119行会因为注释是指数而报错，简单粗暴的方法是删掉
 
 
 ### 组成

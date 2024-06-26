@@ -292,10 +292,12 @@ bool BKSliderBar::loadFromJson(const QJsonValue& val)
 {
     L_IMPL(BKSliderBar);
 
-    if (l->mDataType == DataType::Int)
-        setCurrentValue(val.toInt());
-    else
-        setCurrentValue(val.toDouble());
+    if (l->mDataType == DataType::Int) {
+        dataChanged(val.toInt());
+    }
+    else {
+        dataChanged(val.toDouble());
+    }
 
     return true;
 }

@@ -91,7 +91,7 @@ BKCheckBox::~BKCheckBox()
 bool BKCheckBox::loadFromJson(const QJsonValue& val)
 {
     L_IMPL(BKCheckBox);
-    setChecked(val.toBool());
+    dataChanged(val.toBool());
 
     return true;
 }

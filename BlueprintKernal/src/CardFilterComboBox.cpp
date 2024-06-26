@@ -195,7 +195,7 @@ public:
     }
 
 public:
-    void updateAll(const std::map<QString, QStringList>& dict)
+    void updateAll(const DataRecordMap& dict)
     {
         refreshOriginDict(dict);
         reload();
@@ -208,7 +208,7 @@ public:
         refreshVisibleDict();
     }
 
-    void refreshOriginDict(const std::map<QString, QStringList>& dict)
+    void refreshOriginDict(const DataRecordMap& dict)
     {
         mItems.clear();
 
@@ -396,7 +396,7 @@ public:
             return;
 
         QString group = index.data(TreeView::Model::GroupNameRole).toString();
-        QString name = index.data().toString();
+        QString name = transAlias2CardName(group, index.data().toString());
         CardCreatorPtr creator = mpHandle->getCreator(name, group);
         if (creator) {
             mpLoader->setDarling(creator(mpLoader));
@@ -410,12 +410,43 @@ public:
         mpPopView->reload();
     }
 
+    void updatePopView()
+    {
+        mActiveRecordMap.clear();
+        for (const auto& group : mItems)
+        {
+            auto& groupItems = mActiveRecordMap[group.first];
+            for (const auto& child : group.second) {
+                groupItems.push_back(child.first);
+            }
+        }
+
+        mpPopView->updateAll(mActiveRecordMap);
+    }
+
+    QString transAlias2CardName(const QString& group, const QString& alias) const 
+    {
+        auto itor = mItems.find(group);
+        if (itor == mItems.end())
+            return "";
+
+        const auto& groupItems = itor->second;
+        auto gItor = groupItems.find(alias);
+        if (gItor == groupItems.end())
+            return "";
+
+        return gItor->second;
+    }
+
 public:
     CardFilterComboBox* mpHandle = nullptr;
     TreeView* mpPopView = nullptr;
     QLineEdit* mpLineEdit = nullptr;
-    std::map<QString, QStringList> mItems;
-    QMetaObject::Connection textChangedConn;
+
+    // group-<alias, cardName>
+    std::map<QString, std::map<QString, QString>> mItems;
+    DataRecordMap mActiveRecordMap;
+
     BlueprintLoader* mpLoader = nullptr;
 };
 
@@ -433,44 +464,48 @@ CardFilterComboBox::~CardFilterComboBox()
     mpImpl = nullptr;
 }
 
-void CardFilterComboBox::registItems(const QString& item, const QString& group /*= "Default"*/)
+
+void CardFilterComboBox::registItems(const QString& cardName, const QString& alias, const QString& group /*= DefaultGroupName*/)
 {
     L_IMPL(CardFilterComboBox);
     QString groupName = group.isEmpty() ? DefaultGroupName : group;
-    QStringList& itemList = l->mItems[groupName];
-    if (itemList.indexOf(item) < 0) {
-        itemList.push_back(item);
-    }
+    auto& items = l->mItems[groupName];
 
-    l->mpPopView->updateAll(l->mItems);
-}
-
-void CardFilterComboBox::registItems(const QStringList& items, const QString& group /*= "Default"*/)
-{
-    L_IMPL(CardFilterComboBox);
-    QString groupName = group.isEmpty() ? DefaultGroupName : group;
-    QStringList& itemList = l->mItems[groupName];
-
-    for (const QString& o : items)
+    if (items.find(alias) == items.end())
     {
-        if (itemList.indexOf(o) < 0) {
-            itemList.push_back(o);
-        }
+        items.insert({ alias, cardName });
+        l->updatePopView();
     }
-
-    l->mpPopView->updateAll(l->mItems);
 }
 
 CardCreatorPtr CardFilterComboBox::getCreator(const QString& name, const QString& group /*= strDefaultGroupName*/)
 {
-    auto gi = mRegistItems.find(group);
-    if (gi == mRegistItems.end())
-        return nullptr;
+    auto get_item_in_group = [&](const std::map<QString, CardCreatorPtr>& group) -> CardCreatorPtr {
+        auto childItem = group.find(name);
+        return childItem == group.end() ? nullptr : childItem->second;
+    };
 
-    const auto& cards = gi->second;
-    auto ci = cards.find(name);
+    CardCreatorPtr creator = nullptr;
 
-    return ci != cards.end() ? ci->second : nullptr;
+    if (group.isEmpty())
+    {
+        for (const auto& items : mRegistItems)
+        {
+            creator = get_item_in_group(items.second);
+            if (creator)
+                break;
+        }
+    }
+    else
+    {
+        auto gi = mRegistItems.find(group);
+        if (gi == mRegistItems.end())
+            return nullptr;
+
+        creator = get_item_in_group(gi->second);
+    }
+
+    return creator;
 }
 
 void CardFilterComboBox::showEvent(QShowEvent* e)

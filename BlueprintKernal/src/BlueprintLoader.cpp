@@ -369,13 +369,14 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
     auto cardsObject = doc["card"];
     if (cardsObject.isNull())
         return false;
+
     auto cards = cardsObject.toArray();
     std::map<int, BKCard*> record;
     for (const auto& item : cards)
     {
         auto card = item.toObject();
         QString qname = card["name"].toString();
-        auto creator = l->mpCreatorComboBox->getCreator(qname);
+        auto creator = l->mpCreatorComboBox->getCreator(qname, "");
         if (!creator)
             continue;
 
@@ -389,7 +390,11 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
     auto get_card = [&](int index, int row, BKAnchor::AnchorType type) -> BKAnchor* {
         auto itor = record.find(index);
         if (itor == record.end())
+        {
+            qWarning() << "我卡呢？" << index;
             return nullptr;
+        }
+            
 
         auto card = itor->second;
         return card->getRowAnchor(row, type);
@@ -402,6 +407,10 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
             auto connect = item.toObject();
             auto lAnchor = get_card(connect["card1"].toInt(), connect["row1"].toInt(), BKAnchor::AnchorType::Input);
             auto rAnchor = get_card(connect["card2"].toInt(), connect["row2"].toInt(), BKAnchor::AnchorType::Output);
+
+            if (!lAnchor || !rAnchor) {
+                continue;
+            }
 
             createUnit<BKConnectingLine>(BKAnchor::getColorByDataType(lAnchor->getDataType()), lAnchor, rAnchor);
         }

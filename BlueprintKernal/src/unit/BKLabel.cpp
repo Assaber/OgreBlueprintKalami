@@ -59,7 +59,7 @@ BKLabel::~BKLabel()
 
 bool BKLabel::loadFromJson(const QJsonValue& val)
 {
-    setText(val.toString());
+    dataChanged(val.toString());
     return true;
 }
 

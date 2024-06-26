@@ -57,10 +57,14 @@ RenderItemCard::~RenderItemCard()
 
 bool RenderItemCard::renderItemChange(BKUnit* unit, const QVariant& param)
 {
-    QString type = param.toString();
-    auto itor = mRenderItemList.find(type);            // 应该没有调皮捣蛋的吧
-
     destroyRenderItem();
+
+    QString type = param.toString();
+    auto itor = mRenderItemList.find(type);             // 应该没有调皮捣蛋的吧
+                                                        // 还真有... 2024.06.26
+    if (itor == mRenderItemList.end())
+        return false;
+    
     mpRenderItem = mpSceneManager->createItem(itor->second.toStdString(),
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         Ogre::SCENE_DYNAMIC);

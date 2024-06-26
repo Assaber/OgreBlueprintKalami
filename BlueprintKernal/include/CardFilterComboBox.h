@@ -7,33 +7,41 @@ class BKCard;
 class BlueprintLoader;
 class _BlueprintKernalExport CardFilterComboBox : public QFrame
 {
-    Q_OBJECT
 public:
     CardFilterComboBox(BlueprintLoader* parent);
     ~CardFilterComboBox();
 
 public:
-    void registItems(const QString& item, const QString& group = DefaultGroupName);
-    void registItems(const QStringList& items, const QString& group = DefaultGroupName);
-
     template<typename T, typename = std::enable_if_t<std::is_base_of_v<BKCard, T>>>
-    void registCard(QString group = DefaultGroupName, QString display = "") {
-        if (group.isEmpty())
+    void registCard(QString group = DefaultGroupName, QString alias = "") {
+        if (group.isEmpty()) {
             group = DefaultGroupName;
+        }
+        auto& registGroup = mRegistItems[group];
 
-        auto& g = mRegistItems[group];
+        QString cardName = T::Factory::_cardName;
+        if (alias.isEmpty()) {
+            alias = cardName;
+        }
 
-        if (display.isEmpty())
-            display = T::Factory::_cardName;
-
-        g.insert({ display , T::Factory::createOne });
-        registItems(display, group);
+        registGroup.insert({ cardName , T::Factory::createOne });
+        registItems(cardName, alias, group);
     }
 
-    CardCreatorPtr getCreator(const QString& name, const QString& group = DefaultGroupName);
+    /**
+     * @brief:                                          通过卡片名字获取构建器
+     * @param: const QString & name                     卡片名称
+     * @param: const QString & group                    卡片隶属组，当传入参数为""时将遍历所有已存在的组来寻找卡片
+     * @return: CardCreatorPtr                          构建器函数指针，未查找到则返回nullptr
+     * @remark: 
+     */
+    CardCreatorPtr getCreator(const QString& alias, const QString& group = DefaultGroupName);
 
 protected:
     virtual void showEvent(QShowEvent* e) override;
+
+private:
+    void registItems(const QString& cardName, const QString& alias, const QString& group = DefaultGroupName);
 
 private:
     class Impl;

@@ -47,6 +47,7 @@ ReadFileCard::ReadFileCard(QObject* parent)
     BKCell* fileLoaderCell = BKCreator::create(BKAnchor::AnchorType::None);
     mpFilepathEdit = BKCreator::create<BKLineEdit>();
     mpFilepathEdit->setEnable(false);
+    mpFilepathEdit->setDataChangeCallback(std::bind(&ReadFileCard::reloadFile, this, std::placeholders::_1, std::placeholders::_2));
     fileLoaderCell->append(mpFilepathEdit);
     BKPushButton* openFileBtn = BKCreator::create<BKPushButton>();
     openFileBtn->setText("打开");
@@ -87,7 +88,7 @@ bool ReadFileCard::openFile(BKUnit* unit, const QVariant& data)
     mWatcher.addPath(filepath);
     mpFilepathEdit->setText(filepath);
 
-    reloadFile(unit, data);
+    // reloadFile(unit, data);
     return true;
 }
 

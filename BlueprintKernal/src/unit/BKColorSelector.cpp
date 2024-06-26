@@ -155,7 +155,12 @@ BKColorSelector::~BKColorSelector()
 bool BKColorSelector::loadFromJson(const QJsonValue& val)
 {
     L_IMPL(BKColorSelector);
-    return l->loadFromColorString(val.toString());
+    bool ret = l->loadFromColorString(val.toString());
+    if (ret) {
+        dataChanged(l->mColor);
+    }
+
+    return ret;
 }
 
 QVariant BKColorSelector::data()

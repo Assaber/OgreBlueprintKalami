@@ -200,7 +200,7 @@ BKLineEdit::~BKLineEdit()
 
 bool BKLineEdit::loadFromJson(const QJsonValue& val)
 {
-    setText(val.toString());
+    dataChanged(val.toString());
     return true;
 }
 

@@ -351,7 +351,13 @@ BKUnit* BKColorSelectorEx::copy()
 bool BKColorSelectorEx::loadFromJson(const QJsonValue& val)
 {
     L_IMPL(BKColorSelectorEx);
-    return l->loadFromColorString(val.toString());
+
+    bool ret = l->loadFromColorString(val.toString());
+    if (ret) {
+        dataChanged(l->mColor);
+    }
+
+    return ret;
 }
 
 QVariant BKColorSelectorEx::data()

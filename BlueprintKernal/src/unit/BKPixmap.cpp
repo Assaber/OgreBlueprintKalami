@@ -91,7 +91,7 @@ BKUnit* BKPixmap::copy()
 
 bool BKPixmap::loadFromJson(const QJsonValue& val)
 {
-    setSource(val.toString());
+    dataChanged(val.toString());
     return true;
 }
 

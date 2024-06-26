@@ -307,7 +307,8 @@ BKComboBox::operator QJsonValue() const
 bool BKComboBox::loadFromJson(const QJsonValue& val)
 {
     L_IMPL(BKComboBox);
-    setCurrentItem(val.toString());
+
+    dataChanged(val.toString());
     return true;
 }
 

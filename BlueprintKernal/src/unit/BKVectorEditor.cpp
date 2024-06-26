@@ -437,13 +437,26 @@ bool BKVectorEditor::loadFromJson(const QJsonValue& val)
     switch (l->mType)
     {
     case Type::Int:
-        for (int i = 0; i < std::min((int)l->miVector.size(), rec.count()); ++i)
-            std::get<0>(l->miVector[i]) = rec[i].toInt();
-        break;
+    {
+        BKVectorEditor::IntegerVec vec;
+        int count = std::min((int)l->miVector.size(), rec.count());
+        for (int i = 0; i < count; ++i) {
+            vec.push_back(rec[i].toInt());
+        }
+        dataChanged(QVariant::fromValue(vec));
+    }
+    break;
+
     case Type::Float:
-        for (int i = 0; i < std::min((int)l->mfVector.size(), rec.count()); ++i)
-            std::get<0>(l->mfVector[i]) = rec[i].toDouble();
-        break;
+    {
+        BKVectorEditor::FloatVec vec;
+        int count = std::min((int)l->mfVector.size(), rec.count());
+        for (int i = 0; i < count; ++i) {
+            vec.push_back(rec[i].toDouble());
+        }
+        dataChanged(QVariant::fromValue(vec));
+    }
+    break;
     }
 
     return true;

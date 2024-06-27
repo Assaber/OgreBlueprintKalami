@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(OgreBlueprintKalami VERSION 0.0.1 LANGUAGES CXX)
 
-include(./cmake/RestoreOrDownload.cmake)
+# include(./cmake/RestoreOrDownload.cmake)
 
 # 配置选项
 option(BUILD_SHARED "Build shared library" ON)
@@ -14,18 +14,21 @@ set(OUTPUT_BASE_DIR "${CMAKE_BINARY_DIR}/output")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_BASE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_BASE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_BASE_DIR}/bin)
+set(OGRE_ARCHIVE_OUTPUT ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+set(OGRE_LIBRARY_OUTPUT ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set(OGRE_RUNTIME_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 #下载源码
 option(OGREDEPS_BUILD_SHADERC "ogre-next-dep中编译shaderc的使能" OFF)
 set(OGREDEPS_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ogre-next-deps")
-set(OGRE_DEP_STORE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/store/ogre-next-deps.tar.gz")
-rod("ogre-dep" ${OGREDEPS_SOURCE_DIR} ${OGRE_DEP_STORE_FILE} "--recurse-submodules --shallow-submodules git@github.com:OGRECave/ogre-next-deps.git")
+# set(OGRE_DEP_STORE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/store/ogre-next-deps.tar.gz")
+# rod("ogre-dep" ${OGREDEPS_SOURCE_DIR} ${OGRE_DEP_STORE_FILE} "--recurse-submodules --shallow-submodules git@github.com:OGRECave/ogre-next-deps.git")
 
 option(OGRE_BUILD_SAMPLES2 "ogre-next中编译用例的使能" OFF)
 set(OGRE_BINARY_DIR "${OUTPUT_BASE_DIR}")
 set(OGRE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ogre-next")
-set(OGRE_STORE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/store/ogre-next.tar.gz")
-rod("ogre-next" ${OGRE_DIR} ${OGRE_STORE_FILE} "git@github.com:OGRECave/ogre-next.git")
+# set(OGRE_STORE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/store/ogre-next.tar.gz")
+# rod("ogre-next" ${OGRE_DIR} ${OGRE_STORE_FILE} "git@github.com:OGRECave/ogre-next.git")
 
 ## 更新输出路径，统一由外侧调控
 set(PATTERNS "OGRE_BINARY_DIR" "CMAKE_ARCHIVE_OUTPUT_DIRECTORY" "CMAKE_LIBRARY_OUTPUT_DIRECTORY" "CMAKE_RUNTIME_OUTPUT_DIRECTORY")

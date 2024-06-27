@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "BlueprintLoader.h"
+#include "OgreVector3.h"
 #include "OgreColourValue.h"
 
 class BlueprintEditor : public BlueprintLoader

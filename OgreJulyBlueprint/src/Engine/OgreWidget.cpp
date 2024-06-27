@@ -45,7 +45,8 @@ OgreWidget::OgreWidget(QWidget* parent/* = nullptr*/)
 {
     setAttribute(Qt::WA_PaintOnScreen, true);
 
-    mpRoot = new Ogre::Root(nullptr, "", "", "");           // 在4.0.0版本中，参数1变为了abiCookie检测 (好像3.0就改了
+    mpRoot = new Ogre::Root("", "", "");            // 在4.0.0版本中，参数1变为了abiCookie检测 (好像3.0就改了
+                                                    // 强行压到v2.3 这里就不进行更改了
     Ogre::LogManager& logMgr = Ogre::LogManager::getSingleton();
     mpLogHandle = logMgr.getDefaultLog();
     mpLogHandle->setDebugOutputEnabled(false);

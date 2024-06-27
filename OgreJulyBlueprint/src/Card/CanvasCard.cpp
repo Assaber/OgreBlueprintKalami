@@ -55,14 +55,14 @@ CanvasCard::CanvasCard()
 
 
     size_t dataSize = 4 * canvasSize.width() * canvasSize.height();
-    uint8_t* data = reinterpret_cast<uint8_t*>(OGRE_MALLOC_SIMD(dataSize, MEMCATEGORY_RENDERSYS));
+    uint8_t* data = reinterpret_cast<uint8_t*>(OGRE_MALLOC_SIMD(dataSize, Ogre::MEMCATEGORY_RENDERSYS));
     memset(data, 0, dataSize);
     mpTexture->_transitionTo(Ogre::GpuResidency::Resident, reinterpret_cast<uint8_t*>(data));
     mpTexture->_setNextResidencyStatus(Ogre::GpuResidency::Resident);
 
     uploadTextureData(canvasSize.width(), canvasSize.height(), data);
 
-    OGRE_FREE_SIMD(data, MEMCATEGORY_RENDERSYS);
+    OGRE_FREE_SIMD(data, Ogre::MEMCATEGORY_RENDERSYS);
     // mpTexture->notifyDataIsReady();
 
 

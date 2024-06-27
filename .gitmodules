@@ -1,0 +1,7 @@
+[submodule "ogre-next"]
+	path = ogre-next
+	url = git@github.com:OGRECave/ogre-next.git
+	branch = v2-3
+[submodule "ogre-next-deps"]
+	path = ogre-next-deps
+	url = git@github.com:OGRECave/ogre-next-deps.git

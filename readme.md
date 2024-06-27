@@ -6,9 +6,22 @@
 //todo...
 
 
+### 组成
+
+//todo...
+
+
+### 下载以及更新
+
+整个工程已经将**ogre-next**和**ogre-next-deps**添加为子模块，下载本工程后可通过下面的指令进行依赖的递归更新
+
+``` bash 
+git submodule update --progress --init --recursive -- "ogre-next-deps"
+```
+
 ### 编译
 
-1. 注意在编译**OgreSceneFormat**时，需要添加一个CmakeLists的条目
+1. 注意在编译**OgreSceneFormat**时，需要添加一个CmakeLists的条目（ogre-next/Components/SceneFormat/CMakeLists.txt）
 
 ``` shell
 [line 25] include_directories(${CMAKE_SOURCE_DIR}/ogre-next/Components/Hlms/Common/include)
@@ -16,27 +29,10 @@
 2. msvc编译的时候**OgreIrradianceField.cpp**的第119行会因为注释是指数而报错，简单粗暴的方法是删掉
 
 
-### 组成
-
-//todo...
-
-
-### Ogre下载
-
-如果访问github速度还可以，可以通过下面的方式
-
-``` bash 
-# 下载ogre-next依赖
-git clone git@github.com:OGRECave/ogre-next-deps.git
-
-git submodule update --init --recursive
-
-git clone git@github.com:OGRECave/ogre-next.git
-```
-
 ### 备注
-1. 如果INCLUDE_INNER_PARTICLE_CARD的开关进行了改变，记得清除CMakeCache.txt蛤~
+1. 如果**INCLUDE_INNER_PARTICLE_CARD**的开关进行了改变，记得清除CMakeCache.txt蛤~
 
+2. 如果*ogre-next-deps*有部分单元没有下载成功，但又希望提交工程到git，可以删除报错提示目录中的.git文件（是子模块中对应的文件，不是总的）
 
 ### 关键结点记录
 <table width="95%" cellpadding="2" cellspacing="1">

@@ -16,7 +16,7 @@ public:
     ~BlueprintLoader();
 
 private:
-    template<typename T, typename... Args, typename = std::enable_if_t<std::is_base_of_v<StandAloneUnit, T>>>
+    template<typename T, typename... Args, typename = typename std::enable_if<std::is_base_of<StandAloneUnit, T>::value>::type>
     T* _createUnit(Args &&...args) {
         T* item = new T(std::forward<Args>(args)...);
         StandAloneUnit* unit = dynamic_cast<StandAloneUnit*>(item);
@@ -30,12 +30,12 @@ private:
     }
 
 public:
-    template<typename T, typename... Args, typename = std::enable_if_t<std::is_base_of_v<StandAloneUnit, T>>>
+    template<typename T, typename... Args, typename = typename std::enable_if<std::is_base_of<StandAloneUnit, T>::value>::type>
     void createUnit(Args &&...args) {
         _createUnit<T>(std::forward<Args>(args)...);
     }
 
-    template<typename T, typename = std::enable_if_t<std::is_base_of_v<BKCard, T>>>
+    template<typename T, typename = typename std::enable_if<std::is_base_of<BKCard, T>::value>::type>
     BKCard* create() {
         auto ptr = _createUnit<T>();
         return ptr;

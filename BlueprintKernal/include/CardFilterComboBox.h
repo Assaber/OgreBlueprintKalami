@@ -12,7 +12,7 @@ public:
     ~CardFilterComboBox();
 
 public:
-    template<typename T, typename = std::enable_if_t<std::is_base_of_v<BKCard, T>>>
+    template<typename T, typename = typename std::enable_if<std::is_base_of<BKCard, T>::value>::type>
     void registCard(QString group = DefaultGroupName, QString alias = "") {
         if (group.isEmpty()) {
             group = DefaultGroupName;

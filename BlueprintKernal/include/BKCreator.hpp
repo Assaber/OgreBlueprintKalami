@@ -9,7 +9,7 @@ using CardCreatorPtr = BKCard * (*)(BlueprintLoader* loader);
 class BKCreator
 {
 public:
-    template<typename T, typename... Args, typename = std::enable_if_t<std::is_base_of_v<BKUnit, T>>>
+    template<typename T, typename... Args, typename = typename std::enable_if<std::is_base_of<BKUnit, T>::value>::type>
     static T* create(Args &&...args)
     {
         auto ptr = new T(std::forward<Args>(args)...);

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(OgreJulyBlueprintKachow VERSION 0.0.1 LANGUAGES CXX)
+project(OgreBlueprintKalami VERSION 0.0.1 LANGUAGES CXX)
 
 include(./cmake/RestoreOrDownload.cmake)
 

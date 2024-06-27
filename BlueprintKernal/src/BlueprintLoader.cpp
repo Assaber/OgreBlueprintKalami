@@ -498,8 +498,7 @@ void BlueprintLoader::mouseReleaseEvent(QMouseEvent* event)
         l->mpCreatorComboBox->show();
         l->mpCreatorComboBox->setFocus(Qt::FocusReason::MouseFocusReason);
     }
-
-    viewport()->setCursor(Qt::ArrowCursor);
+    viewport()->unsetCursor();
 }
 
 void BlueprintLoader::keyPressEvent(QKeyEvent* event)

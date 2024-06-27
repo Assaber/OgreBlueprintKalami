@@ -37,6 +37,7 @@ public:
      
 private:
     Info mTextureInfo;
+    QString mLastTextureName = "";
 };
 
 Q_DECLARE_METATYPE(UnlitDiffuseMapCard::Info)

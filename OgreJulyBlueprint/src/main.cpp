@@ -16,6 +16,7 @@
 #include "Card/Material/SimpleMaterialCard.h"
 #include "Card/Material/SimpleMaterialProgramCard.h"
 #include "Card/ReadFileCard.h"
+#include "Card/CanvasCard.h"
 
 #ifdef OBK_INCLUDE_PARTICLE_PLUGIN
 #include "Card/Particle/ParticleCard.h"
@@ -84,6 +85,8 @@ int main(int argc, char** argv)
         menu->registCard<SimpleMaterialCard>("材质", "普通材质");
         menu->registCard<SimpleFragmentProgCard>("材质", "普通片段程序");
         menu->registCard<SimpleVertexProgCard>("材质", "普通顶点程序");
+
+        menu->registCard<CanvasCard>("材质", "画布");
 
 #ifdef OBK_INCLUDE_PARTICLE_PLUGIN
         menu->registCard<ParticleCard>("粒子", "金色传说");

@@ -66,15 +66,41 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
          ),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图")),
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKPixmap>()
+        BKCreator::create(BKAnchor::AnchorType::Input)
+                    ->setDataType(BKAnchor::Input, BKAnchor::DataType::String)
+                    ->append(BKCreator::create<BKPixmap>()
                 ->setFixedSize({100, 100})
                 ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
-                QString qtexturePath = param.toString();
-                    Ogre::String texturePath = qtexturePath.toStdString();
-                    resetResourceDir(texturePath);
+                    if (!param.isValid() || !param.canConvert<QString>())
+                    {
+                        mLastTextureName = "";
+                        mTextureInfo.texture = "";
+                        outputCell->valueChanged(mTextureInfo);
+                    }
+                    else 
+                    {
+                        QString name = param.toString();
 
-                    mTextureInfo.texture = QFileInfo(param.toString()).fileName().toStdString();
-                    outputCell->valueChanged(mTextureInfo);
+                        if (mLastTextureName.compare(name) == 0) {      // 无需变更
+                            return true;
+                        }
+                        else
+                        {
+                            if (QFile(name).exists())
+                            {
+                                Ogre::String texturePath = name.toStdString();
+                                resetResourceDir(texturePath);
+                            }
+                            else  {  
+                                // 视为纹理由连接线传入，并非资源路线
+                                mLastTextureName = name;
+                            }
+
+                            mTextureInfo.texture = QFileInfo(name).fileName().toStdString();
+                            outputCell->valueChanged(mTextureInfo);
+                        }
+                    }
+
                     return true;
                     })
             ),

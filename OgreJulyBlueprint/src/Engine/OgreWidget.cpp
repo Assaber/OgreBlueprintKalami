@@ -94,15 +94,19 @@ void OgreWidget::updateFrame()
     }
 }
 
+static_assert(OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT || OGRE_PLATFORM == OGRE_PLATFORM_LINUX, "Platform-related plugins are not loading!");
 void OgreWidget::loadPlugin()
 {
     QDir currentDir(QCoreApplication::applicationDirPath());
     QStringList filter;
 
-    static_assert(OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT, "臣妾不知道其他平台怎么判定呀orz");
-    filter << "Plugin_*.dll"
-        << "RenderSystem_*.dll";
-
+    if(OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT) {
+    	filter << "Plugin_*.dll" << "RenderSystem_*.dll";
+    }
+    else if(OGRE_PLATFORM_LINUX == OGRE_PLATFORM) {
+    	filter << "Plugin_*.so" << "RenderSystem_*.so";
+    }
+    
     QFileInfoList files = currentDir.entryInfoList(filter, QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot);
     for (const QFileInfo& info : files)
     {

@@ -26,7 +26,6 @@ namespace particle
         Type type = Default;
         void* pObj = nullptr;
     };
-    Q_DECLARE_METATYPE(particle::ParticleAffector)
 
     enum PEmitterType
     {
@@ -84,4 +83,6 @@ namespace particle
            static_cast<float>(color.alpha()) / 255 );
     }
 }
+
+Q_DECLARE_METATYPE(particle::ParticleAffector)
 #endif

@@ -13,9 +13,9 @@ public:
 
 public:
     template<typename T, typename = typename std::enable_if<std::is_base_of<BKCard, T>::value>::type>
-    void registCard(QString group = DefaultGroupName, QString alias = "") {
+    void registCard(QString group = "Default", QString alias = "") {
         if (group.isEmpty()) {
-            group = DefaultGroupName;
+            group = "Default";
         }
         auto& registGroup = mRegistItems[group];
 
@@ -35,19 +35,16 @@ public:
      * @return: CardCreatorPtr                          构建器函数指针，未查找到则返回nullptr
      * @remark: 
      */
-    CardCreatorPtr getCreator(const QString& alias, const QString& group = DefaultGroupName);
+    CardCreatorPtr getCreator(const QString& alias, const QString& group = "Default");
 
 protected:
     virtual void showEvent(QShowEvent* e) override;
 
 private:
-    void registItems(const QString& cardName, const QString& alias, const QString& group = DefaultGroupName);
+    void registItems(const QString& cardName, const QString& alias, const QString& group = "Default");
 
 private:
     class Impl;
     Impl* mpImpl = nullptr;
     std::map<QString, std::map<QString, CardCreatorPtr>> mRegistItems;
-
-public:
-    static constexpr char DefaultGroupName[] = "Default";
 };

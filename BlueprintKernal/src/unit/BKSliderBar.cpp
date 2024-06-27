@@ -11,6 +11,7 @@
 #include <QCoreApplication>
 #include <QValidator>
 
+class BKSliderBarEditor;
 class BKSliderBar::Impl : public QGraphicsItem
 {
 public:

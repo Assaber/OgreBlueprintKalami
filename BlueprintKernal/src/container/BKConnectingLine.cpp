@@ -113,7 +113,7 @@ public:
         if ((mAnchorArray[0] && !mAnchorArray[1])
             || (!mAnchorArray[0] && mAnchorArray[1]))
         {
-            throw std::exception("查！严查！！为什么会有不配套的传入");
+            throw std::logic_error("Unmatched anchors' layout!!!! why??????");
         }
 
         if (!mAnchorArray[0] && !mAnchorArray[1])

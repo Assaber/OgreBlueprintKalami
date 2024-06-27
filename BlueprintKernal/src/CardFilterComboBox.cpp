@@ -465,10 +465,10 @@ CardFilterComboBox::~CardFilterComboBox()
 }
 
 
-void CardFilterComboBox::registItems(const QString& cardName, const QString& alias, const QString& group /*= DefaultGroupName*/)
+void CardFilterComboBox::registItems(const QString& cardName, const QString& alias, const QString& group)
 {
     L_IMPL(CardFilterComboBox);
-    QString groupName = group.isEmpty() ? DefaultGroupName : group;
+    QString groupName = group.isEmpty() ? "Default" : group;
     auto& items = l->mItems[groupName];
 
     if (items.find(alias) == items.end())

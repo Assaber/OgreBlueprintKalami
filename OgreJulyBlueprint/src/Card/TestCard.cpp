@@ -34,6 +34,7 @@ TestCard::TestCard()
                     ->setText("Hello world")
                     ->setAlignment(Qt::AlignLeft | Qt::AlignVCenter),
                 BKCreator::create<BKComboBox>()
+                    ->setMinWidth(70)
                     ->setItems(QStringList() << "焚我残躯" << "熊熊圣火" << "生亦何欢" << "死亦何苦" << "为善除恶" << "为光明故" << "喜乐悲愁" << "皆归尘土")
                     ->setCurrentIndex(1, false)
             })
@@ -59,15 +60,18 @@ TestCard::TestCard()
                         ->setTooltip("你瞅啥"), true }
             }),
         BKCreator::create(BKAnchor::Input, BKAnchor::Output)
-            ->append({ BKCreator::create<BKComboBox>()
+            ->append(BKCreator::create<BKComboBox>()
                             ->setItems(QStringList() << "青丝白发一瞬间" << "年华老去像谁言" << "春风犹有怜花意" << "可否许我再少年")
                             ->setCurrentIndex(1, false)
-            }),
+            ),
         BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None)
-            ->append({ BKCreator::create<BKComboBox>()
+            ->append({
+                  { BKCreator::create<BKComboBox>()
                             ->setItems(QStringList() << "青丝白发一瞬间" << "年华老去像谁言" << "春风犹有怜花意" << "可否许我再少年")
                             ->setCurrentIndex(1, false)
-            }),
+                    , true
+                  }
+              }),
         BKCreator::create()
             ->append({ { BKCreator::create<BKPushButton>()
                             ->setText("ooook", true), true },

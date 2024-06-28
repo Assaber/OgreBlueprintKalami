@@ -28,6 +28,35 @@ git submodule update --progress --init --recursive -- "ogre-next-deps"
 ```
 2. msvc编译的时候**OgreIrradianceField.cpp**的第119行会因为注释是指数而报错，简单粗暴的方法是删掉
 
+3. 在Linux下进行编译，目前已验证使用Vulkan是可以的，但是工程仍需要一些改动
+
+- ogre-next/RenderSystems/Vulkan/src/Windowing/X11/OgreVulkanXcbWindow.cpp
+
+``` c++
+void VulkanXcbWindow::createWindow( const String &windowName, uint32 width, uint32 height, const NameValuePairList *miscParams )
+    {
+        uint32_t value_mask, value_list[32];
+        value_mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
+        value_list[0] = mScreen->black_pixel;
+        value_list[1] = /*XCB_EVENT_MASK_KEY_PRESS |*/ XCB_EVENT_MASK_STRUCTURE_NOTIFY;
+
+        if(miscParams)
+        {
+             NameValuePairList::const_iterator opt = miscParams->find("externalWindowHandle");
+             if( opt != miscParams->end() )
+             {
+                 mXcbWindow = StringConverter::parseUnsignedInt(opt->second, 0);
+             }
+        }
+
+        if(mXcbWindow == 0)
+        {
+            mXcbWindow = xcb_generate_id( mConnection );
+        }
+
+        xcb_create_window( ...
+```
+即添加额外的参数解析***externalWindowHandle***，但是目前这样修正在程序退出时会报错（但不影响大逻辑），故暂时没有向总仓库申请pull request。
 
 ### 备注
 1. 如果**INCLUDE_INNER_PARTICLE_CARD**的开关进行了改变，记得清除CMakeCache.txt蛤~

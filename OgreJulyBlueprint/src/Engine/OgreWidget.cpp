@@ -104,7 +104,7 @@ void OgreWidget::loadPlugin()
     	filter << "Plugin_*.dll" << "RenderSystem_*.dll";
     }
     else if(OGRE_PLATFORM_LINUX == OGRE_PLATFORM) {
-    	filter << "Plugin_*.so" << "RenderSystem_*.so";
+    	filter << "Plugin_*.so*" << "RenderSystem_*.so*";
     }
     
     QFileInfoList files = currentDir.entryInfoList(filter, QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot);
@@ -128,7 +128,7 @@ bool OgreWidget::selectRenderSystem()
         "Vulkan Rendering Subsystem",
         "NULL Rendering Subsystem",
     };
-    const char* rs = rsList[0];
+    const char* rs = rsList[2];
 
     Ogre::RenderSystemList rList = mpRoot->getAvailableRenderers();
     Ogre::RenderSystemList::iterator itor = rList.begin();
@@ -174,6 +174,7 @@ void OgreWidget::createScene()
     mpDefaultCamera = mpDefaultSceneManager->createCamera("DefaultCamera");
     mpDefaultCamera->setNearClipDistance(1e-5);
     Ogre::SceneNode* camNode = rootSceneNode->createChildSceneNode();
+    assert(camNode != nullptr && "Create illegal scene node");
     mpDefaultCamera->detachFromParent();
     camNode->attachObject(mpDefaultCamera);
     mpCameraHandle = new CameraMan(camNode);

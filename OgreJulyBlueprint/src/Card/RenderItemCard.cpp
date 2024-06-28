@@ -30,7 +30,6 @@ RenderItemCard::RenderItemCard()
         {
             BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("对象类别")}),
             BKCreator::create(BKAnchor::AnchorType::None)
-                // ->append({ BKCreator::create<BKLabel>()->setText("对象类别")->setFixedSize({60, 20})})
                 ->append({ BKCreator::create<BKComboBox>()
                                 ->setItems(list)
                                 ->setMinWidth(140)
@@ -40,12 +39,11 @@ RenderItemCard::RenderItemCard()
             BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("材质")}),
             BKCreator::create(BKAnchor::AnchorType::Input)
                 ->setDataType(BKAnchor::Input, BKAnchor::String)
-                // ->append({ BKCreator::create<BKLabel>()->setText("材质")->setFixedSize({60, 20})})
-                ->append({ BKCreator::create<BKComboBox>()
+                ->append(BKCreator::create<BKComboBox>()
                                 ->setItems(QStringList() << "snow")
                                 ->setDataChangeCallback(std::bind(&RenderItemCard::materialChange, this, std::placeholders::_1, std::placeholders::_2))
                                 ->setCurrentIndex(0)
-                }),
+                ),
         }
     );
 }
@@ -64,10 +62,11 @@ bool RenderItemCard::renderItemChange(BKUnit* unit, const QVariant& param)
                                                         // 还真有... 2024.06.26
     if (itor == mRenderItemList.end())
         return false;
-    
+
     mpRenderItem = mpSceneManager->createItem(itor->second.toStdString(),
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         Ogre::SCENE_DYNAMIC);
+
     Ogre::SceneNode* rootNode = mpSceneManager->getRootSceneNode();
     rootNode->attachObject(mpRenderItem);
 
@@ -79,9 +78,11 @@ bool RenderItemCard::renderItemChange(BKUnit* unit, const QVariant& param)
 bool RenderItemCard::materialChange(BKUnit* unit, const QVariant& param)
 {
     mLastMaterialName = param.toString();
+    qDebug() << mLastMaterialName;
 
-    if (mpRenderItem)
+    if (mpRenderItem) {
         mpRenderItem->setDatablockOrMaterialName(mLastMaterialName.toStdString());
+    }
 
     return true;
 }

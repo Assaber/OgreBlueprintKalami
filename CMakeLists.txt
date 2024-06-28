@@ -9,6 +9,17 @@ option(BUILD_SHARED "Build shared library" ON)
 option(INCLUDE_INNER_PARTICLE_CARD "The particle cards in the tool are enabled" ON)
 # set(CMAKE_BUILD_TYPE Debug|Release|MinSizeRel|RelWithDebInfo)
 
+if(NOT MSVC)
+# 设置构建类型
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug) # 或者Release
+endif()
+
+# 定义不同构建类型的编译选项
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+endif()
+
 # 设置存放路径
 set(OUTPUT_BASE_DIR "${CMAKE_BINARY_DIR}/output")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_BASE_DIR}/lib)
@@ -62,7 +73,7 @@ set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
 # 如果无法正常找到Qt5就开启下面的注释，并将路径更新
 if(NOT DEFINED ENV{QT5_DIR})
     # message(FATAL_ERROR "未能找到QT5安装路径,请设置'QT5_DIR',他的路径为bin目录的上一层")
-    set(QT5_DIR "C:/Qt/Qt5.12.8/5.12.8/msvc2017_64")
+    set(QT5_DIR "/home/assaber/Qt5.12.2/5.12.2/gcc_64")
     message(STATUS "QT5_DIR 已更新")
 endif()
 set(CMAKE_PREFIX_PATH ${QT5_DIR})

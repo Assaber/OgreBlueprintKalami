@@ -19,9 +19,8 @@ PrintCard::PrintCard()
 
     _pack({
         BKCreator::create(BKAnchor::AnchorType::Input)
-            ->setDataType(BKAnchor::Input, BKAnchor::String)
-            ->append({ BKCreator::create<BKLineEdit>()
-                            ->setText("嘻嘻嘻嘻嘻嘻嘻嘻")
+            ->append( BKCreator::create<BKLineEdit>()
+                ->setText("嘻嘻嘻嘻嘻嘻嘻嘻")
                 ->setDataChangeCallback([](BKUnit* unit, const QVariant& data) ->bool {
                         if (!data.isValid()) {
                             dynamic_cast<BKLineEdit*>(unit)->setText("");
@@ -29,6 +28,6 @@ PrintCard::PrintCard()
                         
                         return true;
                     })
-            })
+            )
         });
 }

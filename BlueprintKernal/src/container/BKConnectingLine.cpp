@@ -8,6 +8,7 @@
 #include "container/BKCard.h"
 #include "unit/BKPushButton.h"
 #include <QGraphicsSceneEvent>
+#include <stdexcept>
 
 class BKConnectingLine::Impl : public QGraphicsItem
 {

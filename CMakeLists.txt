@@ -70,14 +70,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 超帅的，解决了vs中不将target_include_directories头文件路径添加到“附加包含目录”中的问题
 set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
 
-# 如果无法正常找到Qt5就开启下面的注释，并将路径更新
-if(NOT DEFINED ENV{QT5_DIR})
-    # message(FATAL_ERROR "未能找到QT5安装路径,请设置'QT5_DIR',他的路径为bin目录的上一层")
-    set(QT5_DIR "/home/assaber/Qt5.12.2/5.12.2/gcc_64")
-    message(STATUS "QT5_DIR 已更新")
-endif()
-set(CMAKE_PREFIX_PATH ${QT5_DIR})
-
 if(NOT BUILD_SHARED)
     add_compile_definitions(BK_STATIC_LIB)
 endif()

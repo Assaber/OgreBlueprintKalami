@@ -9,6 +9,12 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+# 打印Qt5安装路径
+get_target_property(Qt5Core_LOCATION Qt5::Core LOCATION)
+get_filename_component(Qt5Core_DIR ${Qt5Core_LOCATION} DIRECTORY)
+get_filename_component(Qt5_INSTALL_DIR ${Qt5Core_DIR} DIRECTORY)
+message(STATUS "Qt5 is installed in: ${Qt5_INSTALL_DIR}")
+
 #qt5_add_resources(QRC_FILES a.qrc)
 set(FLAGS)
 if(MSVC)
@@ -63,7 +69,7 @@ endif()
 
 
 if(MSVC)
-    set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_ENVIRONMENT "PATH=${QT5_DIR}/bin;$\{PATH\}")
+    set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_ENVIRONMENT "PATH=${Qt5_INSTALL_DIR}/bin;$\{PATH\}")
 	set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "$\(OutDir\)")
 endif()
 

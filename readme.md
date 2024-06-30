@@ -129,7 +129,6 @@ _pack({
 
 Or write conservatively, like***ReadFileCard***(Damn, it's really hard to find)
 ``` c++
-_pack({
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
     outputCell->setDataType(BKAnchor::Output, BKAnchor::String);
     mpOutputAnchor = outputCell->getAnchor(BKAnchor::AnchorType::Output);

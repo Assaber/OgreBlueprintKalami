@@ -24,12 +24,12 @@
 
 SimpleMaterialCard::SimpleMaterialCard()
 {
-    setTitle("简单材质");
+    setTitle("Simple material");
     mstrMaterialName = QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>();
     outputLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    outputLabel->setText("输出");
+    outputLabel->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
     outputCell->setDataType(BKAnchor::Output, BKAnchor::String);
     outputCell->append(outputLabel, false);;
@@ -37,7 +37,7 @@ SimpleMaterialCard::SimpleMaterialCard()
     mpOutputAnchor->redirectToCard();
 
     BKLabel* nameLabel = BKCreator::create<BKLabel>();
-    nameLabel->setText("脚本类型");
+    nameLabel->setText("Type");
     BKCell* nameCell = BKCreator::create(BKAnchor::AnchorType::None);
     nameCell->append(nameLabel);
 
@@ -48,7 +48,7 @@ SimpleMaterialCard::SimpleMaterialCard()
     nameEditCell->append(nameEdit);
     
     BKLabel* vertexProgram = BKCreator::create<BKLabel>();
-    vertexProgram->setText("顶点着色器程序");
+    vertexProgram->setText("Vertex program");
     vertexProgram->setTitleNeverChanges(true);
     vertexProgram->setDataChangeCallback(std::bind(&SimpleMaterialCard::slotVertexProgramUpdate, this, std::placeholders::_1, std::placeholders::_2));
     BKCell* vertexProgramCell = BKCreator::create(BKAnchor::AnchorType::Input);
@@ -56,7 +56,7 @@ SimpleMaterialCard::SimpleMaterialCard()
     vertexProgramCell->append(vertexProgram);
 
     BKLabel* fragmentProgram = BKCreator::create<BKLabel>();
-    fragmentProgram->setText("片段着色器程序");
+    fragmentProgram->setText("Fragment program");
     fragmentProgram->setTitleNeverChanges(true);
     fragmentProgram->setDataChangeCallback(std::bind(&SimpleMaterialCard::slotFragmentProgramUpdate, this, std::placeholders::_1, std::placeholders::_2));
     BKCell* fragmentProgramProgramCell = BKCreator::create(BKAnchor::AnchorType::Input);
@@ -85,8 +85,7 @@ void SimpleMaterialCard::updateMaterial()
     
     Ogre::MaterialManager* mm = Ogre::MaterialManager::getSingletonPtr();
     Ogre::MaterialPtr materialPtr = mm->getByName(mstrMaterialName);
-    if (!materialPtr)
-    {
+    if (!materialPtr) {
         materialPtr = mm->create(mstrMaterialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     }
 
@@ -98,11 +97,13 @@ void SimpleMaterialCard::updateMaterial()
 
         Ogre::GpuProgramParametersSharedPtr vpp = pass->getVertexProgramParameters();
 
-        for (const auto& item : mVertexProgramInfo.aci)
+        for (const auto& item : mVertexProgramInfo.aci) {
             vpp->setNamedAutoConstant(item.name, item.type);
+        }
 
-        for (const auto& item : mVertexProgramInfo.ci)
+        for (const auto& item : mVertexProgramInfo.ci) {
             transConstantInfo2Program(item, vpp);
+        }
     }
 
     if (mFragmentProgramInfo.name.size())
@@ -111,11 +112,13 @@ void SimpleMaterialCard::updateMaterial()
 
         Ogre::GpuProgramParametersSharedPtr fpp = pass->getFragmentProgramParameters();
 
-        for (const auto& item : mFragmentProgramInfo.aci)
+        for (const auto& item : mFragmentProgramInfo.aci) {
             fpp->setNamedAutoConstant(item.name, item.type);
+        }
 
-        for (const auto& item : mFragmentProgramInfo.ci)
+        for (const auto& item : mFragmentProgramInfo.ci) {
             transConstantInfo2Program(item, fpp);
+        }
     }
 
     mpOutputAnchor->dataChanged(getCurrentCardValue());

@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 
     qsrand(QDateTime::currentSecsSinceEpoch());
 
-    // 注册自定义结构体的锚点识别及颜色
+    // Register
     BKAnchor::registDataType(QMetaTypeId<PbsCommonTextureCard::Info>::qt_metatype_id());
     BKAnchor::registDataType(QMetaTypeId<PbsDetailTextureCard::Info>::qt_metatype_id());
     BKAnchor::registDataType(QMetaTypeId<PbsTransparentCard::Info>::qt_metatype_id());
@@ -67,41 +67,41 @@ int main(int argc, char** argv)
     if (editor)
     {
         CardFilterComboBox* menu = editor->getFilterMenuPtr();
-        menu->registCard<TestCard>("功能", "测试");
-        menu->registCard<PrintCard>("功能", "理论上万物皆可打印");
-        menu->registCard<ReadFileCard>("功能", "文件读取");
+        menu->registCard<TestCard>("Common", "Test");
+        menu->registCard<PrintCard>("Common", "Print");
+        menu->registCard<ReadFileCard>("Common", "Read File");
 
-        menu->registCard<RenderItemCard>("靶子", "渲染对象");
+        menu->registCard<RenderItemCard>("Render", "Render Item");
 
-        menu->registCard<PbsDatablockCard>("材质", "PBS数据块");
-        menu->registCard<PbsCommonTextureCard>("材质", "PBS材质");
-        menu->registCard<PbsDetailTextureCard>("材质", "PBS细节");
-        menu->registCard<PbsTransparentCard>("材质", "PBS透明");
-        menu->registCard<BlendblockCard>("材质", "混合块");
-        menu->registCard<MacroblockCard>("材质", "宏块");
-        menu->registCard<UnlitDatablockCard>("材质", "Unlit数据块");
-        menu->registCard<UnlitDiffuseMapCard>("材质", "漫反射贴图");
+        menu->registCard<PbsDatablockCard>("Texture", "PBS Datablock");
+        menu->registCard<PbsCommonTextureCard>("Texture", "PBS Texture");
+        menu->registCard<PbsDetailTextureCard>("Texture", "PBS Detail");
+        menu->registCard<PbsTransparentCard>("Texture", "PBS Transparent");
+        menu->registCard<BlendblockCard>("Texture", "Blendblock");
+        menu->registCard<MacroblockCard>("Texture", "Macroblock");
+        menu->registCard<UnlitDatablockCard>("Texture", "Unlit Datablock");
+        menu->registCard<UnlitDiffuseMapCard>("Texture", "Unlit Diffuse");
 
-        menu->registCard<SimpleMaterialCard>("材质", "普通材质");
-        menu->registCard<SimpleFragmentProgCard>("材质", "普通片段程序");
-        menu->registCard<SimpleVertexProgCard>("材质", "普通顶点程序");
+        menu->registCard<SimpleMaterialCard>("Texture", "Simple Material");
+        menu->registCard<SimpleFragmentProgCard>("Texture", "Simple Fragment Program");
+        menu->registCard<SimpleVertexProgCard>("Texture", "Simple Vertex Program");
 
-        menu->registCard<CanvasCard>("材质", "画布");
+        menu->registCard<CanvasCard>("Texture", "Canvas");
 
 #ifdef OBK_INCLUDE_PARTICLE_PLUGIN
-        menu->registCard<ParticleCard>("粒子", "金色传说");
-        menu->registCard<ParticleBillboardSettingCard>("粒子", "广告板设置");
-        menu->registCard<ParticleEmitterCard>("粒子", "发射器");
-        menu->registCard<ParticleEmitterTypeCard>("粒子", "发射器类型扩展");
-        menu->registCard<ParticleColourFader2Card>("粒子", "双重颜色渐变导演");
-        menu->registCard<ParticleColourFaderCard>("粒子", "颜色渐变导演");
-        menu->registCard<ParticleColourImageCard>("粒子", "图片渐变导演");
-        menu->registCard<ParticleColourInterpolatorCard>("粒子", "多重颜色渐变导演");
-        menu->registCard<ParticleDeflectorPlaneCard>("粒子", "金色传说导演");
-        menu->registCard<ParticleDirectionRandomiserCard>("粒子", "方向随机导演");
-        menu->registCard<ParticleLinearForceCard>("粒子", "线性力导演");
-        menu->registCard<ParticleRotatorCard>("粒子", "旋转导演");
-        menu->registCard<ParticleScalerCard>("粒子", "缩放导演");
+        menu->registCard<ParticleCard>("Particle", "Particle");
+        menu->registCard<ParticleBillboardSettingCard>("Particle", "Billboard Setting");
+        menu->registCard<ParticleEmitterCard>("Particle", "Emitter");
+        menu->registCard<ParticleEmitterTypeCard>("Particle", "Emitter Type");
+        menu->registCard<ParticleColourFader2Card>("Particle", "Colour Fader Affector");
+        menu->registCard<ParticleColourFaderCard>("Particle", "Colour Fader Affector");
+        menu->registCard<ParticleColourImageCard>("Particle", "Colour Image Affector");
+        menu->registCard<ParticleColourInterpolatorCard>("Particle", "Colour Interpolator Affector");
+        menu->registCard<ParticleDeflectorPlaneCard>("Particle", "Deflector Plane Affector");
+        menu->registCard<ParticleDirectionRandomiserCard>("Particle", "Direction Randomiser Affector");
+        menu->registCard<ParticleLinearForceCard>("Particle", "Linear Force Affector");
+        menu->registCard<ParticleRotatorCard>("Particle", "Rotator Affector");
+        menu->registCard<ParticleScalerCard>("Particle", "Scaler Affector");
 #endif
     }
     

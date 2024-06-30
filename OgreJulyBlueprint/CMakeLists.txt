@@ -9,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# 打印Qt5安装路径
+# Print Qt5 install dir
 get_target_property(Qt5Core_LOCATION Qt5::Core LOCATION)
 get_filename_component(Qt5Core_DIR ${Qt5Core_LOCATION} DIRECTORY)
 get_filename_component(Qt5_INSTALL_DIR ${Qt5Core_DIR} DIRECTORY)
@@ -73,7 +73,7 @@ if(MSVC)
 	set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "$\(OutDir\)")
 endif()
 
-# 拷贝
+# Copy necessary
 set(OGRE_SAMPLE_COMMON "${OUTPUT_BASE_DIR}/media")
 if(NOT EXISTS ${OGRE_SAMPLE_COMMON})
     file(COPY 
@@ -96,5 +96,5 @@ if(NOT EXISTS ${OGRE_SAMPLE_COMMON})
         ${CMAKE_SOURCE_DIR}/media/texture
         DESTINATION 
         ${OGRE_SAMPLE_COMMON})
-    message("拷贝必要资源")
+    message("Copy resource finished...")
 endif()

@@ -1,15 +1,16 @@
 ﻿#include "unit/BKSliderBar.h"
-#include <QGraphicsSceneMouseEvent>
-#include <QPainter>
-#include <QFontMetrics>
-#include <QGraphicsProxyWidget>
-#include <QLineEdit>
-#include <QStyle>
-#include <QGraphicsScene>
 #include "container/BKCard.h"
 #include "BKEvent.h"
+
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsProxyWidget>
 #include <QCoreApplication>
+#include <QGraphicsScene>
+#include <QFontMetrics>
 #include <QValidator>
+#include <QLineEdit>
+#include <QPainter>
+#include <QStyle>
 
 class BKSliderBarEditor;
 class BKSliderBar::Impl : public QGraphicsItem
@@ -24,11 +25,6 @@ public:
         mOption.setAlignment(Qt::AlignCenter);
     }
 
-    ~Impl()
-    {
-
-    }
-
 public:
     virtual QRectF boundingRect() const override
     {
@@ -39,7 +35,6 @@ public:
     {
         correctRange();
 
-        // 绘制外边框
         QPen p(QColor(255, 128, 64));
         painter->save();
         {
@@ -49,7 +44,6 @@ public:
             painter->restore();
         }
 
-        // 绘制百分比
         painter->save();
         {
             painter->setPen(p);
@@ -58,10 +52,12 @@ public:
             do 
             {
                 float percent = 0;
-                if (mDataType == DataType::Int)
+                if (mDataType == DataType::Int) {
                     percent = (mIntRange[1] == mIntRange[0]) ? 0 : 1.0f * (mIntRange[1] - miCurrentValue) / (mIntRange[1] - mIntRange[0]);
-                else
+                }
+                else {
                     percent = (mDoubleRange[1] == mDoubleRange[0]) ? 0 : 1.0f * (mDoubleRange[1] - mdCurrentValue) / (mDoubleRange[1] - mDoubleRange[0]);
+                }
 
                 percent = percent > 1 ? 1.0f : (percent < 0 ? 0 : percent);
                 painter->drawRoundedRect(mCtrlArea - QMargins(0, 0, percent * mCtrlArea.width(), 0), 2.0f, 2.0f);
@@ -71,7 +67,6 @@ public:
             painter->restore();
         }
 
-        // 绘制文字
         painter->save();
         {
             painter->setPen(QColor(142, 47, 0));
@@ -121,38 +116,40 @@ private:
 
         if (mDataType == DataType::Int)
         {
-            if (mIntRange[0] > mIntRange[1])
+            if (mIntRange[0] > mIntRange[1]) {
                 std::swap(mIntRange[0], mIntRange[1]);
+            }
         }
         else if (mDataType == DataType::Double)
         {
-            if (mDoubleRange[0] > mDoubleRange[1])
+            if (mDoubleRange[0] > mDoubleRange[1]) {
                 std::swap(mDoubleRange[0], mDoubleRange[1]);
+            }
         }
         mbHasCorrected = true;
     }
 
 public:
     BKSliderBar* mpHandle = nullptr;
-    // 包围盒
+
     QRectF mBoundingRect;
-    // 文字选项
+
     QTextOption mOption;
-    // 控件区域
+
     QRect mCtrlArea;
-    // 固定上下边距
+
     static constexpr int mFixedMargin = 2;
-    // 编辑器
+
     static BKSliderBarEditor* mpPublicEditor;
-    // 数据类型
+
     DataType mDataType;
-    // Int型范围及当前值
+
     int miCurrentValue = 0;
     int mIntRange[2] = { 0, 100 };
-    // Double型范围
+
     double mdCurrentValue = 0;
     double mDoubleRange[2] = { 0, 100.0f };
-    // 纠正使能
+
     bool mbHasCorrected = false;
 };
 
@@ -228,10 +225,12 @@ private:
     {
         if (mpBindItem)
         {
-            if (mpBindItem->mDataType == BKSliderBar::DataType::Int  && mpLineEdit->text().toInt() != mpBindItem->miCurrentValue)
+            if (mpBindItem->mDataType == BKSliderBar::DataType::Int && mpLineEdit->text().toInt() != mpBindItem->miCurrentValue) {
                 mpBindItem->mpHandle->dataChanged(mpLineEdit->text().toInt());
-            else if (mpBindItem->mDataType == BKSliderBar::DataType::Double && mpLineEdit->text().toDouble() != mpBindItem->mdCurrentValue)
+            }
+            else if (mpBindItem->mDataType == BKSliderBar::DataType::Double && mpLineEdit->text().toDouble() != mpBindItem->mdCurrentValue) {
                 mpBindItem->mpHandle->dataChanged(mpLineEdit->text().toDouble());
+            }
 
             mpBindItem->update();
 
@@ -266,8 +265,9 @@ void BKSliderBar::Impl::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
         TopmostCardEvent e(mpHandle->mpBindCard->getBindItem());
         qApp->sendEvent(scene(), &e);
 
-        if (!mpPublicEditor)
+        if (!mpPublicEditor) {
             mpPublicEditor = new BKSliderBarEditor();
+        }
 
         mpPublicEditor->setExpand(this);
     }
@@ -341,23 +341,27 @@ BKSliderBar::~BKSliderBar()
 
 BKSliderBar* BKSliderBar::setCurrentValue(const QVariant& value)
 {
-    L_IMPL(BKSliderBar)
+    L_IMPL(BKSliderBar);
 
-    if (l->mDataType == DataType::Int)
+    if (l->mDataType == DataType::Int) {
         l->miCurrentValue = value.toInt();
-    else
+    }
+    else {
         l->mdCurrentValue = value.toDouble();
+    }
     return this;
 }
 
 BKSliderBar* BKSliderBar::setMaximum(const QVariant& max)
 {
-    L_IMPL(BKSliderBar)
+    L_IMPL(BKSliderBar);
 
-    if (l->mDataType == DataType::Int)
+    if (l->mDataType == DataType::Int) {
         l->mIntRange[1] = max.toInt();
-    else
+    }
+    else {
         l->mDoubleRange[1] = max.toDouble();
+    }
 
     l->mbHasCorrected = false;
     return this;
@@ -365,12 +369,14 @@ BKSliderBar* BKSliderBar::setMaximum(const QVariant& max)
 
 BKSliderBar* BKSliderBar::setMinimum(const QVariant& min)
 {
-    L_IMPL(BKSliderBar)
+    L_IMPL(BKSliderBar);
 
-    if (l->mDataType == DataType::Int)
+    if (l->mDataType == DataType::Int) {
         l->mIntRange[0] = min.toInt();
-    else
+    }
+    else {
         l->mDoubleRange[0] = min.toDouble();
+    }
     l->mbHasCorrected = false;
     return this;
 }
@@ -394,14 +400,16 @@ void BKSliderBar::dataChanged(const QVariant& data)
 
     if (data.isNull())
     {
-        if (mpRightAnchor)
+        if (mpRightAnchor) {
             mpRightAnchor->dataChanged(l->mDataType == DataType::Int ? l->miCurrentValue : l->mdCurrentValue);
+        }
     }
     else
     {
         setCurrentValue(data);
         l->update();
-        if (!mCallbackFunc(this, data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor) {
             mpRightAnchor->dataChanged(data);
+        }
     }
 }

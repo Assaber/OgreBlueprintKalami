@@ -1,14 +1,15 @@
 ﻿#include "unit/BKColorSelector.h"
-#include <QGraphicsSceneMouseEvent>
-#include <QPainter>
-#include <QGraphicsProxyWidget>
-#include <QStyle>
-#include <QGraphicsScene>
 #include "container/BKCard.h"
 #include "BKEvent.h"
+
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsProxyWidget>
 #include <QCoreApplication>
-#include <QDebug>
+#include <QGraphicsScene>
 #include <QColorDialog>
+#include <QPainter>
+#include <QStyle>
+#include <QDebug>
 
 class BKColorSelector::Impl : public QGraphicsItem
 {
@@ -22,7 +23,10 @@ public:
     }
 
 public:
-    virtual QRectF boundingRect() const override { return mBoundingRect; }
+    virtual QRectF boundingRect() const override 
+    { 
+        return mBoundingRect; 
+    }
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override
     {
@@ -52,10 +56,12 @@ public:
     bool loadFromColorString(const QString& color) 
     {
         QStringList split;
-        if (color.indexOf(',') < 0)     // 空格分隔
+        if (color.indexOf(',') < 0) {
             split = color.split(' ', QString::SkipEmptyParts);
-        else
+        }
+        else {
             split = color.split(',', QString::SkipEmptyParts);
+        }
 
         if (split.count() > 2)
         {
@@ -65,12 +71,13 @@ public:
         }
         else
         {
-            qWarning() << "颜色解析戳啦，戳啦！";
+            qWarning() << "Color parsing error, or, r ...";
             return false;
         }
         
-        if (split.count() > 3)
+        if (split.count() > 3) {
             mColorData[3] = split[3].toFloat();
+        }
         
         syncColor();
 
@@ -104,15 +111,15 @@ protected:
             return;
         }
 
-        if (!mBoundingRect.contains(event->pos()))
-        {
+        if (!mBoundingRect.contains(event->pos())) {
             event->ignore();
         }
         else
         {
             QColorDialog dlg(mColor);
-            if (mType == Type::Vector4)
+            if (mType == Type::Vector4) {
                 dlg.setOption(QColorDialog::ShowAlphaChannel);
+            }
 
             if (dlg.exec() != QDialog::Accepted)
                 return;
@@ -126,16 +133,16 @@ protected:
 
 public:
     BKColorSelector* mpHandle = nullptr;
-    // 包围盒
+
     QRectF mBoundingRect;
-    // 控件区域
+
     QRect mCtrlArea;
-    // 固定上下边距
+
     static constexpr int mFixedMargin = 2;
-    // 当前颜色
+
     Color4f mColorData = {1.0f, 1.0f, 1.0f, 1.0f};
     QColor mColor;
-    // 颜色格式
+
     BKColorSelector::Type mType;
 };
 
@@ -237,14 +244,16 @@ void BKColorSelector::dataChanged(const QVariant& data)
 
     if (data.isNull())
     {
-        if (mpRightAnchor)
+        if (mpRightAnchor) {
             mpRightAnchor->dataChanged(l->mColor);
+        }
     }
     else
     {
         setColor(data.value<QColor>());
         l->update();
-        if (!mCallbackFunc(this, data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor) {
             mpRightAnchor->dataChanged(data);
+        }
     }
 }

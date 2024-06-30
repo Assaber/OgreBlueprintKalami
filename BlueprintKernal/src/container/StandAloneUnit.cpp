@@ -14,6 +14,7 @@ StandAloneUnit::~StandAloneUnit()
 void StandAloneUnit::syncSoulImprint()
 {
     QGraphicsItem* item = getBindItem();
-    if (item)
+    if (item) {
         item->setData(StandAloneUnitInUserData, GET_ENUM_CLASS_UPWARD_VARIANT(mUnitType));
+    }
 }

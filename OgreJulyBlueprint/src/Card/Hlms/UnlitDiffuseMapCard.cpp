@@ -32,13 +32,13 @@ const QMap<QString, Ogre::UnlitBlendModes> name2UnlitBlendModes = {
 UnlitDiffuseMapCard::UnlitDiffuseMapCard()
     : ResetResourceSup("ResourceGroup.Unlit.Snow")
 {
-    setTitle("Unlit贴图");
+    setTitle("Unlit diffuse");
 
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
     outputCell->setDataType(BKAnchor::Output, QMetaTypeId<UnlitDiffuseMapCard::Info>::qt_metatype_id())
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-            ->setText("输出")
+            ->setText("Output")
             ->setMinWidth(140)
         , false)
         ->getAnchor(BKAnchor::AnchorType::Output)
@@ -54,7 +54,7 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
     _pack({
         outputCell,
 
-         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("索引")),
+         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Index")),
          BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(indexList)
             ->setCurrentIndex(0, false)
@@ -65,7 +65,7 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
                 })
          ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Pixmap")),
         BKCreator::create(BKAnchor::AnchorType::Input)
                     ->setDataType(BKAnchor::Input, BKAnchor::DataType::String)
                     ->append(BKCreator::create<BKPixmap>()
@@ -81,7 +81,7 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
                     {
                         QString name = param.toString();
 
-                        if (mLastTextureName.compare(name) == 0) {      // 无需变更
+                        if (mLastTextureName.compare(name) == 0) {      // No changes are required
                             return true;
                         }
                         else
@@ -92,7 +92,8 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
                                 resetResourceDir(texturePath);
                             }
                             else  {  
-                                // 视为纹理由连接线传入，并非资源路线
+                                // In this case, it is considered as the texture is coming in from the connection line, not the resource
+                                // Such as canvas, it has a inner texture, so we only need update input name
                                 mLastTextureName = name;
                             }
 
@@ -105,7 +106,7 @@ UnlitDiffuseMapCard::UnlitDiffuseMapCard()
                     })
             ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("混合模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Blend mode")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendModes)
             ->setCurrentIndex(initBlendModeIndex, false)

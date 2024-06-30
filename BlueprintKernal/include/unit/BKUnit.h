@@ -8,20 +8,23 @@
 class BKUnitCreator;
 class BKCard;
 class BKAnchor;
-// 组元
+
 class _BlueprintKernalExport BKUnit
 {
 public:
-    /// 大小策略
     enum class SizePolicy : uint8_t
     {
-        Fixed,                  ///< 固定大小
-        Adaptive,               ///< 自适应
+        Fixed,
+        Adaptive,
     };
 
-    /// 数据更新回调函数
-    // - @param： param 控件值
-    // - @return: bool 若为true则停止传递，否则依照锚点绑定传递到下一个结点
+    /// Callback function for data updates
+    // - @param： unit  
+    //          Which Unit made the update
+    // - @param： param
+    //          Data
+    // - @return: bool
+    //          If true, the updated value will stop being passed to the bound output anchor, otherwise it will continue to be passed
     using DataChangeCallback = std::function<bool(BKUnit* unit, const QVariant& param)>;
 
 public:
@@ -30,68 +33,42 @@ public:
 
 public:
     /**
-     * @brief:                          获取绑定的卡片
-     * @return: BKCard*
-     * @remark:                         如果未绑定将返回nullptr
+     * @remark: If not bound, nullptr will be returned                   
      */
     BKCard* getBindCard() const;
 
-    /**
-     * @brief:                          默认的数据更新回调函数  
-     * @param: const QVariant & param   控件值
-     * @return: bool                    若为true则停止传递，否则依照锚点绑定传递到下一个结点
-     * @remark: 
-     */
     static bool defaultDataChangeCallback(BKUnit* unlit, const QVariant& param);
 
 public:
     virtual operator QJsonValue() const = 0;
     virtual bool loadFromJson(const QJsonValue& val) = 0;
 
-    /**
-     * @brief:                          控件当前值
-     * @return: QVariant                
-     * @remark: 
-     */
     virtual QVariant data() = 0;
 
     /**
-     * @brief:                          组元复制
-     * @return: BKUnit*                 新对象指针
-     * @remark:                         可只深度拷贝部分成员属性，大体上是在可扩展单元中使用
+     * @remark: You can deep copy only a subset of member attributes, which is largely used in template cell(BKCell::Type::ListGroup)
      */
     virtual BKUnit* copy() = 0;
 
 protected:
-    /**
-     * @brief:                          获取绑定的QGraphics对象
-     * @return: QGraphicsItem*          对象指针
-     * @remark: 
-     */
     virtual QGraphicsItem* getGraphicsItem() = 0;
-    /**
-     * @brief:                          更新数据
-     * @param: const QVariant & data    数据变量
-     * @return: void                
-     * @remark:                         当变量为空，则视为使用当前值触发后续更新，否则使用传入值进行更新
+    /**         
+     * @remark: If the param is QVariant(), the current value is used to trigger subsequent updates, otherwise the param is used
      */
     virtual void dataChanged(const QVariant& data) = 0;
     /**
-     * @brief:                          更新数据
-     * @return: void
-     * @remark:                         以QVariant::Invalid的参数触发数据改变的回调。原则上只有连接线断开后用来通知下一节点数据发生改变，不会真正意义地改变控件值，如果需要清空控件数据，则在回调中分情况处理
+     * @remark: QVariant::Invalid parameter triggers a callback for data change. In principle, only after the connection line is disconnected, 
+     * it is used to notify the next node that the data has changed, and will not change the control value actually. you can set a new value 
+     * in the callback by discussing the situation
      */
     virtual void dataChanged();
     /**
-     * @brief:                          组元大小变更后的主动回调
+     * @brief: The function will be called after the size has been changed, and you can override this function to update the layout inside 
+     * some units
      */
     virtual void resized();
-
     /**
-     * @brief:                          复制基础组元信息
-     * @param: BKUnit * dst             靶对象
-     * @return: void
-     * @remark: 
+     * @remark: Copy some necessary and basic attribute, you can call this function in copy()
      */
     void _copyBasicAttributeTo(BKUnit* dst);
 
@@ -99,23 +76,22 @@ protected:
     friend class BKCell;
     friend class BKAnchor;
     friend class BKConnectingLine;
-    // 当前组元大小，原则上步应该由组元确定，应当由cell统一调配
+    // The size of unit. In principle, it should not be determined by the unit, it should be set by it's cell
     QSizeF mSize = { 0, 0 };
-    // 组元的最小大小限制
+    // Minimum limit on unit size
     QSizeF mMinSize = { 0, 0 };
-    // 组元大小策略，整体调整大小时会根据此策略进行判定
+    // Unit size policy, which is used to determine the layout when calculating the layout
     SizePolicy mSizePolicy = SizePolicy::Adaptive;
-    // 绑定的卡片
+
     BKCard* mpBindCard = nullptr;
-    // 绑定的下游锚点
+    // The associated output anchor
     BKAnchor* mpRightAnchor = nullptr;
-    // 数据更新回调
+
     DataChangeCallback mCallbackFunc;
-    // 控件使能
+    // Whether the unit can respond to certain interactions
     bool mbEnable = true;
 
 public:
-    // 最小组元高度
     static constexpr int minUnitHeight = 20;
 };
 

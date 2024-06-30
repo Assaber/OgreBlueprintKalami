@@ -23,7 +23,7 @@ public:
 public:
     virtual bool loadFromJson(const QJsonValue& val) override;
     virtual operator QJsonValue() const override;
-    //返回QColor类型对象
+    // Returns a QVariant from QColor
     virtual QVariant data() override;
     virtual BKUnit* copy() override;
 

@@ -34,13 +34,13 @@ const QMap<QString, Ogre::PbsTextureTypes> name2TextureType = {
 PbsCommonTextureCard::PbsCommonTextureCard()
     : ResetResourceSup("ResourceGroup.Pbs.Snow")
 {
-    setTitle("Pbs贴图");
+    setTitle("Pbs texture");
 
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
     outputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsCommonTextureCard::Info>::qt_metatype_id())
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-            ->setText("输出")
+            ->setText("Output")
             ->setMinWidth(140)
         , false)
         ->getAnchor(BKAnchor::AnchorType::Output)
@@ -55,7 +55,7 @@ PbsCommonTextureCard::PbsCommonTextureCard()
     _pack({
         outputCell,
 
-         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图类型")),
+         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Type")),
          BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(textureTypeNames)
             ->setCurrentIndex(initTextureTypeIndex, false)
@@ -66,7 +66,7 @@ PbsCommonTextureCard::PbsCommonTextureCard()
                 })
          ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Pixmap")),
         BKCreator::create(BKAnchor::AnchorType::Input)
             ->setDataType(BKAnchor::Input, BKAnchor::String)
             ->append(BKCreator::create<BKPixmap>()
@@ -82,7 +82,7 @@ PbsCommonTextureCard::PbsCommonTextureCard()
                     })
             ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("纹理寻址模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Sampler")),
         BKCreator::create(BKAnchor::AnchorType::None)
                 ->append({
                     BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("U"),

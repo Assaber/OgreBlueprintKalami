@@ -19,13 +19,13 @@ CanvasCard::CanvasCard()
     : BKCard()
     , mpTextureManager(Ogre::Root::getSingletonPtr()->getRenderSystem()->getTextureGpuManager())
 {
-    setTitle("画板");
+    setTitle("Canvas");
     mstrTextureUuid = QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();
     const QSize canvasSize = { 200, 200 };
 
     BKCell* textureNameLabelCell = BKCreator::create(BKAnchor::AnchorType::None);
     BKLabel* textureNameLabel = BKCreator::create<BKLabel>();
-    textureNameLabel->setText("名称");
+    textureNameLabel->setText("Name");
     textureNameLabelCell->append(textureNameLabel, false);
 
     BKCell* textureNameEditCell = BKCreator::create(BKAnchor::AnchorType::Output);
@@ -41,7 +41,7 @@ CanvasCard::CanvasCard()
     canvas->setDataChangeCallback(std::bind(&CanvasCard::slotTextureUpdate, this, std::placeholders::_1, std::placeholders::_2));
     canvasCell->append(canvas);
 
-    // 创建纹理
+    // Create texture
     mpTexture = mpTextureManager->createOrRetrieveTexture(
         mstrTextureUuid,
         Ogre::GpuPageOutStrategy::Discard,

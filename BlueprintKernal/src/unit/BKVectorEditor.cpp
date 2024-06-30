@@ -1,21 +1,20 @@
 ﻿#include "unit/BKVectorEditor.h"
 #include "container/BKCard.h"
 #include "BKEvent.h"
-
-#include <QGraphicsSceneMouseEvent>
-#include <QCoreApplication>
-#include <QGraphicsScene>
-#include <QPainter>
-#include <QStyle>
 #include <stdexcept>
 #include <limits>
+
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsProxyWidget>
+#include <QCoreApplication>
+#include <QRegExpValidator>
+#include <QGraphicsScene>
 #include <QFontMetrics>
 #include <QApplication>
-#include <QGraphicsProxyWidget>
-#include <QLineEdit>
-#include <QRegExpValidator>
 #include <QJsonArray>
-
+#include <QLineEdit>
+#include <QPainter>
+#include <QStyle>
 
 class BKVectorCtrl;
 class BKVectorEditor::Impl : public QGraphicsItem
@@ -25,7 +24,6 @@ public:
         : mpHandle(handle)
         , mType(type)
     {
-        // 开辟内存
         if (count != 0)
         {
             if (mType == Type::Float)
@@ -51,10 +49,6 @@ public:
         mVecName.resize(count);
     }
 
-    ~Impl()
-    {
-    }
-
 public:
     QVariant getValue()
     {
@@ -63,16 +57,18 @@ public:
         if (mType == Type::Float)
         {
             FloatVec vec;
-            for (const auto& item : mfVector)
+            for (const auto& item : mfVector) {
                 vec.push_back(std::get<0>(item));
+            }
 
             ret = QVariant::fromValue(vec);
         }
         else if (mType == Type::Int)
         {
             IntegerVec vec;
-            for (const auto& item : miVector)
+            for (const auto& item : miVector) {
                 vec.push_back(std::get<0>(item));
+            }
 
             ret = QVariant::fromValue(vec);
         }
@@ -85,14 +81,15 @@ public:
         auto get_max_label_width = [this]() -> int {
             int maxWidth = 0;
             QFontMetrics fm = QApplication::fontMetrics();
-            for (const QString& title : mVecName)
+            for (const QString& title : mVecName) {
                 maxWidth = std::max(fm.size(Qt::TextSingleLine, title).width(), maxWidth);
+            }
 
             return maxWidth;
         };
 
 
-        if (size.isValid()) // 自行调整，更新编辑框大小
+        if (size.isValid()) // Update the edit box size
         {
             if (mVecName.size() == 0)
                 return;
@@ -125,11 +122,12 @@ public:
                     x = 0;
                     y += ctrlHeight + mFixedMargin;
                 }
-                else
+                else {
                     x += mItemsSpacing;
+                }
             }
         }
-        else    // 更新最小范围
+        else    // Refresh minimum range
         {
             if (mVecName.size() == 0)
             {
@@ -137,15 +135,17 @@ public:
                 return;
             }
 
-            // 重新计算宽度
+            // Recalculates the width
             int oneCellWidth = get_max_label_width() + mCtrlSpacing + mLineEditWidth;
             int width = 0;
             int lines = mVecName.size() / mItemsInLine + (mVecName.size() % mItemsInLine == 0 ? 0 : 1);
             int height = lines * BKUnit::minUnitHeight + mFixedMargin * (2 + lines - 1);
-            if (mVecName.size() < mItemsInLine)
+            if (mVecName.size() < mItemsInLine) {
                 width = oneCellWidth * mVecName.size() + (mVecName.size() - 1) * mItemsSpacing;
-            else
+            }
+            else {
                 width = oneCellWidth * mItemsInLine + (mItemsInLine - 1) * mItemsSpacing;
+            }
 
             mpHandle->mMinSize = { 1.0f * width, 1.0f * height};
         }
@@ -163,8 +163,7 @@ public:
         painter->save();
         {
             painter->setPen(QColor(255, 128, 0));
-            for (int i = 0; i < mTitleArea.size(); ++i)
-            {
+            for (int i = 0; i < mTitleArea.size(); ++i) {
                 painter->drawText(mTitleArea[i], mVecName[i], op);
             }
                 
@@ -180,10 +179,12 @@ public:
             {
                 painter->drawRoundedRect(mEditorArea[i], 2.0f, 2.0f);
 
-                if(mType == Type::Int)
+                if (mType == Type::Int) {
                     painter->drawText(mEditorArea[i], QString::number(std::get<0>(miVector[i])), op);
-                else if(mType == Type::Float)
+                }
+                else if (mType == Type::Float) {
                     painter->drawText(mEditorArea[i], QString::number(std::get<0>(mfVector[i]), 'f', 3), op);
+                }
             }
 
             painter->restore();
@@ -212,36 +213,30 @@ protected:
 
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
-
 public:
-    // 包围盒
     QRectF mBoundingRect;
     BKVectorEditor* mpHandle;
     BKVectorEditor::Type mType;
     std::vector<std::tuple<int, int, int>> miVector;
     std::vector<std::tuple<float, float, float>> mfVector;
-    // 固定上下边距
+
     static constexpr int mFixedMargin = 2;
-    // 标题与编辑框的间隔
     static constexpr int mCtrlSpacing = 6;
-    // 单元间的间隔
     static constexpr int mItemsSpacing = 10;
-    // 向量名称
+
     std::vector<QString> mVecName = { "x" , "y" , "z" , "u" , "v" , "w" };
-    // 一行中有多少个控件
+
     int mItemsInLine = 2;
-    // 固定一个输入框的宽度
+    // The fixed width of an input box
     int mLineEditWidth = 56;
-    // 向量标题的范围
+
     std::vector<QRectF> mTitleArea;
-    // 向量编辑框的范围
     std::vector<QRectF> mEditorArea;
-    // 编辑框
+
     static BKVectorCtrl* mpPublicEditor;
 };
 
-
-// 这两句不要注册，注册后会导致无法正常转换
+// These two sentences do not register, after registration, it will lead to the failure of conversion
 // Q_DECLARE_METATYPE(BKVectorEditor::IntegerVec)
 // Q_DECLARE_METATYPE(BKVectorEditor::FloatVec)
 
@@ -326,8 +321,9 @@ private:
             std::get<0>(rec[mLastIndex]) = newVal;
 
             std::vector<T> vec;
-            for (const auto& item : rec)
+            for (const auto& item : rec) {
                 vec.push_back(std::get<0>(item));
+            }
 
             mpBindItem->mpHandle->dataChanged(QVariant::fromValue(vec));
             return true;
@@ -339,10 +335,12 @@ private:
     {
         if (mpBindItem)
         {
-            if (mpBindItem->mType == BKVectorEditor::Type::Int)
+            if (mpBindItem->mType == BKVectorEditor::Type::Int) {
                 compareAndCopy(mpLineEdit->text().toInt(), mpBindItem->miVector);
-            else if(mpBindItem->mType == BKVectorEditor::Type::Float)
+            }
+            else if (mpBindItem->mType == BKVectorEditor::Type::Float) {
                 compareAndCopy(mpLineEdit->text().toFloat(), mpBindItem->mfVector);
+            }
 
             mpBindItem->update();
 
@@ -385,8 +383,9 @@ void BKVectorEditor::Impl::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event
             TopmostCardEvent e(mpHandle->mpBindCard->getBindItem());
             qApp->sendEvent(scene(), &e);
 
-            if (!mpPublicEditor)
+            if (!mpPublicEditor) {
                 mpPublicEditor = new BKVectorCtrl();
+            }
 
             mpPublicEditor->setExpand(this, i);
             break;
@@ -471,8 +470,9 @@ QVariant BKVectorEditor::data()
     case Type::Int:
     {
         BKIntegerVector ret;
-        for (const auto& item : l->miVector)
+        for (const auto& item : l->miVector) {
             ret.push_back(std::get<0>(item));
+        }
 
         return QVariant::fromValue(ret);
     }
@@ -480,8 +480,9 @@ QVariant BKVectorEditor::data()
     case Type::Float:
     {
         BKFloatVector ret;
-        for (const auto& item : l->mfVector)
+        for (const auto& item : l->mfVector) {
             ret.push_back(std::get<0>(item));
+        }
 
         return QVariant::fromValue(ret);
     }
@@ -499,12 +500,14 @@ BKVectorEditor::operator QJsonValue() const
     switch (l->mType)
     {
     case Type::Int:
-        for (const auto& item : l->miVector)
+        for (const auto& item : l->miVector) {
             ret.push_back(std::get<0>(item));
+        }
         break;
     case Type::Float:
-        for (const auto& item : l->mfVector)
+        for (const auto& item : l->mfVector) {
             ret.push_back(std::get<0>(item));
+        }
         break;
     }
 
@@ -523,8 +526,9 @@ BKVectorEditor* BKVectorEditor::setValue(const QVariant& value)
                 break;
 
             FloatVec dst = value.value<BKVectorEditor::FloatVec>();
-            for (size_t i = 0; i < std::min(l->mfVector.size(), dst.size()); ++i)
+            for (size_t i = 0; i < std::min(l->mfVector.size(), dst.size()); ++i) {
                 std::get<0>(l->mfVector[i]) = dst[i];
+            }
         }
         else if (l->mType == BKVectorEditor::Type::Int)
         {
@@ -532,8 +536,9 @@ BKVectorEditor* BKVectorEditor::setValue(const QVariant& value)
                 break;
 
             IntegerVec dst = value.value<BKVectorEditor::IntegerVec>();
-            for (size_t i = 0; i < std::min(l->miVector.size(), dst.size()); ++i)
+            for (size_t i = 0; i < std::min(l->miVector.size(), dst.size()); ++i) {
                 std::get<0>(l->miVector[i]) = dst[i];
+            }
         }
 
     } while (false);
@@ -596,23 +601,27 @@ BKVectorEditor* BKVectorEditor::setNames(const std::vector<QString>& names)
     L_IMPL(BKVectorEditor);
 
     int maxCount = 0;
-    if (l->mType == BKVectorEditor::Type::Float)
+    if (l->mType == BKVectorEditor::Type::Float) {
         maxCount = l->mfVector.size();
-    else if(l->mType == BKVectorEditor::Type::Int)
+    }
+    else if (l->mType == BKVectorEditor::Type::Int) {
         maxCount = l->miVector.size();
+    }
 
     if (maxCount == 0)
         return this;
 
     l->mVecName.clear();
-    if (names.size() > maxCount)
+    if (names.size() > maxCount) {
         l->mVecName.insert(l->mVecName.begin(), names.begin(), std::next(names.begin(), maxCount));
+    }
     else
     {
         l->mVecName.insert(l->mVecName.begin(), names.begin(), names.end());
         int count = maxCount - names.size();
-        while (count--)
+        while (count--) {
             l->mVecName.push_back("?");
+        }
     }
 
     l->recalcArea();
@@ -638,15 +647,17 @@ void BKVectorEditor::dataChanged(const QVariant& data)
 
     if (data.isNull())
     {
-        if (mpRightAnchor)
+        if (mpRightAnchor) {
             mpRightAnchor->dataChanged(l->getValue());
+        }
     }
     else
     {
         setValue(data);
         l->update();
-        if (!mCallbackFunc(this, data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor) {
             mpRightAnchor->dataChanged(data);
+        }
     }
 }
 

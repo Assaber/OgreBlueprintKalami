@@ -6,21 +6,21 @@
 #include <QDebug>
 
 const std::map<QString, QString> RenderItemCard::mRenderItemList = {
-    {"球体", "sphere.mesh"},
-    {"圆柱体", "cylinder.mesh"},
-    {"立方体", "cube.mesh"},
-    {"锥体", "cone.mesh"},
-    {"甜甜圈", "torus.mesh"},
-    {"平面", "plane.mesh"},
-    {"圆面", "disc.mesh"},
-    {"情比金坚七天锁", "knot.mesh"},
+    {"Sphere", "sphere.mesh"},
+    {"Cylinder", "cylinder.mesh"},
+    {"Cube", "cube.mesh"},
+    {"Cone", "cone.mesh"},
+    {"Torus", "torus.mesh"},
+    {"Plane", "plane.mesh"},
+    {"Disc", "disc.mesh"},
+    {"Knot", "knot.mesh"},
 };
 
 RenderItemCard::RenderItemCard()
     : BKCard()
     , mpSceneManager(Ogre::Root::getSingletonPtr()->getSceneManager(OgreWidget::strSceneMgrName))
 {
-    setTitle("渲染对象");
+    setTitle("Render item");
 
     QStringList list;
     for (const auto& item : mRenderItemList)
@@ -28,7 +28,7 @@ RenderItemCard::RenderItemCard()
 
     _pack(
         {
-            BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("对象类别")}),
+            BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("Type")}),
             BKCreator::create(BKAnchor::AnchorType::None)
                 ->append({ BKCreator::create<BKComboBox>()
                                 ->setItems(list)
@@ -36,7 +36,7 @@ RenderItemCard::RenderItemCard()
                                 ->setDataChangeCallback(std::bind(&RenderItemCard::renderItemChange, this, std::placeholders::_1, std::placeholders::_2))
                                 ->setCurrentIndex(0)
                 }),
-            BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("材质")}),
+            BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("Material")}),
             BKCreator::create(BKAnchor::AnchorType::Input)
                 ->setDataType(BKAnchor::Input, BKAnchor::String)
                 ->append(BKCreator::create<BKComboBox>()
@@ -58,8 +58,8 @@ bool RenderItemCard::renderItemChange(BKUnit* unit, const QVariant& param)
     destroyRenderItem();
 
     QString type = param.toString();
-    auto itor = mRenderItemList.find(type);             // 应该没有调皮捣蛋的吧
-                                                        // 还真有... 2024.06.26
+    auto itor = mRenderItemList.find(type);             // There shouldn't be any mischievous ones
+                                                        // Ok, myself... 2024.06.26
     if (itor == mRenderItemList.end())
         return false;
 
@@ -78,7 +78,6 @@ bool RenderItemCard::renderItemChange(BKUnit* unit, const QVariant& param)
 bool RenderItemCard::materialChange(BKUnit* unit, const QVariant& param)
 {
     mLastMaterialName = param.toString();
-    qDebug() << mLastMaterialName;
 
     if (mpRenderItem) {
         mpRenderItem->setDatablockOrMaterialName(mLastMaterialName.toStdString());

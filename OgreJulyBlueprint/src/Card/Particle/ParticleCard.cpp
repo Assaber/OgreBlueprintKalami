@@ -41,7 +41,7 @@ return true;\
 
 ParticleCard::ParticleCard()
 {
-	setTitle("粒子卡片");
+	setTitle("Particle");
 	mData.id = QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();
 
     mpSceneManager = Ogre::Root::getSingletonPtr()->getSceneManager(OgreWidget::strSceneMgrName);
@@ -49,11 +49,11 @@ ParticleCard::ParticleCard()
     mpBindNode = mpBindNodeParent->createChildSceneNode();
 
 	mpParticleSystemTemplate = Ogre::ParticleSystemManager::getSingleton().createTemplate(mData.id, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-	mpParticleSystemTemplate->setRenderer("billboard");
+	mpParticleSystemTemplate->setRenderer("billboard");         // Temporarily fixed
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
 		->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-		->setText("输出");
+		->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
 		->setDataType(BKAnchor::Output, BKAnchor::String)
 		->append(outputLabel, false);
@@ -65,7 +65,7 @@ ParticleCard::ParticleCard()
 		->setDataType(BKAnchor::Input, GET_QT_METATYPE_ID(ParticleEmitterCard::Data));
 	mpEmitterAnchor = emitterCell->getAnchor(BKAnchor::Input);
 	emitterCell->append(BKCreator::create<BKLabel>()
-            ->setText("发射器")
+            ->setText("Emitter")
             ->setTitleNeverChanges(true)
             ->setDataChangeCallback(std::bind(&ParticleCard::updateEmitter, this, std::placeholders::_1, std::placeholders::_2))
         );
@@ -74,7 +74,7 @@ ParticleCard::ParticleCard()
         ->setDataType(BKAnchor::Input, GET_QT_METATYPE_ID(particle::ParticleAffector));
 	mpAffectorAnchor = affectorCell->getAnchor(BKAnchor::Input);
 	affectorCell->append(BKCreator::create<BKLabel>()
-        ->setText("控制器")
+        ->setText("Affector")
         ->setTitleNeverChanges(true)
         ->setDataChangeCallback(std::bind(&ParticleCard::updateAffector, this, std::placeholders::_1, std::placeholders::_2))
     );
@@ -83,7 +83,7 @@ ParticleCard::ParticleCard()
         outputCell,
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKLabel>()->setText("材质名称")
+            BKCreator::create<BKLabel>()->setText("Material")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKLineEdit>()
@@ -97,7 +97,7 @@ ParticleCard::ParticleCard()
         ),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-			BKCreator::create<BKLabel>()->setText("存在数量")
+			BKCreator::create<BKLabel>()->setText("Quota")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(2'0000)
@@ -106,7 +106,7 @@ ParticleCard::ParticleCard()
 		),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKLabel>()->setText("范围宽度")
+            BKCreator::create<BKLabel>()->setText("Width")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(100)
@@ -115,7 +115,7 @@ ParticleCard::ParticleCard()
         ),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKLabel>()->setText("范围高度")
+            BKCreator::create<BKLabel>()->setText("Height")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(100)
@@ -126,33 +126,33 @@ ParticleCard::ParticleCard()
         BKCreator::create(BKAnchor::AnchorType::Input)
 		->setDataType(BKAnchor::Input, GET_QT_METATYPE_ID(ParticleBillboardSettingCard::Data))
 			->append(
-				BKCreator::create<BKLabel>()->setText("渲染类型")
+				BKCreator::create<BKLabel>()->setText("Render type")
 					->setDataChangeCallback(std::bind(&ParticleCard::updateRenderType, this, std::placeholders::_1, std::placeholders::_2))
 					->setTitleNeverChanges(true)
 			),
 
         BKCreator::create(BKAnchor::AnchorType::None)
-			->append(BKCreator::create<BKLabel>()->setText("点渲染"))
+			->append(BKCreator::create<BKLabel>()->setText("Point rendering"))
 			->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isPointRendering)->setDataChangeCallback(UpdateFunction(mData.isPointRendering = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)
-            ->append(BKCreator::create<BKLabel>()->setText("精确面"))
+            ->append(BKCreator::create<BKLabel>()->setText("Accurate facing"))
             ->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isAccurateFacing)->setDataChangeCallback(UpdateFunction(mData.isAccurateFacing = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)
-            ->append(BKCreator::create<BKLabel>()->setText("裁剪"))
+            ->append(BKCreator::create<BKLabel>()->setText("Cull each"))
             ->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isCullEach)->setDataChangeCallback(UpdateFunction(mData.isCullEach = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)
-            ->append(BKCreator::create<BKLabel>()->setText("排序"))
+            ->append(BKCreator::create<BKLabel>()->setText("Sorted"))
             ->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isSorted)->setDataChangeCallback(UpdateFunction(mData.isSorted = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)
-            ->append(BKCreator::create<BKLabel>()->setText("局部空间"))
+            ->append(BKCreator::create<BKLabel>()->setText("Local space"))
             ->append(BKCreator::create<BKCheckBox>()->setChecked(mData.isLocalSpace)->setDataChangeCallback(UpdateFunction(mData.isLocalSpace = data.toBool()))),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKLabel>()->setText("粒子更新间隔")
+            BKCreator::create<BKLabel>()->setText("Update interval")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(3.f)
@@ -161,7 +161,7 @@ ParticleCard::ParticleCard()
         ),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKLabel>()->setText("停止更新超时")
+            BKCreator::create<BKLabel>()->setText("Update timeout")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(60)
@@ -239,7 +239,7 @@ bool ParticleCard::updateEmitter(BKUnit* unit, const QVariant& var)
         ParticleEmitterCard::Data emitterInfo = item.value<ParticleEmitterCard::Data>();
 
         const ParticleEmitterTypeCard::Data& typeInfo = emitterInfo.type;
-        // 更新Type
+        // Update Type
         Ogre::ParticleEmitter* emitter = mpParticleSystemTemplate->addEmitter(typeInfo.type.toStdString());
         particle::PEmitterType type = particle::emitterName2Type[typeInfo.type];
         switch (type)
@@ -333,7 +333,6 @@ bool ParticleCard::updateAffector(BKUnit* unit, const QVariant& var)
                     static_cast<float>(data->color.green()) / 255,
                     static_cast<float>(data->color.blue()) / 255,
                     static_cast<float>(data->color.alpha()) / 255);
-
             }
         }
         break;

@@ -51,7 +51,7 @@ const QMap<QString, Ogre::TextureAddressingMode> name2TextureAddrMode = {
 PbsDetailTextureCard::PbsDetailTextureCard()
     : ResetResourceSup("ResourceGroup.Pbs.Snow")
 {
-    setTitle("Pbs细节");
+    setTitle("Pbs detail");
 
     QStringList blendModes = name2PbsBlendModes.keys();
     int initBlendModeIndex = blendModes.indexOf(name2PbsBlendModes.key(mDetailInfo.blendMode));
@@ -68,7 +68,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
     mpOutputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsDetailTextureCard::Info>::qt_metatype_id())
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-            ->setText("输出")
+            ->setText("Output")
             ->setMinWidth(140)
             , false)
         ->getAnchor(BKAnchor::AnchorType::Output)
@@ -77,7 +77,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
     _pack({
         mpOutputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("纹理类型")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Type")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
         ->setItems(textureTypes)
         ->setCurrentIndex(initTextureTypeIndex, false)
@@ -89,7 +89,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
             })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("贴图")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Texture")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKPixmap>()
         ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 QString qtexturePath = param.toString();
@@ -102,7 +102,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
             })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("纹理寻址模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Sampler")),
         BKCreator::create(BKAnchor::AnchorType::None)
                 ->append({
                     BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("U"),
@@ -143,7 +143,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
 
                 }),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("混合模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Mode")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendModes)
             ->setCurrentIndex(initBlendModeIndex, false)
@@ -155,7 +155,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
             ),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append({
-                BKCreator::create<BKLabel>()->setText("偏移比例"),
+                BKCreator::create<BKLabel>()->setText("Offset scale"),
                 {
                     BKCreator::create<BKCheckBox>()->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                         mDetailInfo.offsetScaleEnable = param.toBool();
@@ -167,7 +167,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
                 }),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKVectorEditor>(BKVectorEditor::Type::Float, 4)
             ->setItemInLine(2)
-            ->setNames({"U偏移", "V偏移", "U缩放", "V缩放"})
+            ->setNames({"Offset U", "Offset V", "Scale U", "Scale V"})
             ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{0, 0, 1.0f, 1.0f}))
             ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                 BKVectorEditor::FloatVec data = param.value<BKVectorEditor::FloatVec>();
@@ -184,7 +184,7 @@ PbsDetailTextureCard::PbsDetailTextureCard()
             BKCreator::create(BKAnchor::AnchorType::None)
                 ->append(BKCreator::create<BKComboBox>()
                     ->setItems(QStringList() << "" << "0" << "1" << "2" << "3" << "4" << "5" << "6" << "7")
-                    ->setCurrentItem(0, false)          // 对应-1
+                    ->setCurrentItem(0, false)
                     ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                         QString si = param.toString();
                         mDetailInfo.uv = si.isEmpty() ? -1 : si.toInt();

@@ -18,7 +18,7 @@ ReadFileCard::ReadFileCard(QObject* parent)
     : QObject(parent)
     , BKCard()
 {
-    setTitle("读取文件");
+    setTitle("Read file");
 
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
     outputCell->setDataType(BKAnchor::Output, BKAnchor::String);
@@ -26,13 +26,13 @@ ReadFileCard::ReadFileCard(QObject* parent)
     mpOutputAnchor->redirectToCard();
     BKLabel* outputLabel = BKCreator::create<BKLabel>();
     outputLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    outputLabel->setText("输出");
+    outputLabel->setText("Output");
     outputLabel->setMinWidth(160);
     outputCell->append(outputLabel, false);
 
     BKCell* watcherCell = BKCreator::create(BKAnchor::AnchorType::None);
     BKLabel* watcherLabel = BKCreator::create<BKLabel>();
-    watcherLabel->setText("自动监听");
+    watcherLabel->setText("Auto listening");
     watcherCell->append(watcherLabel, false);
     BKCheckBox* watcherCheckBox = BKCreator::create<BKCheckBox>();
     watcherCheckBox->setChecked(false);
@@ -41,7 +41,7 @@ ReadFileCard::ReadFileCard(QObject* parent)
 
     BKCell* flTitleCell = BKCreator::create(BKAnchor::AnchorType::None);
     BKLabel* flTitleLabel = BKCreator::create<BKLabel>();
-    flTitleLabel->setText("文件加载");
+    flTitleLabel->setText("Load file");
     flTitleCell->append(flTitleLabel);
 
     BKCell* fileLoaderCell = BKCreator::create(BKAnchor::AnchorType::None);
@@ -50,12 +50,12 @@ ReadFileCard::ReadFileCard(QObject* parent)
     mpFilepathEdit->setDataChangeCallback(std::bind(&ReadFileCard::reloadFile, this, std::placeholders::_1, std::placeholders::_2));
     fileLoaderCell->append(mpFilepathEdit);
     BKPushButton* openFileBtn = BKCreator::create<BKPushButton>();
-    openFileBtn->setText("打开");
+    openFileBtn->setText("Open");
     openFileBtn->setFixedSize({ 46, 25 });
     openFileBtn->setDataChangeCallback(std::bind(&ReadFileCard::openFile, this, std::placeholders::_1, std::placeholders::_2));
     fileLoaderCell->append(openFileBtn);
     BKPushButton* reloadBtn = BKCreator::create<BKPushButton>();
-    reloadBtn->setText("加载");
+    reloadBtn->setText("Load");
     reloadBtn->setFixedSize({ 46, 25 });
     reloadBtn->setDataChangeCallback(std::bind(&ReadFileCard::reloadFile, this, std::placeholders::_1, std::placeholders::_2));
     fileLoaderCell->append(reloadBtn);
@@ -97,13 +97,13 @@ bool ReadFileCard::reloadFile(BKUnit* unit, const QVariant& data)
     QString filepath = mpFilepathEdit->getCurrentText();
     if (filepath.isEmpty())
     {
-        QMessageBox::critical(nullptr, "错误", "文件路径为空，请先打开文件（左边那个钮）然后再加载...");
+        QMessageBox::critical(nullptr, "Error", "The file path is empty, please open the file (the button on the left) and then load it...");
         return true;
     }
 
     if (!QFileInfo(filepath).exists())
     {
-        QMessageBox::critical(nullptr, "错误", "文件无法打开，请确定文件存在，且拥有读取权限");
+        QMessageBox::critical(nullptr, "Error", "The file cannot be opened, make sure that the file exists and has read permissions");
         return true;
     }
 
@@ -116,9 +116,8 @@ bool ReadFileCard::reloadFile(BKUnit* unit, const QVariant& data)
 void ReadFileCard::loadFile(const QString& path)
 {
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qDebug() << "文件打开失败..." << path;
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "File open error..." << path;
     }
 
     mstrData = QString::fromUtf8(file.readAll());
@@ -135,7 +134,8 @@ void ReadFileCard::fileChanged(const QString& path)
 {
     if (path.compare(mpFilepathEdit->getCurrentText()) == 0)
     {
-        if (mbWatchEnable) {
+        if (mbWatchEnable) 
+        {
             loadFile(path);
             mpOutputAnchor->dataChanged(getCurrentCardValue());
         }

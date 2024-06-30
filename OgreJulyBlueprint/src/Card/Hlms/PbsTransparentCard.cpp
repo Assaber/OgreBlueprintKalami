@@ -16,18 +16,15 @@
 #include "OgreHlmsManager.h"
 #include "OgreHlmsPbs.h"
 
-#include <QMessageBox>
-#include <QUuid>
-
 PbsTransparentCard::PbsTransparentCard()
 {
-    setTitle("Pbs透明");
+    setTitle("Pbs transparent");
 
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
     outputCell->setDataType(BKAnchor::Output, QMetaTypeId<PbsTransparentCard::Info>::qt_metatype_id())
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-            ->setText("输出")
+            ->setText("Output")
             ->setMinWidth(80)
             , false)
         ->getAnchor(BKAnchor::AnchorType::Output)
@@ -38,7 +35,7 @@ PbsTransparentCard::PbsTransparentCard()
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             {
-                BKCreator::create<BKLabel>()->setText("使能"),
+                BKCreator::create<BKLabel>()->setText("Enable"),
                 BKCreator::create<BKCheckBox>()
                     ->setChecked(mInfo.enable)
                     ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
@@ -48,7 +45,7 @@ PbsTransparentCard::PbsTransparentCard()
                     })
             }),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("透明度")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Transparent")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)
             ->setMinimum(0)
             ->setMaximum(1.0f)
@@ -59,25 +56,34 @@ PbsTransparentCard::PbsTransparentCard()
                 return true;
                 })),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("透明模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Mode")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(QStringList() << "None" << "Transparent" << "Fade")
             ->setCurrentIndex(1)
             ->setCallbackParamType(BKComboBox::CallbackParamType::Index)
             ->setDataChangeCallback([this, outputCell](BKUnit* unit, const QVariant& param) -> bool {
-                int mode = param.toInt();
-                if (mode == 0)
+
+                switch (param.toInt())
+                {
+                case 0:
                     mInfo.mode = Ogre::HlmsPbsDatablock::None;
-                else if (mode == 1)
+                    break;
+                case 1:
                     mInfo.mode = Ogre::HlmsPbsDatablock::Transparent;
-                else if (mode == 2)
+                    break;
+                case 2:
                     mInfo.mode = Ogre::HlmsPbsDatablock::Fade;
+                    break;
+                default:
+                    break;
+                }
+
                 outputCell->valueChanged(mInfo);
                 return true;
                 })
             ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("从纹理获取透明值")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Alpha from texture")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKCheckBox>()
                 ->setChecked(mInfo.alphaFromTex)

@@ -72,9 +72,7 @@ private:
     };
 
 private:
-    // 场景
     QGraphicsScene mScene;
    
-    // 单元集
     std::map<QGraphicsItem*, _UnitItem> mUnitsRecord;
 };

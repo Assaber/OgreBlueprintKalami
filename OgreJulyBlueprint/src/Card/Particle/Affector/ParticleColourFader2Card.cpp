@@ -7,11 +7,11 @@
 ParticleColourFader2Card::ParticleColourFader2Card()
 	: mAffector({ static_cast<particle::ParticleAffector::Type>(ParticleColourFader2Card::Type), &mData })
 {
-	setTitle("颜色渐变 v2");
+	setTitle("Colour fader 2");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, GET_QT_METATYPE_ID(particle::ParticleAffector))
         ->append(outputLabel, false);
@@ -21,7 +21,7 @@ ParticleColourFader2Card::ParticleColourFader2Card()
 	_pack({
 		outputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("颜色1")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Color 1")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>(BKColorSelectorEx::Type::Vector4)
                 ->setColor(mData.color1)
@@ -32,7 +32,7 @@ ParticleColourFader2Card::ParticleColourFader2Card()
                     })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("颜色2")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Color 2")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>(BKColorSelectorEx::Type::Vector4)
                 ->setColor(mData.color2)
@@ -43,7 +43,7 @@ ParticleColourFader2Card::ParticleColourFader2Card()
                     })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("时间间隔")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Interval")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(20.0f)
                 ->setCurrentValue(mData.time)

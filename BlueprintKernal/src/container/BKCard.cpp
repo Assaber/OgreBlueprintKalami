@@ -9,27 +9,21 @@
 class BKCard::Impl : public QGraphicsItemGroup
 {
 public:
-    // 标题内容
     QString mstrTitle = "(empty)";
-    // 关联句柄
+
     BKCard* mpHandle = nullptr;
-    // 包含对象
+
     std::vector<BKCell*> mItems;
-    // 是否处于展开状态
+
     bool mbExpanded = true;
-    // 成组后自身大小
+    // The size after becoming a group
     QSizeF mSize;
-    // 垂直方向间隔
+
     static constexpr float mnVerticalSpacing = 5;
-    // 内部标头高度
     static constexpr int32_t mnHeaderHeight = 30;
-    // 展开按钮中心圆圈半径
-    static constexpr float mnRadius = 8.0f;
-    // 阴影效果
+
     QGraphicsDropShadowEffect* mpEffext = nullptr;
-    // 是否正在释放
-    // 卡片释放时会导致锚点释放，锚点关联连接线可能又回来了（dataChanged），所以用一个标识更新释放状态
-    // 理论上只有释放的时候会用得到
+    // Whether it is being released
     bool mbImmortal = false;
 
 public:
@@ -41,7 +35,7 @@ public:
             QGraphicsItem::ItemSendsScenePositionChanges
             | QGraphicsItem::ItemIsFocusable
             | QGraphicsItem::ItemIsMovable
-            | QGraphicsItem::ItemIsSelectable);        //追加的两个分别用于移动时反馈和按键时反馈
+            | QGraphicsItem::ItemIsSelectable);
 
         mpEffext = new QGraphicsDropShadowEffect();
         mpEffext->setOffset(2, 2);
@@ -54,11 +48,9 @@ public:
     {
         mbImmortal = true;
 
-        qDebug() << "card item delete";
-
-        // 从场景中移除后分元释放
-        if (scene())
+        if (scene()) {
             scene()->removeItem(this);
+        }
 
         for (auto& item : mItems)
         {
@@ -82,7 +74,7 @@ public:
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override
     {
-        // 绘制边框
+        // paint border
         painter->save();
         {
             //painter->setPen(theme);
@@ -91,7 +83,7 @@ public:
             painter->restore();
         }
 
-        // 绘制标题
+        // paint title
         painter->save();
         {
             painter->setPen(Qt::black);
@@ -108,17 +100,14 @@ protected:
     virtual QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value) override
     {
         /*
-        这里存在优化： 
-            判断当前选择的卡片是否是多个
-                - 如果是多个则判断二者中间是否存在关联
-                    - 如果还存在关联，则只需要更新一次锚点位置变化
-
-        assaber todo...
+            If there are multiple associated cards moving at the same time, this can be optimized
+            todo...
         */
-        if (change == ItemPositionHasChanged)       
-            for (auto& item : mItems)
+        if (change == ItemPositionHasChanged) {
+            for (auto& item : mItems) {
                 item->dispatchPositionChanged();
-            
+            }
+        }
 
         return QGraphicsItemGroup::itemChange(change, value);
     }
@@ -230,7 +219,8 @@ void BKCard::rePackage()
 {
     L_IMPL(BKCard);
 
-    for (BKCell* cell : l->mItems) {
+    for (BKCell* cell : l->mItems) 
+    {
         QGraphicsItem* gi = cell->getGraphicsItem();
         l->removeFromGroup(gi);
         gi->setParentItem(nullptr);
@@ -244,16 +234,17 @@ void BKCard::rePackage()
 
 void BKCard::_pack(std::initializer_list<BKCell*> cells)
 {
-    L_IMPL(BKCard)
+    L_IMPL(BKCard);
 
-    // 清除
-    for (auto& item : l->mItems)
+    for (auto& item : l->mItems) {
         l->removeFromGroup(reinterpret_cast<QGraphicsItem*>(item->getGraphicsItem()));
+    }
     l->mItems.clear();
 
-    // 添加新单元，但是不进入到组
-    for(auto cell : cells)
+    // Add units, but do not addToGroup
+    for (auto cell : cells) {
         l->mItems.push_back(cell);
+    }
 
     l->reCalcSelf();
 }

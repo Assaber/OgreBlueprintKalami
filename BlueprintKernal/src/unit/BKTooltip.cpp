@@ -1,7 +1,8 @@
 ﻿#include "unit/BKTooltip.h"
+#include "container/BKAnchor.h"
 #include <QPainter>
 #include <QDebug>
-#include "container/BKAnchor.h"
+
 
 class BKTooltip::Impl : public QGraphicsItem
 {
@@ -83,6 +84,6 @@ QGraphicsItem* BKTooltip::getGraphicsItem()
 
 void BKTooltip::dataChanged(const QVariant& data)
 {
-    // 我们坐下来聊，告诉我为什么要change
+    // Nothing...
     return;
 }

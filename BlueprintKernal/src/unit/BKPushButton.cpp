@@ -1,8 +1,8 @@
 ﻿#include "unit/BKPushButton.h"
-#include <QGraphicsSceneMouseEvent>
-#include <QPainter>
-#include <QFontMetrics>
 #include "BKCreator.hpp"
+#include <QGraphicsSceneMouseEvent>
+#include <QFontMetrics>
+#include <QPainter>
 
 class BKPushButton::Impl : public QGraphicsItem
 {
@@ -15,10 +15,6 @@ public:
         mOption.setAlignment(Qt::AlignCenter);
     }
 
-    ~Impl()
-    {
-    }
-
 public:
     virtual QRectF boundingRect() const override
     {
@@ -29,7 +25,6 @@ public:
     {
         QRectF rect = mbPressed ? mButtonArea - QMargins(2, 2, 0, 0) : mButtonArea - QMargins(1, 1, 1, 1);
 
-        // 绘制按钮
         painter->save();
         {
             painter->setPen(Qt::NoPen);
@@ -38,7 +33,6 @@ public:
             painter->restore();
         }
 
-        // 绘制文字
         painter->save();
         {
             painter->setPen(Qt::white);
@@ -72,8 +66,7 @@ protected:
     {
         if (event->button() == Qt::LeftButton)
         {
-            if (mButtonArea.contains(event->pos().toPoint()))
-            {
+            if (mButtonArea.contains(event->pos().toPoint())) {
                 mpHandle->dataChanged(QVariant());
             }
             mbPressed = false;
@@ -84,17 +77,11 @@ protected:
 
 public:
     BKPushButton* mpHandle = nullptr;
-    // 固定上下边距
     static constexpr int mFixedMargin = 2;
-    // 包围盒
     QRectF mBoundingRect;
-    // 按钮区域
     QRectF mButtonArea;
-    // 是否为按下状态
     bool mbPressed = false;
-    // 文字绘制选项
     QTextOption mOption;
-    // 按钮文字
     QString mstrButtonText = "";
 };
 
@@ -138,8 +125,7 @@ BKPushButton* BKPushButton::setText(const QString& text, bool comfy/* = false*/)
 
     if (comfy) {
         QFont defaultFont;
-        QFontMetrics fm(defaultFont);           //assaber: 需要更新到系统字体
-                                                //todo...
+        QFontMetrics fm(defaultFont);           //The only font in the program should be loaded, todo...
         setFixedSize({ 1.0f * fm.horizontalAdvance(text) + 4 * l->mFixedMargin, 1.0f * fm.height() + 4 * l->mFixedMargin });
     }
 

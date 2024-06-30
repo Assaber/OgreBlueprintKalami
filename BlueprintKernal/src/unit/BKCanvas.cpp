@@ -124,7 +124,7 @@ void BKCanvas::resized()
 {
     L_IMPL(BKCanvas);
 
-    // 不进行已有图片缩放，而是进行像素拷贝和裁剪
+    // Instead of scaling existing images, pixel copy and cutting are performed
     QImage dst = QImage(mSize.width(), mSize.height(), QImage::Format::Format_RGBA8888);
     dst.fill(l->mBackgroundFillRule == BackgroundSetting::FillWhite ?  Qt::white : Qt::transparent);
 

@@ -30,7 +30,7 @@
 PbsDatablockCard::PbsDatablockCard()
     : mpPbs(reinterpret_cast<Ogre::HlmsPbs*>(Ogre::Root::getSingletonPtr()->getHlmsManager()->getHlms(Ogre::HLMS_PBS)))
 {
-    setTitle("Pbs数据块");
+    setTitle("Pbs datablock");
 
     mpNameLineEdit = BKCreator::create<BKLineEdit>();
     mpNameLineEdit->setText(mstrName.c_str())
@@ -49,13 +49,13 @@ PbsDatablockCard::PbsDatablockCard()
     mpOutputCell->setDataType(BKAnchor::Output, BKAnchor::String)
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-            ->setText("输出"), false)
-        ->getAnchor(BKAnchor::AnchorType::Output)           // 皮一下 XD
+            ->setText("Output"), false)
+        ->getAnchor(BKAnchor::AnchorType::Output)
         ->redirectToCard();
 
     auto texMapInputCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
     texMapInputCell->append(BKCreator::create<BKLabel>()
-        ->setText("材质")
+        ->setText("Material")
         ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             std::vector<QVariant> items;
@@ -63,10 +63,11 @@ PbsDatablockCard::PbsDatablockCard()
                 return true;
 
             mTextureInfoSet.clear();
-            for (const auto& item : items)
+            for (const auto& item : items) {
                 mTextureInfoSet.insert(item.value<PbsCommonTextureCard::Info>());
+            }
 
-            // 这里是需要重建材质的...吗？
+            // Is this a material that needs to be rebuilt?
             // todo...
             createHlms(true);
             return true;
@@ -77,7 +78,7 @@ PbsDatablockCard::PbsDatablockCard()
 
     auto texDetailCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
     texDetailCell->append(BKCreator::create<BKLabel>()
-        ->setText("细节")
+        ->setText("Detail")
         ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             std::vector<QVariant> items;
@@ -85,10 +86,11 @@ PbsDatablockCard::PbsDatablockCard()
                 return true;
 
             mDetailInfoSet.clear();
-            for (const auto& item : items)
+            for (const auto& item : items) {
                 mDetailInfoSet.insert(item.value<PbsDetailTextureCard::Info>());
+            }
 
-            // 这里是需要重建材质的...吗？
+            // Is this a material that needs to be rebuilt?
             // todo...
             createHlms(true);
             return true;
@@ -99,7 +101,7 @@ PbsDatablockCard::PbsDatablockCard()
 
     BKCell* blendblockCell = BKCreator::create(BKAnchor::Input);
     blendblockCell->append(BKCreator::create<BKLabel>()
-        ->setText("混合")
+        ->setText("Blend")
         ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             mBlendblock = param.value<Ogre::HlmsBlendblock>();
@@ -111,7 +113,7 @@ PbsDatablockCard::PbsDatablockCard()
 
     BKCell* macroblockCell = BKCreator::create(BKAnchor::Input);
     macroblockCell->append(BKCreator::create<BKLabel>()
-        ->setText("宏")
+        ->setText("Macro")
         ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             mMacroblock = param.value<Ogre::HlmsMacroblock>();
@@ -124,10 +126,10 @@ PbsDatablockCard::PbsDatablockCard()
     _pack({
         mpOutputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("名称")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Name")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(mpNameLineEdit),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("漫反射背景色")}),
+        BKCreator::create(BKAnchor::AnchorType::None)->append({ BKCreator::create<BKLabel>()->setText("Background color")}),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>(BKColorSelectorEx::Type::Vector4)
             ->setColor(QColor())
             ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
@@ -136,7 +138,7 @@ PbsDatablockCard::PbsDatablockCard()
                 return false;
                 })),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("漫反射")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Diffuse")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
             ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
@@ -145,7 +147,7 @@ PbsDatablockCard::PbsDatablockCard()
                 return false;
                 })),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("镜面反射")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Specular")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
             ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
@@ -154,7 +156,7 @@ PbsDatablockCard::PbsDatablockCard()
                 return false;
                 })),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("粗糙度")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Roughness")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)
             ->setMinimum(0)
             ->setMaximum(1.0f)
@@ -165,7 +167,7 @@ PbsDatablockCard::PbsDatablockCard()
                 return false;
                 })),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("自发光")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Emissive")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
             ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
@@ -174,7 +176,7 @@ PbsDatablockCard::PbsDatablockCard()
                 return false;
                 })),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("菲涅尔")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Fresnel")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
             ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
@@ -190,7 +192,7 @@ PbsDatablockCard::PbsDatablockCard()
         macroblockCell,
 
         BKCreator::create(BKAnchor::AnchorType::Input)->append(
-            BKCreator::create<BKLabel>()->setText("透明")
+            BKCreator::create<BKLabel>()->setText("Transparent")
                 ->setTitleNeverChanges(true)
                 ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
                     if (!param.canConvert<PbsTransparentCard::Info>())
@@ -239,7 +241,7 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
         if (!uuid.empty())
         {
 #if CHANGE_DATABLOCK_NAME_HAS_NOTIFY
-            int ret = QMessageBox::warning(nullptr, "警告", QString("存在重名数据块，名称存在更新：\n%1->%2\n确定将完成此更换，否则将推出数据块创建")
+            int ret = QMessageBox::warning(nullptr, "Warning", QString("There is a duplicate name block, the name is updated:\n%1->%2\nOk will complete this replacement, otherwise block creation will be exited")
                 .arg(mstrName.c_str())
                 .arg(uuid.c_str()), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
             if (ret == QMessageBox::Cancel)
@@ -256,7 +258,7 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
 
                 if (!mstrOldName.empty())
                 {
-                    // 移除使用旧纹理的对象
+                    // Removes objects that use old textures
                     Ogre::SceneManager* sceneMgr = Ogre::Root::getSingletonPtr()->getSceneManager(OgreWidget::strSceneMgrName);
                     assert(sceneMgr && "what?");
 
@@ -284,9 +286,7 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
     mpDatablock->setBackgroundDiffuse(mBackgroundColor.isValid() ? BlueprintEditor::toColor(mBackgroundColor) : Ogre::ColourValue());
     mpDatablock->setDiffuse(mDiffuse.isValid() ? BlueprintEditor::toVec3f(mDiffuse) : Ogre::Vector3(1.0f, 1.0f, 1.0f));
     {
-        // 这里选择不冒险
         mpDatablock->setSpecular(mSpecular.isValid() ? BlueprintEditor::toVec3f(mSpecular) : Ogre::Vector3(1.0f, 1.0f, 1.0f));
-        // 跟参数传入保持一致
         // todo...
     }
     mpDatablock->setRoughness(mRoughness);
@@ -299,8 +299,9 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
             continue;
 
         mpDatablock->setTexture(item.type, item.texture, &item.sampler);
-        if(item.uv > -1)
+        if (item.uv > -1) {
             mpDatablock->setTextureUvSource(item.type, item.uv);
+        }
     }
 
     for (const PbsDetailTextureCard::Info item : mDetailInfoSet)
@@ -309,25 +310,26 @@ void PbsDatablockCard::createHlms(bool recreate/* = false*/)
             continue;
 
         mpDatablock->setTexture(item.type, item.texture, &item.sampler);
-        if (item.uv > -1)
+        if (item.uv > -1) {
             mpDatablock->setTextureUvSource(item.type, item.uv);
+        }
 
         mpDatablock->setDetailMapBlendMode(item.indexOffset, item.blendMode);
-        if(item.offsetScaleEnable)
+        if (item.offsetScaleEnable) {
             mpDatablock->setDetailMapOffsetScale(item.indexOffset, { item.offsetScale[0], item.offsetScale[1], item.offsetScale[2], item.offsetScale[3] });
+        }
     }
 
-    if (mTransparentInfo.enable)
+    if (mTransparentInfo.enable) {
         mpDatablock->setTransparency(mTransparentInfo.transparency, mTransparentInfo.mode, mTransparentInfo.alphaFromTex);
-    else
+    }
+    else {
         mpDatablock->setTransparency(1.0f, Ogre::HlmsPbsDatablock::None, true);
+    }
 
-    // 这里不进行展开，通过锚点传递的方式进行更新 ( o _ < )
-    // for (Ogre::SubItem* item : refreshSubItems)
-    //     item->setDatablock(mpDatablock);
-
-    if (notify)
+    if (notify) {
         mpOutputCell->valueChanged(QString(mstrName.c_str()));
+    }
 }
 
 void PbsDatablockCard::getHitSubItems(const Ogre::IdString& id, Ogre::SceneNode* node, std::set<Ogre::SubItem*>& items)
@@ -358,8 +360,9 @@ void PbsDatablockCard::getHitSubItems(const Ogre::IdString& id, Ogre::SceneNode*
     while (nodeItor != nodeItorVec.end())
     {
         Ogre::SceneNode* item = dynamic_cast<Ogre::SceneNode*>(*nodeItor);
-        if (item)
+        if (item) {
             getHitSubItems(id, item, items);
+        }
 
         ++nodeItor;
     }

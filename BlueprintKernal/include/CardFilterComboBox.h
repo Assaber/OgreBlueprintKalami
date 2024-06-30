@@ -29,11 +29,7 @@ public:
     }
 
     /**
-     * @brief:                                          通过卡片名字获取构建器
-     * @param: const QString & name                     卡片名称
-     * @param: const QString & group                    卡片隶属组，当传入参数为""时将遍历所有已存在的组来寻找卡片
-     * @return: CardCreatorPtr                          构建器函数指针，未查找到则返回nullptr
-     * @remark: 
+     * @remark: When the input parameter group is "", all existing groups will be traversed to find the card
      */
     CardCreatorPtr getCreator(const QString& alias, const QString& group = "Default");
 

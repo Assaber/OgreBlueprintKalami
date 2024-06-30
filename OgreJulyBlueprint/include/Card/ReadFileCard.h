@@ -11,7 +11,6 @@ class ReadFileCard : public QObject, public BKCard
 public:
     ReadFileCard(QObject* parent = nullptr);
 
-
     virtual QVariant getCurrentCardValue() override;
 
 private:
@@ -22,16 +21,15 @@ private:
     void fileChanged(const QString& path);
 
 private:
-    // 文件路径编辑栏
     BKLineEdit* mpFilepathEdit = nullptr;
-    // 输出锚点
+
     BKAnchor* mpOutputAnchor = nullptr;
-    // 文件监视器
+
     QFileSystemWatcher mWatcher;
-    // 文件监视器使能
+
     bool mbWatchEnable = false;
-    // 最后一个打开的文件路径
+
     QString mstrLastFilepath = "";
-    // 文件内容
+
     QString mstrData = "";
 };

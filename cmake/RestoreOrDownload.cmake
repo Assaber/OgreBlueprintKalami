@@ -22,7 +22,6 @@ if(NOT EXISTS ${dst_dir})
 			RESULT_VARIABLE GIT_RESULT
 		)
 
-		# 检查git命令是否执行成功
 		if(GIT_RESULT EQUAL "0")
 			message(STATUS "[${tag}]Git clone successful")
 		else()

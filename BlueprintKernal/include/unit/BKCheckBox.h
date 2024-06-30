@@ -17,13 +17,6 @@ public:
     virtual operator QJsonValue() const override;
 
 public:
-
-    /**
-     * @brief:                          设置开关使能
-     * @param: bool enable              使能
-     * @return: BKCheckBox*             自身指针
-     * @remark: 
-     */
     BKCheckBox* setChecked(bool enable);
 
 private:

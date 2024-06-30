@@ -17,11 +17,7 @@ public:
 
 public:
     /**
-     * @brief:                                  设置显示文字
-     * @param: const QString & text             文字内容
-     * @param: bool comfy                       是否让按钮边界贴合文字
-     * @return: BKPushButton*                   自身引用
-     * @remark: 
+     * @param: bool comfy     Whether or not to make the button borders fit the text
      */
     BKPushButton* setText(const QString& text, bool comfy = false);
 

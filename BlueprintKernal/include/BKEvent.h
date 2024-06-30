@@ -28,15 +28,10 @@ public:
     PreConnLineEvent& setSender(BKAnchor* sender);
 
 public:
-    // 事件类型
     EventType type = EventType::Pressed;
-    // 绘制起始点
     QPointF begin = {};
-    // 绘制终止点
     QPointF end = {};
-    // 绘制颜色
     QColor* color = nullptr;
-    // 发送者
     BKAnchor* sender = nullptr;
 };
 

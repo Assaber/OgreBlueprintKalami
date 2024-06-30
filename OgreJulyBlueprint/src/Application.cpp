@@ -16,8 +16,9 @@ bool Application::event(QEvent* e)
     static bool ret = false;
     ret = super::event(e);
 
-    if (e->type() == QEvent::Quit)
+    if (e->type() == QEvent::Quit) {
         mbEnable = false;
+    }
 
     return ret;
 }

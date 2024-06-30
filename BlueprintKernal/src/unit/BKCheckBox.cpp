@@ -24,7 +24,6 @@ public:
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override
     {
-        // 绘制外边框
         QPen p(QColor(255, 128, 64));
         qreal r = mCtrlArea.height() / 2;
         painter->save();
@@ -35,15 +34,16 @@ public:
             painter->restore();
         }
 
-        // 绘制按钮
         painter->save();
         {
             painter->setPen(p);
             painter->setBrush(Qt::white);
-            if(mbEnable)
+            if (mbEnable) {
                 painter->drawEllipse(QPointF(mCtrlArea.right() - r, r + mFixedMargin), r - 2.0f, r - 2.0f);
-            else
-                painter->drawEllipse(QPointF(r ,r + mFixedMargin), r - 3.0f, r - 3.0f);
+            }
+            else {
+                painter->drawEllipse(QPointF(r, r + mFixedMargin), r - 3.0f, r - 3.0f);
+            }
             painter->restore();
         }
     }
@@ -63,13 +63,13 @@ protected:
 
 public:
     BKCheckBox* mpHandle = nullptr;
-    // 包围盒
+
     QRectF mBoundingRect;
-    // 控件区域
+
     QRect mCtrlArea;
-    // 固定上下边距
+
     static constexpr int mFixedMargin = 2;
-    // 使能
+
     bool mbEnable = false;
 };
 
@@ -144,14 +144,16 @@ void BKCheckBox::dataChanged(const QVariant& data)
 
     if (data.isNull())
     {
-        if (mpRightAnchor)
+        if (mpRightAnchor) {
             mpRightAnchor->dataChanged(l->mbEnable);
+        }
     }
     else
     {
         setChecked(data.toBool());
         l->update();
-        if (!mCallbackFunc(this, data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor) {
             mpRightAnchor->dataChanged(data);
+        }
     }
 }

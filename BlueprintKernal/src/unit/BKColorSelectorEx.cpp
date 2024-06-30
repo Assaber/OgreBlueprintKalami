@@ -1,16 +1,17 @@
 ﻿#include "unit/BKColorSelectorEx.h"
-#include <QGraphicsSceneMouseEvent>
-#include <QPainter>
-#include <QGraphicsProxyWidget>
-#include <QStyle>
-#include <QGraphicsScene>
 #include "container/BKCard.h"
 #include "BKEvent.h"
+
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsProxyWidget>
 #include <QCoreApplication>
-#include <QDebug>
+#include <QRegExpValidator>
+#include <QGraphicsScene>
 #include <QColorDialog>
 #include <QLineEdit>
-#include <QRegExpValidator>
+#include <QPainter>
+#include <QStyle>
+#include <QDebug>
 
 class BKColorEditor;
 class BKColorSelectorEx::Impl : public QGraphicsItem
@@ -40,7 +41,6 @@ public:
             painter->restore();
         }
 
-        // 绘制外边框
         painter->save();
         {
             painter->setPen("#FF8000");
@@ -49,7 +49,6 @@ public:
             painter->restore();
         }
 
-        // 绘制文字
         painter->save();
         {
             painter->setPen("#FF8000");
@@ -101,10 +100,12 @@ public:
             else
             {
                 QStringList split;
-                if (color.indexOf(',') < 0)     // 空格分隔
+                if (color.indexOf(',') < 0) {
                     split = color.split(' ', QString::SkipEmptyParts);
-                else
+                }
+                else {
                     split = color.split(',', QString::SkipEmptyParts);
+                }
 
                 if (split.count() < 3)
                     break;
@@ -113,19 +114,22 @@ public:
                 ret.setGreen(255 * split[1].toFloat());
                 ret.setBlue(255 * split[2].toFloat());
 
-                if (split.count() > 3)
+                if (split.count() > 3) {
                     ret.setAlpha(255 * split[3].toFloat());
+                }
             }
 
-            if (ok)
+            if (ok) {
                 *ok = true;
+            }
 
             return ret;
 
         } while (false);
 
-        if (ok)
+        if (ok) {
             *ok = false;
+        }
 
         return ret;
     }
@@ -141,8 +145,9 @@ public:
             syncColor(false, false);
             mstrColor = color;
         } 
-        else
-            qWarning() << "颜色解析错误";
+        else {
+            qWarning() << "Color parsing error, or, r ...";
+        }
 
         return ok;
     }
@@ -164,8 +169,9 @@ public:
             mColorData[3] = 1.0f * mColor.alpha() / 255;
         }
 
-        if (updateText)
+        if (updateText) {
             mstrColor = getCurrentColor();
+        }
     }
 
 protected:
@@ -179,8 +185,9 @@ protected:
             if (mColorDrawableArea.contains(event->pos()))
             {
                 QColorDialog dlg(mColor);
-                if (mType == Type::Vector4)
+                if (mType == Type::Vector4) {
                     dlg.setOption(QColorDialog::ShowAlphaChannel);
+                }
 
                 if (dlg.exec() != QDialog::Accepted)
                     return;
@@ -193,8 +200,9 @@ protected:
                 this->setFocus();
                 event->ignore();
             }
-            else
+            else {
                 event->accept();
+            }
         }
     }
 
@@ -202,27 +210,27 @@ protected:
 
 public:
     BKColorSelectorEx* mpHandle = nullptr;
-    // 包围盒
+
     QRectF mBoundingRect;
-    // 编辑框区域
+
     QRectF mEditorArea;
-    // 控件区域
+
     QRectF mColorDrawableArea;
-    // 固定上下边距
+
     static constexpr int mFixedMargin = 2;
-    // 颜色选择区域固定宽度
+
     static constexpr int mFixedColorAreaWidth = 35;
-    // 两个控件间的间隔
+
     static constexpr int mSpacing = 2;
-    // 当前颜色
+
     Color4f mColorData = {1.0f, 1.0f, 1.0f, 1.0f};
     QColor mColor;
     QString mstrColor;
-    // 文字选项
+
     QTextOption mOption;
-    // 编辑器
+
     static BKColorEditor* mpPublicEditor;
-    // 显示向量
+
     BKColorSelectorEx::Type mType;
 };
 
@@ -290,8 +298,7 @@ private:
     {
         if (mpBindItem)
         {
-            if (mpBindItem->mstrColor != mpLineEdit->text() && mpBindItem->loadFromColorString(mpLineEdit->text()))
-            {
+            if (mpBindItem->mstrColor != mpLineEdit->text() && mpBindItem->loadFromColorString(mpLineEdit->text())) {
                 mpBindItem->mpHandle->dataChanged(mpBindItem->mColor);
             }
                 
@@ -319,16 +326,18 @@ private:
 
 void BKColorSelectorEx::Impl::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (!mEditorArea.contains(event->pos()))
+    if (!mEditorArea.contains(event->pos())) {
         event->ignore();
+    }
 
     if (event->button() == Qt::LeftButton)
     {
         TopmostCardEvent e(mpHandle->mpBindCard->getBindItem());
         qApp->sendEvent(scene(), &e);
 
-        if (!mpPublicEditor)
+        if (!mpPublicEditor) {
             mpPublicEditor = new BKColorEditor();
+        }
 
         mpPublicEditor->setExpand(this);
     }
@@ -438,14 +447,16 @@ void BKColorSelectorEx::dataChanged(const QVariant& data)
 
     if (data.isNull())
     {
-        if (mpRightAnchor)
+        if (mpRightAnchor) {
             mpRightAnchor->dataChanged(l->mColor);
+        }
     }
     else
     {
         setColor(data.value<QColor>());
         l->update();
-        if (!mCallbackFunc(this, data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor) {
             mpRightAnchor->dataChanged(data);
+        }
     }
 }

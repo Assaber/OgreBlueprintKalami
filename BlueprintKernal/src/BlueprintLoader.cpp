@@ -24,9 +24,9 @@ public:
     {
         destroyAllItems();
 
-        /* 只释放卡片，卡片里面的成分有、复杂，需要按层释放
-            - 卡片间的连接线会在卡片内部进行释放
-            - 预连接线需要手动释放
+        /* Only release the card, the members in the card are somewhat complicated, and need to be released by layer
+            - The connecting lines between the cards are released inside the cards
+            - The pre-connected line needs to be released manually
         */
         delete mpReadyLine;
         mpReadyLine = nullptr;
@@ -49,21 +49,19 @@ private:
     void updateBgBrush();
 
 public:
-    // 场景视口
     BlueprintLoader* mpView;
-    // 全场景
     QGraphicsScene* mpScene = nullptr;
-    // 中心点
+    
     QPointF mCenter = { 0, 0 };
-    // 场景范围
+    
     QRectF mSceneRect = { -1500.0f, -1500.0f, 3000.0f, 3000.0f };
-    //视口缩放
+    
     float mnScaleRatio = 1.0f;
-    // 连接线前身
+    // Pre-connected line. A connection line is not actually created until two endpoints are confirmed, and until then it is represented by this model worker
     BKConnectingLine* mpReadyLine = nullptr;
-    // 最后一个活跃的卡片
+
     QGraphicsItem* mpLastActiveCard = nullptr;
-    // 创建框
+    
     CardFilterComboBox* mpCreatorComboBox  = nullptr;
 };
 
@@ -72,7 +70,7 @@ void BlueprintLoader::Impl::init()
     initScene();
     initView();
 
-    // 初始化连接线
+    // Init the pre-connected line
     mpReadyLine = mpView->_createUnit<BKConnectingLine>();
 
     mpCreatorComboBox->hide();
@@ -80,7 +78,7 @@ void BlueprintLoader::Impl::init()
 
 void BlueprintLoader::Impl::initScene()
 {
-    mpScene->setItemIndexMethod(QGraphicsScene::NoIndex);        //规避removeItem再delete后崩溃
+    mpScene->setItemIndexMethod(QGraphicsScene::NoIndex);        //Avoid the crash after removeItem && delete
     mpScene->installEventFilter(mpView);
     mpScene->setSceneRect(mSceneRect);
     // updateBgBrush();
@@ -90,26 +88,26 @@ void BlueprintLoader::Impl::initView()
 {
     mpView->setScene(mpScene);
     mpView->setSceneRect(mSceneRect);
-    //干掉拖拽残影
+
     mpView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    //永久隐藏滑动条
+
     mpView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    //视口居中
+
     mpView->centerOn(mCenter);
-    //反锯齿
+
     mpView->setRenderHint(QPainter::Antialiasing);
-    //拖拽设置
+
     mpView->setDragMode(QGraphicsView::ScrollHandDrag);
     mpView->viewport()->setCursor(Qt::ArrowCursor);
-    //设置接收拖拽
+    // It doesn't seem to be useful at the moment
     mpView->setAcceptDrops(true);
 }
 
 void BlueprintLoader::Impl::updateBgBrush()
 {
-    const int r = 3;                //每个锚点的半径
-    const int delta = 10;            //每delta * 2r间隔绘制一个锚点
+    const int r = 3;
+    const int delta = 10;
 
     const int width = r * 2 * (delta + 1);
     QImage anchor(width, width, QImage::Format::Format_RGB32);
@@ -157,20 +155,20 @@ bool BlueprintLoader::Impl::PreConnectLineEvent(PreConnLineEvent* event)
             for (auto item : mpScene->items(event->end))
             {
                 auto anchor = dynamic_cast<BKAnchor*>(item);
-                if (!anchor)                   //释放对象也为锚点
+                if (!anchor)                                                                                        //The dst target should also be an anchor
                     continue;
 
-                if (anchor->getAnchorType() == sender->getAnchorType())                                             // 锚点不能为同种类型
+                if (anchor->getAnchorType() == sender->getAnchorType())                                             // Anchors should have different types
                     continue;
                     
-                if (anchor->mpBindCard == sender->mpBindCard)                                                       // 禁止自娱自乐
+                if (anchor->mpBindCard == sender->mpBindCard)                                                       // It is forbidden to entertain oneself
                     continue;
 
-                if (anchor->getDataType() != sender->getDataType())                                                 // 锚点数据类型必须相同
+                if (anchor->getDataType() != sender->getDataType())                                                 // Anchors should have same data type
                     continue;
                 
                 auto input = (sender->getAnchorType() & BKAnchor::Input) ? sender : anchor;
-                if (input->hasConnected() && (input->getAnchorType() & BKAnchor::AnchorType::MultiConn) == 0)       // 禁止多个输出对应一个输入，VIP除外
+                if (input->hasConnected() && (input->getAnchorType() & BKAnchor::AnchorType::MultiConn) == 0)       // Multiple outputs for one input are prohibited，unless, of course, you're a VIP
                     continue;
 
                 if(anchor->hasRegisted(sender))
@@ -231,7 +229,7 @@ void BlueprintLoader::Impl::updateTopmostCardItem(QGraphicsItem* card)
     card->setZValue(1.5f);
     card->update();
 
-    if (mpLastActiveCard)        // 回归初心
+    if (mpLastActiveCard)        // Revert previous privileges
     {
         mpLastActiveCard->setZValue(0);
         card->update();
@@ -255,8 +253,9 @@ void BlueprintLoader::Impl::destroyAllItems()
             delete item;
             itor = record.erase(itor);
         }
-        else
+        else {
             ++itor;
+        }
     }
 }
 
@@ -276,8 +275,9 @@ void BlueprintLoader::exportSceneToJson(const QString& path)
     L_IMPL(BlueprintLoader);
 
     QFile file(path);
-    if (file.exists())
+    if (file.exists()) {
         file.remove();
+    }
 
     if (!file.open(QIODevice::ReadWrite))
         return;
@@ -363,7 +363,7 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
     if (error.error != QJsonParseError::NoError)
         return false;
 
-    //清除场景全部
+    // clear all items
     l->destroyAllItems();
 
     auto cardsObject = doc["card"];
@@ -391,7 +391,7 @@ bool BlueprintLoader::loadSceneFromJson(const QString& path)
         auto itor = record.find(index);
         if (itor == record.end())
         {
-            qWarning() << "我卡呢？" << index;
+            qWarning() << "W-H-E-R-E I-S M-Y C-A-R-D!!!!! M-I-N-E" << index;
             return nullptr;
         }
             
@@ -482,8 +482,9 @@ void BlueprintLoader::mousePressEvent(QMouseEvent* event)
             }
         }
 
-        if (l->mpCreatorComboBox->isActiveWindow())
+        if (l->mpCreatorComboBox->isActiveWindow()) {
             l->mpCreatorComboBox->hide();
+        }
     }
 }
 
@@ -507,14 +508,16 @@ void BlueprintLoader::keyPressEvent(QKeyEvent* event)
     if (event->isAccepted())
         return;
 
-    if (event->key() == Qt::Key_Delete)
-        mpImpl->deleteSelectedBKObject();       
+    if (event->key() == Qt::Key_Delete) {
+        mpImpl->deleteSelectedBKObject();
+    }
 }
 
 bool BlueprintLoader::event(QEvent* event)
 {
-    if (event->type() == AnchorMouseEvent)
+    if (event->type() == AnchorMouseEvent) {
         return mpImpl->PreConnectLineEvent(dynamic_cast<PreConnLineEvent*>(event));
+    }
         
     return QGraphicsView::event(event);
 }

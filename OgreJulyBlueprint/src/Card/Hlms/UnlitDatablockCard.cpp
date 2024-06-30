@@ -32,7 +32,7 @@
 UnlitDatablockCard::UnlitDatablockCard()
     : mpUnlit(reinterpret_cast<Ogre::HlmsUnlit*>(Ogre::Root::getSingletonPtr()->getHlmsManager()->getHlms(Ogre::HLMS_UNLIT)))
 {
-    setTitle("Unlit数据块");
+    setTitle("Unlit datablock");
 
     mpNameLineEdit = BKCreator::create<BKLineEdit>();
     mpNameLineEdit->setText(mstrName.c_str())
@@ -51,15 +51,15 @@ UnlitDatablockCard::UnlitDatablockCard()
     mpOutputCell->setDataType(BKAnchor::Output, BKAnchor::String)
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-            ->setText("输出"), false)
-        ->getAnchor(BKAnchor::AnchorType::Output)           // 皮一下 XD
+            ->setText("Output"), false)
+        ->getAnchor(BKAnchor::AnchorType::Output)
         ->redirectToCard();
 
     BKCell* textureInputCell = BKCreator::create(BKAnchor::Input | BKAnchor::MultiConn, BKAnchor::None);
     BKAnchor* textureInputAnchor = textureInputCell->getAnchor(BKAnchor::Input);
     textureInputAnchor->setDateType(QMetaTypeId<UnlitDiffuseMapCard::Info>::qt_metatype_id());
     textureInputCell->append(BKCreator::create<BKLabel>()
-        ->setText("材质")
+        ->setText("Material")
         ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this, textureInputAnchor](BKUnit* unit, const QVariant& param) -> bool {
             std::vector<QVariant> items;
@@ -70,8 +70,8 @@ UnlitDatablockCard::UnlitDatablockCard()
             for (const auto& item : items)
                 mTextureInfoSet.insert(item.value<UnlitDiffuseMapCard::Info>());
 
-            // 注意次序，不能留有空白
-            // 详见OgreHlmsUnlitDatablock.h中关于diffuse_map2-16的说明
+            // Pay attention to the order and leave no blanks
+            // See See what is said about diffuse_map2~16 in OgreHlmsUnlitDatablock.h
             if (mTextureInfoSet.size())
             {
                 size_t total = mTextureInfoSet.size();
@@ -79,12 +79,12 @@ UnlitDatablockCard::UnlitDatablockCard()
                 lastItemItor = std::next(lastItemItor, total - 1);
                 if (lastItemItor->index != total - 1)
                 {
-                    QMessageBox::warning(nullptr, "错误", "请注意漫反射贴图的索引：\n需要依次增加，不可留有空白");
+                    QMessageBox::warning(nullptr, "Error", "Note that the index of the diffuse map: \nneeds to be increased sequentially, leaving no blanks");
                     mTextureInfoSet.clear();
                 }
             }
 
-            // 这里是需要重建材质的...吗？
+            // Is this a material that needs to be rebuilt?
             // todo...
             createHlms(true);
             return true;
@@ -94,7 +94,7 @@ UnlitDatablockCard::UnlitDatablockCard()
 
     BKCell* blendblockCell = BKCreator::create(BKAnchor::Input);
     blendblockCell->append(BKCreator::create<BKLabel>()
-        ->setText("混合")
+        ->setText("Blend")
         ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             mBlendblock = param.value<Ogre::HlmsBlendblock>();
@@ -106,7 +106,7 @@ UnlitDatablockCard::UnlitDatablockCard()
 
     BKCell* macroblockCell = BKCreator::create(BKAnchor::Input);
     macroblockCell->append(BKCreator::create<BKLabel>()
-        ->setText("宏")
+        ->setText("Macro")
         ->setTitleNeverChanges(true)
         ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
             mMacroblock = param.value<Ogre::HlmsMacroblock>();
@@ -119,10 +119,10 @@ UnlitDatablockCard::UnlitDatablockCard()
     _pack({
         mpOutputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("名称")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Name")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(mpNameLineEdit),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("漫反射")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Diffuse")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKColorSelectorEx>()
             ->setColor(Qt::white)
             ->setDataChangeCallback([this](BKUnit* unit, const QVariant& param) -> bool {
@@ -131,7 +131,7 @@ UnlitDatablockCard::UnlitDatablockCard()
                 return false;
                 })),
 
-        // 透明测试和动画先搁置
+        // Transparency tests and animations are set aside
         // todo ...
 
         textureInputCell,
@@ -161,9 +161,6 @@ void UnlitDatablockCard::createHlms(bool recreate/* = false*/)
     bool notify = false;
     std::set<Ogre::SubItem*> refreshSubItems;
 
-    // 我无法销毁一个datablock，因为别的渲染对象可能正在使用这个材质
-    // 策略变更：只要名字发生变化，则重新创建datablock，当然也包括HlmsMacroblock和HlmsBlendblock的更新
-
     if (recreate)
     {
         mpDatablock = reinterpret_cast<Ogre::HlmsUnlitDatablock*>(mpUnlit->getDatablock(mstrName));
@@ -178,7 +175,7 @@ void UnlitDatablockCard::createHlms(bool recreate/* = false*/)
         if (!uuid.empty())
         {
 #if CHANGE_DATABLOCK_NAME_HAS_NOTIFY
-            int ret = QMessageBox::warning(nullptr, "警告", QString("存在重名数据块，名称存在更新：\n%1->%2\n确定将完成此更换，否则将推出数据块创建")
+            int ret = QMessageBox::warning(nullptr, "Warning", QString("There is a duplicate name block, the name is updated:\n%1->%2\nOk will complete this replacement, otherwise block creation will be exited")
                 .arg(mstrName.c_str())
                 .arg(uuid.c_str()), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
             if (ret == QMessageBox::Cancel)
@@ -195,7 +192,7 @@ void UnlitDatablockCard::createHlms(bool recreate/* = false*/)
 
                 if (!mstrOldName.empty())
                 {
-                    // 移除使用旧纹理的对象
+                    // Removes objects that use old textures
                     Ogre::SceneManager* sceneMgr = Ogre::Root::getSingletonPtr()->getSceneManager(OgreWidget::strSceneMgrName);
                     assert(sceneMgr && "what?");
 
@@ -229,8 +226,9 @@ void UnlitDatablockCard::createHlms(bool recreate/* = false*/)
 
             mpDatablock->setTexture(item.index, item.texture);
             mpDatablock->setBlendMode(item.index, item.blendMode);
-            if (item.uv > -1)
+            if (item.uv > -1) {
                 mpDatablock->setTextureUvSource(item.index, item.uv);
+            }
         }
     }
     else
@@ -239,8 +237,9 @@ void UnlitDatablockCard::createHlms(bool recreate/* = false*/)
         mpDatablock->setColour(mDiffuse.isValid() ? BlueprintEditor::toColor(mDiffuse) : Ogre::ColourValue());
     }
 
-    if (notify)
+    if (notify) {
         mpOutputCell->valueChanged(QString(mstrName.c_str()));
+    }
 }
 
 void UnlitDatablockCard::getHitSubItems(const Ogre::IdString& id, Ogre::SceneNode* node, std::set<Ogre::SubItem*>& items)
@@ -271,8 +270,9 @@ void UnlitDatablockCard::getHitSubItems(const Ogre::IdString& id, Ogre::SceneNod
     while (nodeItor != nodeItorVec.end())
     {
         Ogre::SceneNode* item = dynamic_cast<Ogre::SceneNode*>(*nodeItor);
-        if (item)
+        if (item) {
             getHitSubItems(id, item, items);
+        }
 
         ++nodeItor;
     }

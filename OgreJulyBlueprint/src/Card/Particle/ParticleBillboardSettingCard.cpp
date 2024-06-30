@@ -19,11 +19,11 @@ QVariant ParticleBillboardSettingCard::getCurrentCardValue()
 
 ParticleBillboardSettingCard::ParticleBillboardSettingCard()
 {
-	setTitle("广告板设置");
+	setTitle("Billboard setting");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, QMetaTypeId<Data>::qt_metatype_id())
         ->append(outputLabel, false);
@@ -34,7 +34,7 @@ ParticleBillboardSettingCard::ParticleBillboardSettingCard()
 		outputCell,
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-			BKCreator::create<BKLabel>()->setText("公告板类型")
+			BKCreator::create<BKLabel>()->setText("Type")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKComboBox>()
@@ -45,7 +45,7 @@ ParticleBillboardSettingCard::ParticleBillboardSettingCard()
         ),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKLabel>()->setText("公告板起始点")
+            BKCreator::create<BKLabel>()->setText("Billboard origin")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKComboBox>()
@@ -56,7 +56,7 @@ ParticleBillboardSettingCard::ParticleBillboardSettingCard()
         ),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKLabel>()->setText("公告板旋转类型")
+            BKCreator::create<BKLabel>()->setText("Billboard rotation")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKComboBox>()
@@ -67,7 +67,7 @@ ParticleBillboardSettingCard::ParticleBillboardSettingCard()
         ),
 
 		BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKLabel>()->setText("通用向上")
+            BKCreator::create<BKLabel>()->setText("Common up")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKVectorEditor>()
@@ -82,7 +82,7 @@ ParticleBillboardSettingCard::ParticleBillboardSettingCard()
         ),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKLabel>()->setText("通用方向")
+            BKCreator::create<BKLabel>()->setText("Common direction")
         ),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKVectorEditor>()

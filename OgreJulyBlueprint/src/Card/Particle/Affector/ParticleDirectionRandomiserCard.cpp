@@ -6,11 +6,11 @@
 
 ParticleDirectionRandomiserCard::ParticleDirectionRandomiserCard()
 {
-    setTitle("方向随机影响器");
+    setTitle("Direction randomiser");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, GET_QT_METATYPE_ID(particle::ParticleAffector))
         ->append(outputLabel, false);
@@ -20,7 +20,7 @@ ParticleDirectionRandomiserCard::ParticleDirectionRandomiserCard()
     _pack({
         outputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("随机性大小")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Randomness")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(1'000.0f)
                 ->setCurrentValue(mData.randomness)
@@ -31,7 +31,7 @@ ParticleDirectionRandomiserCard::ParticleDirectionRandomiserCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("受影响粒子百分比")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Scope")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(1.0f)
                 ->setCurrentValue(mData.scope)
@@ -42,7 +42,7 @@ ParticleDirectionRandomiserCard::ParticleDirectionRandomiserCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("是否保持粒子速度")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Keep velocity")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKCheckBox>()
                 ->setChecked(mData.keepVelocity)

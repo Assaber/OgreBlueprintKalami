@@ -43,11 +43,11 @@ QVariant ParticleEmitterCard::getCurrentCardValue()
 
 ParticleEmitterCard::ParticleEmitterCard()
 {
-	setTitle("粒子发射器");
+	setTitle("Emitter");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, QMetaTypeId<Data>::qt_metatype_id())
         ->append(outputLabel, false);
@@ -62,7 +62,7 @@ ParticleEmitterCard::ParticleEmitterCard()
 		BKCreator::create(BKAnchor::AnchorType::Input)
             ->setDataType(BKAnchor::Input, QMetaTypeId<ParticleEmitterTypeCard::Data>::qt_metatype_id())
             ->append(
-                BKCreator::create<BKLabel>("发射器类型")
+                BKCreator::create<BKLabel>("Type")
                 ->setTitleNeverChanges(true)
                 ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.type = data.value<ParticleEmitterTypeCard::Data>();
@@ -71,14 +71,14 @@ ParticleEmitterCard::ParticleEmitterCard()
                 })
             ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("名称")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Name")),
 		BKCreator::create(BKAnchor::AnchorType::None)->append(
 			BKCreator::create<BKLineEdit>()
 				->setText(mData.name)
 				->setEnable(false)
 		),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("接力发射器名称")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Next emitter")),
         BKCreator::create(BKAnchor::AnchorType::Input)
 			->setDataType(BKAnchor::Input, BKAnchor::String)
 			->append(BKCreator::create<BKLineEdit>()
@@ -91,7 +91,7 @@ ParticleEmitterCard::ParticleEmitterCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("允许偏移角度")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Offset degress range")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()
 			->setMaximum(180)
@@ -104,7 +104,7 @@ ParticleEmitterCard::ParticleEmitterCard()
 				})
 		),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("发射位置")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Position")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKVectorEditor>()
 			->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.position[0], mData.position[1], mData.position[2]}))
@@ -116,7 +116,7 @@ ParticleEmitterCard::ParticleEmitterCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("发射方向")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Direction")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKVectorEditor>()
             ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.direction[0], mData.direction[1], mData.direction[2]}))
@@ -128,9 +128,9 @@ ParticleEmitterCard::ParticleEmitterCard()
                 })
         ),
 
-		CREATE_INT_SLIDERBAR_WITH_TITLE("每秒发射个数", mData.sendItemPerSec, 1, 5'000),
+		CREATE_INT_SLIDERBAR_WITH_TITLE("Send count per second", mData.sendItemPerSec, 1, 5'000),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("静态颜色")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Color")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>()
             ->setColor(mData.color)
@@ -141,7 +141,7 @@ ParticleEmitterCard::ParticleEmitterCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("动态起始颜色")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Start color")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>()
             ->setColor(mData.startColor)
@@ -152,7 +152,7 @@ ParticleEmitterCard::ParticleEmitterCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("动态终止颜色")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("End color")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>()
             ->setColor(mData.endColor)
@@ -163,22 +163,22 @@ ParticleEmitterCard::ParticleEmitterCard()
                 })
         ),
 
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("速率", mData.velocity, 1.0f, 1'000.0f),
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("最小速率", mData.velocityMin, 1.0f, 1'000.0f),
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("最大速率", mData.velocityMax, 1.0f, 1'000.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Velocity", mData.velocity, 1.0f, 1'000.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Min velocity", mData.velocityMin, 1.0f, 1'000.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Max velocity", mData.velocityMax, 1.0f, 1'000.0f),
 
 
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("存活时间", mData.timeToLive, 0, 60.0f),
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("最小存活时间", mData.timeToLiveMin, 0, 60.0f),
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("最大存活时间", mData.timeToLiveMax, 0, 60.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Time to live", mData.timeToLive, 0, 60.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Min time to live", mData.timeToLiveMin, 0, 60.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Max time to live", mData.timeToLiveMax, 0, 60.0f),
 
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("活动状态", mData.duration, 0, 20.0f),
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("最小活动状态", mData.durationMin, 0, 20.0f),
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("最大活动状态", mData.durationMax, 0, 20.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Duration", mData.duration, 0, 20.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Min duration", mData.durationMin, 0, 20.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Max duration", mData.durationMax, 0, 20.0f),
 
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("重启时间", mData.repeatDelay, 0, 20.0f),
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("最小重启时间", mData.repeatDelayMin, 0, 20.0f),
-        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("最大重启时间", mData.repeatDelayMax, 0, 20.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Repeat delay", mData.repeatDelay, 0, 20.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Min repeat delay", mData.repeatDelayMin, 0, 20.0f),
+        CREATE_DOUBLE_SLIDERBAR_WITH_TITLE("Max repeat delay", mData.repeatDelayMax, 0, 20.0f),
 
 		});
 }

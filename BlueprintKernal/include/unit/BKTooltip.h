@@ -17,12 +17,6 @@ public:
     virtual operator QJsonValue() const override;
 
 public:
-    /**
-     * @brief:                                              设置提示
-     * @param: const QString & text                         提示内容
-     * @return: BKTooltip*                                  自身引用
-     * @remark:                                             
-     */
     BKTooltip* setTooltip(const QString& text);
 
 private:

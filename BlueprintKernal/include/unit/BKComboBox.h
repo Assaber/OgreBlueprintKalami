@@ -10,8 +10,8 @@ class _BlueprintKernalExport BKComboBox : public BKUnitBasic<BKComboBox>
 public:
     enum CallbackParamType
     {
-        Data,               ///< 数据
-        Index,              ///< 索引
+        Data,
+        Index,
     };
 
 public:
@@ -22,7 +22,9 @@ public:
 public:
     virtual BKUnit* copy() override;
     virtual bool loadFromJson(const QJsonValue& val) override;
-    // 固定返回当前文本(QString)，如果当前索引<0则返回""，不受CallbackParamType影响
+    // Fixed returns to current text(QString)
+    // If current index < 0, it will return ""
+    // It is not affected by CallbackParamType
     virtual QVariant data() override;
     virtual operator QJsonValue() const;
 

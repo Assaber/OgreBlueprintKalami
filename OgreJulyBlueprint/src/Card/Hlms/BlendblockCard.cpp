@@ -19,13 +19,13 @@ const QMap<QString, Ogre::SceneBlendType> name2SceneBlendType = {
 
 BlendblockCard::BlendblockCard()
 {
-    setTitle("混合块");
+    setTitle("Blendblock");
 
     BKCell* output = BKCreator::create(BKAnchor::AnchorType::Output);
     output->setDataType(BKAnchor::Output, QMetaTypeId<Ogre::HlmsBlendblock>::qt_metatype_id())
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-            ->setText("输出")
+            ->setText("Output")
             ->setMinWidth(140)
         , false)
         ->getAnchor(BKAnchor::AnchorType::Output)
@@ -72,7 +72,7 @@ BlendblockCard::BlendblockCard()
     _pack({
         output,
 
-         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("透明覆盖使能")),
+         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Alpha to coverage")),
          BKCreator::create(BKAnchor::AnchorType::None)->append(
                 BKCreator::create<BKCheckBox>()
                     ->setChecked(mBlendblock.mAlphaToCoverageEnabled)
@@ -83,12 +83,12 @@ BlendblockCard::BlendblockCard()
                     })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("通道掩码")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Channel mask")),
         BKCreator::create(BKAnchor::AnchorType::None)->append({
-                BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("红"),
-                BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("绿"),
-                BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("蓝"),
-                BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("透明"),
+                BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("Red"),
+                BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("Green"),
+                BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("Blue"),
+                BKCreator::create<BKLabel>()->setAlignment(Qt::AlignCenter)->setText("Alpha"),
             }),
          BKCreator::create(BKAnchor::AnchorType::None)->append({
                { redChannel },
@@ -97,7 +97,7 @@ BlendblockCard::BlendblockCard()
                { alphaChannel },
             }),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("透明选项")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Transparent option")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(QStringList() << "Not" << "Automatically" << "Forced" << "A & F")
             ->setCurrentIndex(mBlendblock.mIsTransparent)
@@ -109,7 +109,7 @@ BlendblockCard::BlendblockCard()
                 })
             ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("混合类型")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Blend type")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(blendTypeList)
             ->setCurrentIndex(blendTypeList.indexOf(name2SceneBlendType.key(mBlendType)))
@@ -122,7 +122,7 @@ BlendblockCard::BlendblockCard()
             ),
 
         BKCreator::create(BKAnchor::AnchorType::None)->append({
-                BKCreator::create<BKLabel>()->setText("透明混合类型"),
+                BKCreator::create<BKLabel>()->setText("Alpha blend type"),
             { BKCreator::create<BKCheckBox>()
                     ->setChecked(mbAlphaBlendTypeEnable)
                     ->setDataChangeCallback([this, output](BKUnit* unit, const QVariant& param) -> bool {
@@ -153,26 +153,34 @@ QVariant BlendblockCard::getCurrentCardValue()
 void BlendblockCard::updateBlendChannelMask(BKCheckBox* ptr, bool enable)
 {
     auto update_mask = [&](Ogre::HlmsBlendblock::BlendChannelMasks target) {
-        if (enable)
+        if (enable) {
             mBlendblock.mBlendChannelMask |= target;
-        else
+        }
+        else {
             mBlendblock.mBlendChannelMask &= ~target;
+        }
     };
 
-    if (ptr == mChannelMaskCheckBoies[0])
+    if (ptr == mChannelMaskCheckBoies[0]) {
         update_mask(Ogre::HlmsBlendblock::BlendChannelRed);
-    else if(ptr == mChannelMaskCheckBoies[1])
+    }
+    else if(ptr == mChannelMaskCheckBoies[1]) {
         update_mask(Ogre::HlmsBlendblock::BlendChannelGreen);
-    else if (ptr == mChannelMaskCheckBoies[2])
+    }
+    else if (ptr == mChannelMaskCheckBoies[2]) {
         update_mask(Ogre::HlmsBlendblock::BlendChannelBlue);
-    else if (ptr == mChannelMaskCheckBoies[3])
+    }
+    else if (ptr == mChannelMaskCheckBoies[3]) {
         update_mask(Ogre::HlmsBlendblock::BlendChannelAlpha);
+    }
 }
 
 void BlendblockCard::updateBlendType()
 {
-    if (mbAlphaBlendTypeEnable)
+    if (mbAlphaBlendTypeEnable) {
         mBlendblock.setBlendType(static_cast<Ogre::SceneBlendType>(mBlendType), static_cast<Ogre::SceneBlendType>(mAlphaBlendType));
-    else
+    }
+    else {
         mBlendblock.setBlendType(static_cast<Ogre::SceneBlendType>(mBlendType));
+    }
 }

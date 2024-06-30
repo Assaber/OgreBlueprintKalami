@@ -1,8 +1,8 @@
 ﻿#include "unit/BKPixmap.h"
 #include "container/BKAnchor.h"
-#include <QPainter>
-#include <QFileDialog>
 #include <QGraphicsSceneMouseEvent>
+#include <QFileDialog>
+#include <QPainter>
 
 class BKPixmap::Impl : public QGraphicsItem
 {
@@ -21,7 +21,7 @@ public:
         painter->save();
         {
             painter->setPen(Qt::black);
-            painter->drawText(mBoundingRect, "双击选择文件", QTextOption(Qt::AlignCenter));
+            painter->drawText(mBoundingRect, "Double click to select", QTextOption(Qt::AlignCenter));
             painter->restore();
         }
 
@@ -46,8 +46,9 @@ public:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override
     {
         QString path = QFileDialog::getOpenFileName(nullptr, "", "./", "Images (*.png *.xpm *.jpg);;All files (*.*)");
-        if (!path.isEmpty())
+        if (!path.isEmpty()) {
             mpHandle->dataChanged(path);
+        }
           
         event->accept();
     }
@@ -55,11 +56,8 @@ public:
 public:
     BKPixmap* mpHandle = nullptr;
     QString mstrSource = "";
-    // 包围盒
     QRect mBoundingRect = { 0, 0, 60, 60 };
-    // 图片
     QPixmap mPixmap;
-    // 固定上下边距
     static constexpr int mFixedMargin = 2;
 };
 
@@ -112,8 +110,9 @@ BKPixmap* BKPixmap::setSource(const QString& path)
     L_IMPL(BKPixmap);
 
     l->mstrSource = path;
-    if(l->mBoundingRect.width())
+    if (l->mBoundingRect.width()) {
         l->mPixmap = QPixmap(l->mstrSource).scaled(l->mBoundingRect.size());
+    }
     l->update();
     return this;
 }
@@ -129,15 +128,17 @@ void BKPixmap::dataChanged(const QVariant& data)
 
     if (data.isNull())
     {
-        if (mpRightAnchor)
+        if (mpRightAnchor) {
             mpRightAnchor->dataChanged(l->mstrSource);
+        }
     }
     else
     {
         setSource(data.toString());
         l->update();
-        if (!mCallbackFunc(this, data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor) {
             mpRightAnchor->dataChanged(data);
+        }
     }
 }
 
@@ -148,11 +149,14 @@ void BKPixmap::resized()
     QSize size = mSize.toSize();
     size.setHeight(size.height() - 2 * l->mFixedMargin);
     int r = std::min(size.width(), size.height());
-    if(r == size.width())
+    if (r == size.width()) {
         l->mBoundingRect = { 0, (size.height() - r) / 2 + l->mFixedMargin, r, r };
-    else
+    }
+    else {
         l->mBoundingRect = { (size.width() - r) / 2, l->mFixedMargin, r, r };
+    }
 
-    if(!l->mstrSource.isEmpty() && r > 0)
+    if (!l->mstrSource.isEmpty() && r > 0) {
         l->mPixmap = QPixmap(l->mstrSource).scaled(l->mBoundingRect.size());
+    }
 }

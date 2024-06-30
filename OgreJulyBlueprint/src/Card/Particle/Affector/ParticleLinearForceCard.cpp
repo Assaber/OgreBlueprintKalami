@@ -7,11 +7,11 @@
 ParticleLinearForceCard::ParticleLinearForceCard()
     : mAffector({ static_cast<particle::ParticleAffector::Type>(ParticleLinearForceCard::Type), &mData })
 {
-    setTitle("线性力影响器");
+    setTitle("Linear force");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, GET_QT_METATYPE_ID(particle::ParticleAffector))
         ->append(outputLabel, false);
@@ -21,7 +21,7 @@ ParticleLinearForceCard::ParticleLinearForceCard()
     _pack({
         outputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("力")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Force")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKVectorEditor>()
                 ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.force[0], mData.force[1] ,mData.force[2]}))
@@ -34,7 +34,7 @@ ParticleLinearForceCard::ParticleLinearForceCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Mode")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKComboBox>()
                 ->setItems(particle::linearAffectorName2Type.keys())

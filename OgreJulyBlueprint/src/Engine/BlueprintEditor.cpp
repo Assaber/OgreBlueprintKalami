@@ -40,8 +40,7 @@ void BlueprintEditor::keyPressEvent(QKeyEvent* event)
     super::keyPressEvent(event);
     if (!event->isAccepted())
     {
-        if (event->key() == Qt::Key_L && (event->modifiers() & Qt::ControlModifier))
-        {
+        if (event->key() == Qt::Key_L && (event->modifiers() & Qt::ControlModifier)) {
             importScene();
         }
     }

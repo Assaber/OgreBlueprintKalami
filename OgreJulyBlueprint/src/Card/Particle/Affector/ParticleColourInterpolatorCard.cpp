@@ -8,11 +8,11 @@
 ParticleColourInterpolatorCard::ParticleColourInterpolatorCard()
 	: mAffector({ static_cast<particle::ParticleAffector::Type>(ParticleColourInterpolatorCard::Type), &mData })
 {
-    setTitle("颜色插值影响器");
+    setTitle("Colour interpolator");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, GET_QT_METATYPE_ID(particle::ParticleAffector))
         ->append(outputLabel, false);
@@ -23,9 +23,9 @@ ParticleColourInterpolatorCard::ParticleColourInterpolatorCard()
 		outputCell,
 
 		BKCreator::create(BKAnchor::AnchorType::None)->append({
-				BKCreator::create<BKLabel>("使能")->setMinWidth(BKCheckBox::fixedWidth),
-				BKCreator::create<BKLabel>("颜色")->setMinWidth(BKColorSelector::fixedWidth),
-				BKCreator::create<BKLabel>("时间")->setMinWidth(70)
+				BKCreator::create<BKLabel>("Enable")->setMinWidth(BKCheckBox::fixedWidth),
+				BKCreator::create<BKLabel>("Color")->setMinWidth(BKColorSelector::fixedWidth),
+				BKCreator::create<BKLabel>("Time")->setMinWidth(70)
 			}),
 
 		 BKCreator::create(BKAnchor::AnchorType::None, BKCell::Type::ListGroup)
@@ -47,7 +47,6 @@ ParticleColourInterpolatorCard::ParticleColourInterpolatorCard()
 
 void ParticleColourInterpolatorCard::slotGroupChanged(size_t count, const QVariantList& params)
 {
-	//todo...
 	mData.items.clear();
 	mData.items.reserve(count / 3);
     for (QVariantList::const_iterator itor = params.begin(); itor != params.end(); )

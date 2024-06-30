@@ -6,11 +6,11 @@
 ParticleColourImageCard::ParticleColourImageCard()
     : mAffector({ static_cast<particle::ParticleAffector::Type>(ParticleColourImageCard::Type), &mData })
 {
-    setTitle("图片影响器");
+    setTitle("Colour image");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, GET_QT_METATYPE_ID(particle::ParticleAffector))
         ->append(outputLabel, false);
@@ -20,7 +20,7 @@ ParticleColourImageCard::ParticleColourImageCard()
     _pack({
         outputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("图片名称")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Image name")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKLineEdit>()
                 ->setText(mData.image)

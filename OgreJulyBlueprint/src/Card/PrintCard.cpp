@@ -11,16 +11,15 @@
 #include "unit/BKSpacer.h"
 
 
-
 PrintCard::PrintCard()
     : BKCard()
 {
-    setTitle("打印");
+    setTitle("Print");
 
     _pack({
         BKCreator::create(BKAnchor::AnchorType::Input)
             ->append( BKCreator::create<BKLineEdit>()
-                ->setText("嘻嘻嘻嘻嘻嘻嘻嘻")
+                ->setText("Uhhhhhh")
                 ->setDataChangeCallback([](BKUnit* unit, const QVariant& data) ->bool {
                         if (!data.isValid()) {
                             dynamic_cast<BKLineEdit*>(unit)->setText("");

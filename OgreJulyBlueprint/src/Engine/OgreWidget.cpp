@@ -45,8 +45,8 @@ OgreWidget::OgreWidget(QWidget* parent/* = nullptr*/)
 {
     setAttribute(Qt::WA_PaintOnScreen, true);
 
-    mpRoot = new Ogre::Root("", "", "");            // 在4.0.0版本中，参数1变为了abiCookie检测 (好像3.0就改了
-                                                    // 强行压到v2.3 这里就不进行更改了
+    mpRoot = new Ogre::Root("", "", "");            // In version 4.0.0, parameter 1 was changed to abiCookie detection (as if 3.0 was changed
+                                                    // When the associated version is changed to 2.3, this parameter is not used yet
     Ogre::LogManager& logMgr = Ogre::LogManager::getSingleton();
     mpLogHandle = logMgr.getDefaultLog();
     mpLogHandle->setDebugOutputEnabled(false);
@@ -90,7 +90,7 @@ void OgreWidget::updateFrame()
     }
     catch (...)
     {
-        mpLogHandle->logMessage("未知的渲染错误", Ogre::LogMessageLevel::LML_CRITICAL);
+        mpLogHandle->logMessage("Unknown rendering error", Ogre::LogMessageLevel::LML_CRITICAL);
     }
 }
 
@@ -112,15 +112,14 @@ void OgreWidget::loadPlugin()
     {
         std::string pluginName = info.fileName().toStdString();
         mpRoot->loadPlugin(pluginName, false, nullptr);
-        mpLogHandle->logMessage("加载插件:" + pluginName);
+        mpLogHandle->logMessage("Load plugin:" + pluginName);
     }
 }
 
 bool OgreWidget::selectRenderSystem()
 {
     // todo...
-    // 添加一个窗口来选择阵营
-
+    // Add a window to select the rendering system
 
     static constexpr char* rsList[] = {
         "OpenGL 3+ Rendering Subsystem",
@@ -128,7 +127,7 @@ bool OgreWidget::selectRenderSystem()
         "Vulkan Rendering Subsystem",
         "NULL Rendering Subsystem",
     };
-    const char* rs = rsList[2];
+    const char* rs = rsList[0];
 
     Ogre::RenderSystemList rList = mpRoot->getAvailableRenderers();
     Ogre::RenderSystemList::iterator itor = rList.begin();
@@ -138,7 +137,7 @@ bool OgreWidget::selectRenderSystem()
         if (rSys->getName().find(rs) != std::string::npos)
         {
             mpRoot->setRenderSystem(rSys);
-            mpLogHandle->logMessage("渲染系统加载完成: " + std::string(rs));
+            mpLogHandle->logMessage("The render system is loaded: " + std::string(rs));
             break;
         }
 
@@ -147,7 +146,7 @@ bool OgreWidget::selectRenderSystem()
 
     if (itor == rList.end())
     {
-        mpLogHandle->logMessage("渲染系统加载失败: " + std::string(rs), Ogre::LogMessageLevel::LML_CRITICAL);
+        mpLogHandle->logMessage("The render system load failed to load: " + std::string(rs), Ogre::LogMessageLevel::LML_CRITICAL);
         return false;
     }
 
@@ -161,8 +160,10 @@ void OgreWidget::createRenderWindow()
     params["left"] = "0";
     params["top"] = "0";
     params["border"] = "none";
+    // Windows + opengl: It is ok
+    // Linux + vulkan: Brother needs to change VulkanXcbWindow::createWindow, see readme
     params["externalWindowHandle"] = Ogre::StringConverter::toString((size_t)winId());
-    mpRenderWindow = mpRoot->createRenderWindow("Tiny Seed", width(), height(), false, &params);
+    mpRenderWindow = mpRoot->createRenderWindow("Ogre Blueprint Kalami", width(), height(), false, &params);
     mpRenderWindow->_setVisible(true);
 }
 
@@ -201,7 +202,7 @@ void OgreWidget::loadResource()
 
     static const std::map<Ogre::String, std::vector<const char*>> resource = {
         {
-            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, {              // 资源都会拷贝到输出目录的上一层
+            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, {              // Need a selector
                 "../../media/Common",
                 "../../media/Common/Any",
                 "../../media/Common/GLSL",
@@ -266,7 +267,6 @@ void OgreWidget::loadResource()
         }
     }
 
-    // 激活
     rm->initialiseAllResourceGroups(true);
 
     Ogre::Hlms* hlms = mpRoot->getHlmsManager()->getHlms(Ogre::HLMS_PBS);
@@ -351,8 +351,9 @@ void OgreWidget::resizeEvent(QResizeEvent* event)
         mpRenderWindow->requestResolution(size.width(), size.height());
     }
 
-    if (mpDefaultCamera && size.height() != 0)
+    if (mpDefaultCamera && size.height() != 0) {
         mpDefaultCamera->setAspectRatio(size.width() * 1.0f / size.height());
+    }
 }
 
 QPaintEngine* OgreWidget::paintEngine() const

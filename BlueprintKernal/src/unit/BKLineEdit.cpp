@@ -1,14 +1,15 @@
 ﻿#include "unit/BKLineEdit.h"
-#include <QGraphicsSceneMouseEvent>
-#include <QPainter>
-#include <QFontMetrics>
-#include <QGraphicsProxyWidget>
-#include <QLineEdit>
-#include <QStyle>
-#include <QGraphicsScene>
 #include "container/BKCard.h"
 #include "BKEvent.h"
+
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsProxyWidget>
 #include <QCoreApplication>
+#include <QGraphicsScene>
+#include <QFontMetrics>
+#include <QLineEdit>
+#include <QPainter>
+#include <QStyle>
 
 class BKLineEditor;
 class BKLineEdit::Impl : public QGraphicsItem
@@ -23,13 +24,13 @@ public:
     }
 
 public:
-    virtual QRectF boundingRect() const override {
+    virtual QRectF boundingRect() const override 
+    {
         return mBoundingRect;
     }
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override
     {
-        // 绘制外边框
         QPen p(QColor(255, 128, 64));
         painter->save();
         {
@@ -39,7 +40,6 @@ public:
             painter->restore();
         }
 
-        // 绘制文字
         painter->save();
         {
             painter->setPen(p);
@@ -65,17 +65,11 @@ protected:
 
 public:
     BKLineEdit* mpHandle = nullptr;
-    // 显示的文字
     QString mstrText;
-    // 包围盒
     QRectF mBoundingRect;
-    // 文字选项
-    QTextOption mOption;
-    // 控件区域
     QRect mCtrlArea;
-    // 固定上下边距
+    QTextOption mOption;
     static constexpr int mFixedMargin = 2;
-    // 编辑器
     static BKLineEditor* mpPublicEditor;
 };
 
@@ -177,8 +171,9 @@ void BKLineEdit::Impl::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
         TopmostCardEvent e(mpHandle->mpBindCard->getBindItem());
         qApp->sendEvent(scene(), &e);
 
-        if (!mpPublicEditor)
+        if (!mpPublicEditor) {
             mpPublicEditor = new BKLineEditor();
+        }
 
         mpPublicEditor->setExpand(this);
     }
@@ -261,14 +256,16 @@ void BKLineEdit::dataChanged(const QVariant& data)
 
     if (data.isNull())
     {
-        if (mpRightAnchor)
+        if (mpRightAnchor) {
             mpRightAnchor->dataChanged(l->mstrText);
+        }
     }
     else
     {
         setText(data.toString());
 
-        if (!mCallbackFunc(this, data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor) {
             mpRightAnchor->dataChanged(data);
+        }
     }
 }

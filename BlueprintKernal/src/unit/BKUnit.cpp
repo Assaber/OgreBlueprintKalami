@@ -35,5 +35,6 @@ void BKUnit::_copyBasicAttributeTo(BKUnit* dst)
     dst->mSizePolicy = this->mSizePolicy;
     dst->mpBindCard = this->mpBindCard;
 
-    // 绑定相关的需要重新绑定
+    // The specific unit attribute needs to be manually bound internally
+    // ...
 }

@@ -9,12 +9,6 @@ public:
     Impl(BKLabel* handle)
         : mpHandle(handle)
     {
-
-    }
-
-    ~Impl()
-    {
-        qDebug() << "label item destroy";
     }
 
 public:
@@ -33,7 +27,6 @@ public:
     {
         static_cast<void*>(widget);
 
-        // 绘制文字
         painter->save();
         {
             // painter->setFont(CBConfig::getSingleton().getFont());
@@ -94,9 +87,8 @@ BKLabel* BKLabel::setText(const QString& text)
     L_IMPL(BKLabel);
     l->mstrText = text;
 
-    QFont defaultFont;
-    QFontMetrics fm(defaultFont);        //assaber: 需要更新到系统字体
-                                        //todo...
+    static QFont defaultFont;
+    QFontMetrics fm(defaultFont);        //The only font in the program should be loaded, todo...
     mMinSize = { 1.0f * fm.horizontalAdvance(text), 1.0f * fm.height() };
     return this;
 }
@@ -104,8 +96,8 @@ BKLabel* BKLabel::setText(const QString& text)
 BKLabel* BKLabel::setTitleNeverChanges(bool enable)
 {
     L_IMPL(BKLabel);
-    l->mbDontUpdate = enable;
 
+    l->mbDontUpdate = enable;
     return this;
 }
 
@@ -128,8 +120,9 @@ void BKLabel::dataChanged(const QVariant& data)
 
     if (data.isNull())
     {
-        if (mpRightAnchor)
+        if (mpRightAnchor) {
             mpRightAnchor->dataChanged(l->mstrText);
+        }
     }
     else
     {
@@ -139,7 +132,8 @@ void BKLabel::dataChanged(const QVariant& data)
             l->update();
         }
 
-        if (!mCallbackFunc(this, data) && mpRightAnchor)
+        if (!mCallbackFunc(this, data) && mpRightAnchor) {
             mpRightAnchor->dataChanged(data);
+        }
     }
 }

@@ -18,25 +18,15 @@ public:
 
 public:
     /**
-     * @brief:                                              设置显示文字
-     * @param: const QString & text                         文字内容
-     * @return: BKLabel*                                    自身引用
-     * @remark:                                             设置文字后会导致控件的最小宽度发生改变，改变规则为根据文字的最小宽度。所以如果需要设置最小宽度，则需要在设置文字后重新刷新一遍
+     * @remark: After setting the text, the minimum width of the widget will be changed, and the change rule will be based on the minimum width of the text.
+     * So if you need to set the minimum width, you need to refresh it again after setting the text                                            
      */
     BKLabel* setText(const QString& text);
     /**
-     * @brief:                                              设置显示文字永久不发生改变
-     * @param: bool enable                                  使能
-     * @return: BKLabel*
-     * @remark:                                             当设置为true时，锚点传入的数据将不会影响标题显示;原则上用于单锚点接收; 默认为false
+     * @remark:  When set to true, the data passed in from the anchor will not affect the title display; In principle, it is used for single anchor reception
      */
     BKLabel* setTitleNeverChanges(bool enable);
-    /**
-     * @brief:                                              设置对齐
-     * @param: Qt::Alignment alignment                      Qt自带对齐
-     * @return: BKLabel&                                    自身引用
-     * @remark: 
-     */
+
     BKLabel* setAlignment(Qt::Alignment alignment);
 
 private:

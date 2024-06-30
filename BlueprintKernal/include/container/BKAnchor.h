@@ -1,31 +1,39 @@
 ﻿#pragma once
 #include "global_blueprint_kernal.h"
 #include "unit/BKUnit.h"
-#include <stdint.h>
+
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include "BKCreator.hpp"
+#include <stdint.h>
 #include <set>
 
 /*!
  * \class BKAnchor
  *
- * \brief 卡片（单元）上的锚点，用以相互连接
+ * \brief Anchor on the card, as an endpoint of a cell, the necessary part to connect the two cards
  * \detail 
- * 整体风格为监听者模式：将unit注册到输入类型的锚点，将输出类型的锚点注册给unit，将输入锚点注册给输出锚点
- *                      输入锚点
- *               ┌───→·────┐
+ * Like the style of listener: 
+ *                    Input anchor
+ *               ┌───→·←───┐
  *               丨                  丨    
  *               丨                  ↓
- *         Unit  ·                  · 输出锚点
- *               ↑                  丨
+ *         Unit  ·                  · Output anchor
+ *               ↑                  ↑
  *               └─────────┘
- * 运作逻辑：
- *     Unit变更触发绑定的回调函数(valueChanged)，回调会遍历输出锚点列表（其实应该是1个）；如果输出锚点存在输入锚点的绑定，且输入锚点存在Unit的绑定，则继续触发回调(valueChange)
- *     如果一组cell的两个锚点都被连接，则Unit的编辑功能会被关闭。
+ * 
+ * Regist:
+ * - Unit will regist to input anchor at the moment of calling BKCell::append, both of input anchor and output anchor will regist current
+ *   unit if the enable is true. At the same time, the unit will bind an output anchor and know who to tell if its data changes.
+ * - Regarding the relationship between the input and output anchors, they are registered with each other at the time of connection line 
+ *   creation(BKConnectingLine::Impl::anchorControl). One of the reasons they register each other is that they can know each other when 
+ *   the connection line is removed
+ * 
+ * Running:
+ *  When the data of a unit is actively changed, the output anchor which is registed when unit is constructed will be notify. the output 
+ *  anchor will retrieve the currently connected input anchor and transport the variant. The associated input anchor continues to look 
+ *  for the bound unit, so that the next unit can passively handle the data update.
  *
- * \author Assaber
- * \date 2024.02.25
  */
 class BKUnit;
 class BKCell;
@@ -37,32 +45,27 @@ class _BlueprintKernalExport BKAnchor : public QGraphicsItem, public BKUnitBasic
 public:
     enum AnchorType
     {
-        None                        = 0x00, ///< 无连接锚点
-        Input                       = 0x01, ///< 仅输入锚点（左侧）
-        Output                      = 0x02, ///< 仅输出锚点（右侧）
-        Both                        = Input | Output,   ///< 两端
-        MultiConn                   = 0x04, ///< 多重绑定
+        None                        = 0x00,             ///< Have no anchor
+        Input                       = 0x01,             ///< Input anchor(On the left side of the card)
+        Output                      = 0x02,             ///< Output anchor(On the right side of the card)
+        Both                        = Input | Output,   ///< IO anchor
+        MultiConn                   = 0x04,             ///< The identification of supporting multi-input
     };
 
     enum DataType
     {
-        Default = 0x00,             ///< 缺省数据类型（不进行类型区分）
-        Boolean,                    ///< bool类型
-        Short,                      ///< short类型
-        Integer,                    ///< 整数类型
-        String,                     ///< 字符串类型
-        Float,                      ///< 小数类型
-        Double,                     ///< 双精度浮点数
-        VecInteger,                 ///< 整型容器：BKIntegerVector
-        VecFloat,                   ///< 浮点型容器：BKFloatVector
+        Default = 0x00,             ///< Default(No type distinction is performed)
+        Boolean,                    ///< 
+        Short,                      ///< 
+        Integer,                    ///< 
+        String,                     ///< 
+        Float,                      ///< 
+        Double,                     ///< 
+        VecInteger,                 ///< Integral vector：BKIntegerVector
+        VecFloat,                   ///< Float vector：BKFloatVector
         
-        Custom = 0x0100,            ///< 自定义部分：这里注册时沿用Qt MetaType的ID，理论上是1024往后，但是感觉预制类型也用不上就缩啦
+        Custom = 0x0100,            ///< Custom data type:  The Qt MetaType ID is used for registration, which is theoretically 1024 or later. but now it is shrunk
     };
-
-
-    virtual bool loadFromJson(const QJsonValue& val) override;
-    virtual QVariant data() override;
-    virtual operator QJsonValue() const override;
 
 public:
     using super = BKUnitBasic<BKAnchor>;
@@ -77,83 +80,58 @@ public:
 
 public:
     uint32_t getAnchorType();
+
     uint32_t getDataType();
 
     bool hasConnected();
-    /**
-     * @brief:                                  是否在相同的组元中
-     * @param: BKAnchor * anchor                给定的另一个锚点
-     * @return: bool                            4就4，不4就不4
-     * @remark: 
-     */
+
     bool inSameCell(BKAnchor* anchor);
 
-    /**
-     * @brief:                                  是否已经注册过了
-     * @param: BKAnchor * other                 给定的另一个锚点
-     * @return: bool            
-     * @remark: 
-     */
     bool hasRegisted(BKAnchor* other);
 
     /**
-     * @brief:                                  锚点将以传入数据进行传递更新
+     * @remark: Notify the bound unit to pass its own data downward
      */
     virtual void dataChanged() override;
+
+    /**
+     * @remark: Notify the bound unit to pass given data downward
+     */
     virtual void dataChanged(const QVariant& data) override;
 
     /**
-     * @brief:                                  [限输入锚点使用]获取输出锚点全部关联数据
-     * @param: std::vector<QVariant> & rec      记录
-     * @return: int                             记录的个数
-     * @remark: 
+     * @remark: Only the input anchor can call this method, it will get the association data of all the associated output anchors, 
+     * and currently the output anchor only supports the type bound to the card
      */
     int getBindOutputData(std::vector<QVariant>& rec);
 
-public: //注册
-    // 会影响绘制时是否填充
+public: //Regist
     void appendRegist(BKAnchor* anchor, BKConnectingLine* line = nullptr);
     void removeRegist(BKAnchor* anchor);
 
-    /**
-     * @brief:                                  
-     * @param: BKUnit * unit
-     * @return: void
-     * @remark:                                 输入锚点和输出锚点都会注册，输入锚点注册为了整个链路相通；输出锚点注册为了连接时使用原数据更新
-     */
     void appendRegist(BKUnit* unit);
     void removeRegist(BKUnit* unit);
 
     /**
-     * @brief:                  重定向绑定到卡片
-     * @return: bool            是否重定向成功
-     * @remark:                 只限于输出锚点可以调用该方法，调用后注册的Unit会被清空
+     * @remark: This method can be called only by the output anchor, and the registered unit will be cleared after the call
      */
     bool redirectToCard();
 
-public:
     /**
-     * @brief:                              注册锚点可以识别的数据类型
-     * @param: uint32_t type                注册类型
-     * @param: const QColor & color         注册颜色，不给就随机
-     * @return: void
-     * @remark:                             将结构体通过Q_DECLARE_METATYPE包裹注册，并通过QMetaTypeId<T>::qt_metatype_id返回的id作为type即可。
-     * PS： Custom以前的即便传重复了也视为颜色更新，Custom之后的只允许注册一次！
+     * @remark: Register the custom struct via Q_DECLARE_METATYPE, and get the id by QMetaTypeId<T>::qt_metatype_id, After that, take it as parameter 1.
+     * In addition to this, for data types before Custom, repeated passes will be treated as updating the anchor color; For data types after Custom, allow one registration!
      */
     static void registDataType(uint32_t type, const QColor& color = QColor(qrand() % 255, qrand() % 255, qrand() % 255));
 
-    /**
-     * @brief:                              通过数据类型返回注册的颜色
-     * @param: uint32_t type                注册类型
-     * @return: QColor                      注册颜色
-     * @remark:                             白嫖就给默认颜色
-     */
     static QColor getColorByDataType(uint32_t type);
 
 private:
     void dispatchCellPositionChanged();
+
     std::vector<BKAnchor*> getRegistAnchors();
+
     std::set<BKUnit*> getRegistUnits();
+
     BKCell* getCell();
 
 private:
@@ -164,7 +142,6 @@ private:
     Impl* mpImpl;
 
 private:
-    // 锚点小球半径
     static constexpr float mnAnchorBallRadius = 6;
 
 protected:
@@ -174,4 +151,7 @@ protected:
 public:
     virtual QRectF boundingRect() const override;
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
+    virtual bool loadFromJson(const QJsonValue& val) override;
+    virtual QVariant data() override;
+    virtual operator QJsonValue() const override;
 };

@@ -6,11 +6,11 @@
 
 ParticleEmitterTypeCard::ParticleEmitterTypeCard()
 {
-	setTitle("发射器类型");
+	setTitle("Emitter type");
 	
 	BKLabel* outputLabel = BKCreator::create<BKLabel>();
 	outputLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-	outputLabel->setText("输出");
+	outputLabel->setText("Output");
 	outputLabel->setMinWidth(140);
 	BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
 	outputCell->setDataType(BKAnchor::Output, QMetaTypeId<Data>::qt_metatype_id());
@@ -19,7 +19,7 @@ ParticleEmitterTypeCard::ParticleEmitterTypeCard()
     mpOutputAnchor->redirectToCard();
 
     BKLabel* typeLabel = BKCreator::create<BKLabel>();
-	typeLabel->setText("渲染类型");
+	typeLabel->setText("Render type");
     BKCell* typeLabelCell = BKCreator::create(BKAnchor::AnchorType::None);
 	typeLabelCell->append(typeLabel);
     BKComboBox* typeComboBox = BKCreator::create<BKComboBox>();
@@ -46,12 +46,12 @@ ParticleEmitterTypeCard::ParticleEmitterTypeCard()
 		return { lc, sc };
 	};
 
-	auto widthCellPair = create_slider("宽度", mData.width, std::bind(&ParticleEmitterTypeCard::slotWidthChanged, this, std::placeholders::_1, std::placeholders::_2));
-	auto heightCellPair = create_slider("高度", mData.height, std::bind(&ParticleEmitterTypeCard::slotHeightChanged, this, std::placeholders::_1, std::placeholders::_2));
-	auto depthCellPair = create_slider("深度", mData.depth, std::bind(&ParticleEmitterTypeCard::slotDepthChanged, this, std::placeholders::_1, std::placeholders::_2));
-    auto innerWidthCellPair = create_slider("内部宽度", mData.innerWidth, std::bind(&ParticleEmitterTypeCard::slotInnerWidthChanged, this, std::placeholders::_1, std::placeholders::_2));
-    auto innerHeightCellPair = create_slider("内部高度", mData.innerHeight, std::bind(&ParticleEmitterTypeCard::slotInnerHeightChanged, this, std::placeholders::_1, std::placeholders::_2));
-    auto innerDepthCellPair = create_slider("内部深度", mData.innerDepth, std::bind(&ParticleEmitterTypeCard::slotInnerDepthChanged, this, std::placeholders::_1, std::placeholders::_2));
+	auto widthCellPair = create_slider("Width", mData.width, std::bind(&ParticleEmitterTypeCard::slotWidthChanged, this, std::placeholders::_1, std::placeholders::_2));
+	auto heightCellPair = create_slider("Height", mData.height, std::bind(&ParticleEmitterTypeCard::slotHeightChanged, this, std::placeholders::_1, std::placeholders::_2));
+	auto depthCellPair = create_slider("Depth", mData.depth, std::bind(&ParticleEmitterTypeCard::slotDepthChanged, this, std::placeholders::_1, std::placeholders::_2));
+    auto innerWidthCellPair = create_slider("Inner width", mData.innerWidth, std::bind(&ParticleEmitterTypeCard::slotInnerWidthChanged, this, std::placeholders::_1, std::placeholders::_2));
+    auto innerHeightCellPair = create_slider("Inner height", mData.innerHeight, std::bind(&ParticleEmitterTypeCard::slotInnerHeightChanged, this, std::placeholders::_1, std::placeholders::_2));
+    auto innerDepthCellPair = create_slider("Inner depth", mData.innerDepth, std::bind(&ParticleEmitterTypeCard::slotInnerDepthChanged, this, std::placeholders::_1, std::placeholders::_2));
 
 	_pack({
 		outputCell,

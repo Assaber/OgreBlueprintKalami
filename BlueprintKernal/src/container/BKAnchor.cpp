@@ -8,11 +8,9 @@
 #include <QApplication>
 #include <QPainter>
 #include <QDebug>
-#include <QEvent>
 
 #include <stdexcept>
 #include <map>
-#include <set>
 
 class BKAnchor::Impl
 {
@@ -37,7 +35,6 @@ public:
 
     ~Impl()
     {
-        qDebug() << "锚点释放";
         while (mRegistRecord.size())
         {
             auto item = mRegistRecord.begin();
@@ -46,9 +43,7 @@ public:
             BKConnectingLine* line = item->second;
             StandAloneUnit* u = dynamic_cast<StandAloneUnit*>(line);
             auto view = getInnerView(u->getBindItem()->scene());
-            if (view)
-            {
-                qDebug() << "删除连接线";
+            if (view) {
                 view->destroyUnit(line);
             }
 
@@ -56,11 +51,10 @@ public:
         }           
     }
 
-
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr);
+
 public:
     void setDateType(uint32_t type);
-    bool inSameCell(BKAnchor* anchor);
 
 public:
     BlueprintLoader* getInnerView(QGraphicsScene* scene = nullptr);
@@ -79,39 +73,36 @@ public:
     std::map<BKAnchor*, BKConnectingLine*> mRegistRecord;
     std::set<BKUnit*> mRegistUnitSet;
 
-    // 已经存在连接
     bool mbConnect = false;
-    // 准备建立连接
     bool mbReadyEstablishConn = false;
-    // 锚点配色
+
     QColor mColor = QColor(0xFFFF8000);
-    // 填充笔刷
     QBrush mFilledBrush = mColor;
-    // 边界画笔
     QPen mBorderPen = mColor;
-    // 数据类型到颜色的映射
+
+
     static std::map<uint32_t, QColor> mDataType2Color;
-    // 准备线的其实连接点
+    // The start point of the connect line
     QPointF mConnectBegin;
-    // 包裹锚点的组元
+    // Master cell
     BKCell* mpCell = nullptr;
-    // 多输入path
+    // Different from the circular shape of the normal anchor point, the shape unique to the anchor point is input
     QPainterPath mMultiPath;
 };
 
-// 这个配色会让人觉得踏实，不要问为什么，毕竟取自人民币配色√
-// 感谢萌姐好几年前朋友圈提供的灵感
+// This color scheme will make people feel happyヽ(°▽°)ノ, After all, it's the color of ￥
+// Thanks Sister Meng for the inspiration provided by the share looooooooong long ago
 std::map<uint32_t, QColor> BKAnchor::Impl::mDataType2Color = {
-    { BKAnchor::DataType::Default,      0xFFFF8000 },
-    { BKAnchor::DataType::Boolean,      0xFFA28C88 },
-    { BKAnchor::DataType::Short,        0xFF708E98 },
-    { BKAnchor::DataType::Integer,      0xFF8B6773 },
-    { BKAnchor::DataType::String,       0xFF89916B },
-    { BKAnchor::DataType::Float,        0xFF846992 },
-    { BKAnchor::DataType::Double,       0xFF435C74 },
-    { BKAnchor::DataType::VecInteger,   0xFF886349 },
-    { BKAnchor::DataType::VecFloat,     0xFF4F9C83 },
-    { BKAnchor::DataType::Custom,       0xFFBF6074 },
+    { BKAnchor::DataType::Default,      0xFFFF8000 },           // My favorite color
+    { BKAnchor::DataType::Boolean,      0xFFA28C88 },           // 0.1      
+    { BKAnchor::DataType::Short,        0xFF708E98 },           // 0.2
+    { BKAnchor::DataType::Integer,      0xFF8B6773 },           // 0.5
+    { BKAnchor::DataType::String,       0xFF89916B },           // 1
+    { BKAnchor::DataType::Float,        0xFF846992 },           // 5
+    { BKAnchor::DataType::Double,       0xFF435C74 },           // 10
+    { BKAnchor::DataType::VecInteger,   0xFF886349 },           // 20
+    { BKAnchor::DataType::VecFloat,     0xFF4F9C83 },           // 50
+    { BKAnchor::DataType::Custom,       0xFFBF6074 },           // 100
 };
 
 BKUnit* BKAnchor::copy()
@@ -151,7 +142,6 @@ BKAnchor::BKAnchor(uint32_t type, BKCell* cell)
 
 BKAnchor::~BKAnchor()
 {
-    //释放连接线
     delete mpImpl;
     mpImpl = nullptr;
 }
@@ -223,13 +213,18 @@ void BKAnchor::registDataType(uint32_t type, const QColor& color /*= QColor(qran
     auto itor = Impl::mDataType2Color.find(type);
     if (itor != Impl::mDataType2Color.end())
     {
-        if (type > BKAnchor::Custom)
-            throw std::logic_error(QString("注册数据类型错误<%1>, 文件[%2], 行数[%3]").arg(type).arg(__FILE__).arg(__LINE__).toStdString());
-        else
+        if (type > BKAnchor::Custom) 
+        {
+            QString msg = QString("The registration type is incorrect, and the same custom type is registered repeatedly<%1>").arg(type);
+            throw std::logic_error(msg.toStdString());
+        }
+        else {
             itor->second = color;
+        }
     }
-    else
+    else {
         Impl::mDataType2Color[type] = color;
+    }
 }
 
 QColor BKAnchor::getColorByDataType(uint32_t type)
@@ -383,8 +378,10 @@ int BKAnchor::getBindOutputData(std::vector<QVariant>& rec)
     {
         auto ol = other.first->mpImpl;
         auto card = other.first->mpBindCard;
-        if (ol->mRegistUnitSet.size() == 0)             //只支持无绑定节点的锚点
+
+        if (ol->mRegistUnitSet.size() == 0) {           // Only output anchor bound to card can get the value of card
             rec.push_back(card->getCurrentCardValue());
+        }
     }
 
     return rec.size();
@@ -394,7 +391,6 @@ void BKAnchor::Impl::paint(QPainter* painter, const QStyleOptionGraphicsItem* op
 {
     static_cast<void*>(widget);
 
-    // 绘制文字
     painter->save();
     {
         painter->setPen(mBorderPen);
@@ -428,6 +424,7 @@ BlueprintLoader* BKAnchor::Impl::getInnerView(QGraphicsScene* s)
 {
     BlueprintLoader* ret = nullptr;
     QGraphicsScene* scene = s ? s : mpHandle->scene();
+
     do 
     {
         if (!scene)
@@ -444,19 +441,21 @@ BlueprintLoader* BKAnchor::Impl::getInnerView(QGraphicsScene* s)
     return ret;
 }
 
-bool BKAnchor::inSameCell(BKAnchor* anchor) { return mpImpl->inSameCell(anchor); }
+bool BKAnchor::inSameCell(BKAnchor* anchor) 
+{ 
+    L_IMPL(BKAnchor);
+
+    if (!l->mpCell || anchor == this) // Ask and nod XD
+        return true;
+
+    return l->mpCell->hasAnchor(anchor);
+}
 
 bool BKAnchor::hasRegisted(BKAnchor* other)
 {
-    return mpImpl->mRegistRecord.find(other) != mpImpl->mRegistRecord.end();
-}
+    L_IMPL(BKAnchor);
 
-bool BKAnchor::Impl::inSameCell(BKAnchor* anchor)
-{
-    if (!mpCell || anchor == mpHandle)        //休怪无情
-        return true;
-
-    return mpCell->hasAnchor(anchor);
+    return l->mRegistRecord.find(other) != l->mRegistRecord.end();
 }
 
 QGraphicsItem* BKAnchor::getGraphicsItem()

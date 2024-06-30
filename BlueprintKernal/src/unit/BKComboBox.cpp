@@ -1,14 +1,15 @@
 ﻿#include "unit/BKComboBox.h"
-#include <QGraphicsItem>
-#include <QPainter>
-#include <QTextOption>
+#include "container/BKCard.h"
+#include "BKEvent.h"
+
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsProxyWidget>
-#include <QListWidget>
-#include <QGraphicsScene>
-#include "container/BKCard.h"
 #include <QCoreApplication>
-#include "BKEvent.h"
+#include <QGraphicsScene>
+#include <QGraphicsItem>
+#include <QListWidget>
+#include <QTextOption>
+#include <QPainter>
 #include <QToolTip>
 
 class BKComboBox::Impl : public QGraphicsItem
@@ -28,7 +29,6 @@ public:
 
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override
     {
-        // 绘制边框
         painter->save();
         {
             painter->setPen(QColor(255, 128, 64));
@@ -37,7 +37,6 @@ public:
             painter->restore();
         }
 
-        // 绘制文字
         if (mCurrentIndex > -1)
         {
             painter->save();
@@ -49,7 +48,6 @@ public:
             }
         }
 
-        // 绘制按钮
         painter->save();
         {
             painter->setPen(mDropAnchorPen);
@@ -78,8 +76,7 @@ protected:
             {
                 mbPressed = true;
 
-                // 在按下的时候就发，早处理早省心
-                // 很快的
+                // Topmost is triggered when the mouse is pressed
                 TopmostCardEvent e(mpHandle->mpBindCard->getBindItem());
                 qApp->sendEvent(scene(), &e);
 
@@ -94,37 +91,32 @@ protected:
 
 public:
     BKComboBox* mpHandle = nullptr;
-    // 固定上下边距
     static constexpr int mFixedMargin = 2;
-    // 下拉列表
+
     QStringList mItems;
-    // 当前索引
+
     int32_t mCurrentIndex = -1;
-    // 包围盒
+
     QRectF mBoundingRect;
-    // 控件区域
     QRect mCtrlArea;
-    // 按钮区域
     QRect mButtonArea;
-    // 下拉按钮路径
-    QPainterPath mDropAnchorPainterPath;
-    // 文字区域
     QRect mTextArea;
-    // 是否为按下状态
+
+    QPainterPath mDropAnchorPainterPath;
+
     bool mbPressed = false;
-    // 文字绘制选项
+
     QTextOption mOption;
-    // 展开窗体
+
     static BKComboBoxItemView* mpPublicView;
-    // 回调参数类型
+
     CallbackParamType mCbType = CallbackParamType::Data;
-    // 绘制按钮的画笔
+
     static QPen mDropAnchorPen;
 };
 
 BKComboBoxItemView* BKComboBox::Impl::mpPublicView = nullptr;
 QPen BKComboBox::Impl::mDropAnchorPen = QPen(QColor("#FF8040"), 1);
-
 
 class BKComboBoxItemView : public QGraphicsProxyWidget
 {
@@ -271,9 +263,9 @@ void BKComboBox::Impl::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     {
         if (mCtrlArea.contains(event->pos().toPoint()))
         {
-            // 展开菜单
-            if (!mpPublicView)
+            if (!mpPublicView) {        // Singleton obj create
                 mpPublicView = new BKComboBoxItemView();
+            }
 
             mpPublicView->setExpand(this);
         }
@@ -332,16 +324,20 @@ BKComboBox::~BKComboBox()
 
 BKComboBox* BKComboBox::setCurrentIndex(int index, bool notify /*= true*/)
 {
-    L_IMPL(BKComboBox)
-    if (index > -1 && index < l->mItems.size())
+    L_IMPL(BKComboBox);
+
+    if (index > -1 && index < l->mItems.size()) {
         l->mCurrentIndex = index;
-    else
+    }
+    else {
         l->mCurrentIndex = -1;
+    }
 
     mpImpl->update();
 
-    if (notify)
+    if (notify) {
         dataChanged(l->getCurrentText());
+    }
 
     return this;
 }
@@ -351,17 +347,18 @@ BKComboBox* BKComboBox::setCurrentItem(const QString& item, bool notify /*= true
 {
     L_IMPL(BKComboBox);
     l->mCurrentIndex = l->mItems.indexOf(item);
-    mpImpl->update();
+    l->update();
 
     return this;
 }
 
 BKComboBox* BKComboBox::setItems(const QStringList& items)
 {
-    mpImpl->mItems = items;
-    mpImpl->mCurrentIndex = items.size() > 0 ? 0 : -1;
+    L_IMPL(BKComboBox);
+    l->mItems = items;
+    l->mCurrentIndex = items.size() > 0 ? 0 : -1;
 
-    mpImpl->update();
+    l->update();
     return this;
 }
 
@@ -387,7 +384,7 @@ void BKComboBox::resized()
 
     int split = l->mCtrlArea.width() - l->mCtrlArea.height();
     l->mButtonArea = { split, l->mFixedMargin, l->mCtrlArea.height(), l->mCtrlArea.height() };
-    l->mTextArea = { 4, l->mFixedMargin, split - 4, l->mCtrlArea.height() };        // 4 = 左侧内边距
+    l->mTextArea = { 4, l->mFixedMargin, split - 4, l->mCtrlArea.height() };        // 4 = Left margin
 
     
     QPoint center(l->mButtonArea.topLeft() + QPoint(l->mCtrlArea.height() / 2, l->mCtrlArea.height() / 2));
@@ -404,8 +401,9 @@ void BKComboBox::dataChanged(const QVariant& data)
 
     if (data.isNull())
     {
-        if (mpRightAnchor)
+        if (mpRightAnchor) {
             mpRightAnchor->dataChanged(l->getCurrentText());
+        }
     }
     else
     {
@@ -413,12 +411,12 @@ void BKComboBox::dataChanged(const QVariant& data)
         setCurrentIndex(index, false);
         l->update();
 
-        // 阻断传递
-        // 吉人自有天相吧
-        // if (index < 0)      
-        //     return;
+        //  Even if the content passed from the outside is not in the list, the downstream pass can still be triggered
+        //  Of course, if the index is returned, this problem will be exposed
+
         QVariant param = l->mCbType == CallbackParamType::Data ? data : index;
-        if (!mCallbackFunc(this, param) && mpRightAnchor)
+        if (!mCallbackFunc(this, param) && mpRightAnchor) {
             mpRightAnchor->dataChanged(data);
+        }
     }
 }

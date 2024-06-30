@@ -29,7 +29,7 @@ static constexpr int UpdateTopmostCardEvent = QEvent::User + 1002;
 static constexpr int StandAloneUnitInUserData = 101;
 
 class BlueprintLoader;
-// 获取枚举值的上升类型
+// Gets the rising type of the enum class
 #define GET_ENUM_CLASS_UPWARD_VARIANT(x) (static_cast<std::underlying_type<decltype(x)>::type>(x))
 
 #define GET_CARD_NAME(Class) #Class

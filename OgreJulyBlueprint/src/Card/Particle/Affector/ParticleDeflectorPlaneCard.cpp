@@ -8,11 +8,11 @@
 ParticleDeflectorPlaneCard::ParticleDeflectorPlaneCard()
     : mAffector({ static_cast<particle::ParticleAffector::Type>(ParticleDeflectorPlaneCard::Type), &mData })
 {
-    setTitle("偏转平面影响器");
+    setTitle("Deflector plane");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, GET_QT_METATYPE_ID(particle::ParticleAffector))
         ->append(outputLabel, false);
@@ -22,7 +22,7 @@ ParticleDeflectorPlaneCard::ParticleDeflectorPlaneCard()
     _pack({
         outputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("平面一点")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Point")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKVectorEditor>()
                 ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.point[0], mData.point[1] ,mData.point[2]}))
@@ -35,7 +35,7 @@ ParticleDeflectorPlaneCard::ParticleDeflectorPlaneCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("平面法线")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Normal")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKVectorEditor>()
                 ->setValue(QVariant::fromValue(BKVectorEditor::FloatVec{mData.normal[0], mData.normal[1] ,mData.normal[2]}))
@@ -48,7 +48,7 @@ ParticleDeflectorPlaneCard::ParticleDeflectorPlaneCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("反弹强度")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Bounce")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(1.0f)
                 ->setCurrentValue(mData.bounce)

@@ -50,13 +50,13 @@ BKCreator::create(BKAnchor::AnchorType::None) \
 
 MacroblockCard::MacroblockCard()
 {
-    setTitle("宏块");
+    setTitle("Macroblock");
 
     BKCell* output = BKCreator::create(BKAnchor::AnchorType::Output);
     output->setDataType(BKAnchor::Output, QMetaTypeId<Ogre::HlmsMacroblock>::qt_metatype_id())
         ->append(BKCreator::create<BKLabel>()
             ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-            ->setText("输出")
+            ->setText("Output")
             ->setMinWidth(140)
             , false)
         ->getAnchor(BKAnchor::AnchorType::Output)
@@ -75,12 +75,12 @@ MacroblockCard::MacroblockCard()
     _pack({
         output,
 
-        CreateFixedBoolItem("裁剪测试",mMacroblock.mScissorTestEnabled, output),
-        CreateFixedBoolItem("深度限制",mMacroblock.mDepthClamp, output),
-        CreateFixedBoolItem("深度检测",mMacroblock.mDepthCheck, output),
-        CreateFixedBoolItem("深度写入",mMacroblock.mDepthWrite, output),
+        CreateFixedBoolItem("Scissor test",mMacroblock.mScissorTestEnabled, output),
+        CreateFixedBoolItem("Depth clamp",mMacroblock.mDepthClamp, output),
+        CreateFixedBoolItem("Depth check",mMacroblock.mDepthCheck, output),
+        CreateFixedBoolItem("Depth write",mMacroblock.mDepthWrite, output),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("比较函数")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Depth compare function")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(compareFuncList)
             ->setCurrentIndex(initCompareFuncIndex)
@@ -92,7 +92,7 @@ MacroblockCard::MacroblockCard()
                 })
             ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("裁剪模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Cull mode")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(cullingModeList)
             ->setCurrentIndex(initCullingModeIndex)
@@ -104,7 +104,7 @@ MacroblockCard::MacroblockCard()
                 })
             ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("多边形模式")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>()->setText("Polygon mode")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKComboBox>()
             ->setItems(polygonModeList)
             ->setCurrentIndex(initPolygonModeIndex)

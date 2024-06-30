@@ -20,7 +20,7 @@
 #include <QUuid>
 #include <QDebug>
 
-// 正则天下第一！
+// Regular expressions, my God!
 static std::map<Ogre::String, Ogre::GpuProgramParameters::AutoConstantType> name2AutoConstType = {
     { "World Matrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX },
     { "Inverse World Matrix", Ogre::GpuProgramParameters::ACT_INVERSE_WORLD_MATRIX },
@@ -398,16 +398,14 @@ bool SimpleVertexProgCard::createGpuProgram(bool recreate)
             mInfo.type, Ogre::GPT_VERTEX_PROGRAM);
 
         programPtr->setSource(mProgram);
-        // programPtr->setVertexTextureFetchRequired(true);   // 在使用手动创建的Texture时使用吗？ e.g. TextureManager::getSingleton().createManual(something)
+        // programPtr->setVertexTextureFetchRequired(true);   //  Is it used when using manual creation of textures? e.g. TextureManager::getSingleton().createManual(something)
         programPtr->load();
 
         skip = false;
 
     } while (false);
 
-    if (skip)
-    {
-        qWarning() << "Gpu顶点程序名称回滚";
+    if (skip) {
         mInfo.name = oldProgramName;
     }
     else
@@ -415,7 +413,7 @@ bool SimpleVertexProgCard::createGpuProgram(bool recreate)
         mpOutputAnchor->dataChanged(mInfo);
 
         if (recreate && !oldProgramName.empty()) {
-            // 释放旧的材质
+            // Release the old material
             Ogre::HighLevelGpuProgramManager* hlpm = Ogre::HighLevelGpuProgramManager::getSingletonPtr();
             Ogre::HighLevelGpuProgramPtr programPtr = hlpm->getByName(oldProgramName);
             if (programPtr)
@@ -539,16 +537,14 @@ bool SimpleFragmentProgCard::createGpuProgram(bool recreate /*= true*/)
             mInfo.type, Ogre::GPT_FRAGMENT_PROGRAM);
 
         programPtr->setSource(mProgram);
-        // programPtr->setVertexTextureFetchRequired(true);   // 在使用手动创建的Texture时使用吗？ e.g. TextureManager::getSingleton().createManual(something)
+        // programPtr->setVertexTextureFetchRequired(true);   // Is it used when using manual creation of textures? e.g. TextureManager::getSingleton().createManual(something)
         programPtr->load();
 
         skip = false;
 
     } while (false);
 
-    if (skip)
-    {
-        qWarning() << "Gpu片段程序名称回滚";
+    if (skip) {
         mInfo.name = oldProgramName;
     }
     else
@@ -556,7 +552,7 @@ bool SimpleFragmentProgCard::createGpuProgram(bool recreate /*= true*/)
         mpOutputAnchor->dataChanged(mInfo);
 
         if (recreate && !oldProgramName.empty()) {
-            // 释放旧的材质
+            // Release the old material
             Ogre::HighLevelGpuProgramManager* hlpm = Ogre::HighLevelGpuProgramManager::getSingletonPtr();
             Ogre::HighLevelGpuProgramPtr programPtr = hlpm->getByName(oldProgramName);
             if (programPtr)

@@ -25,33 +25,22 @@ public:
 public:
     virtual BKUnit* copy() override;
     virtual bool loadFromJson(const QJsonValue& val) override;
-    // std::vector<int> 或std::vector<float>
+    // std::vector<int> or std::vector<float>
     virtual QVariant data() override;
     virtual operator QJsonValue() const override;
 
 public:
     /**
-     * @brief:                                          设置向量名称
-     * @param: const std::vector<QString> & names
-     * @return: BKVectorEditor*
-     * @remark:                                          预存6个，分别为x\y\z\u\v\w
+     * @remark: Six names are deposited by default(x\y\z\u\v\w)
      */
     BKVectorEditor* setNames(const std::vector<QString>& names);
     BKVectorEditor* setValue(const QVariant& value);
     /**
-     * @brief: 
-     * @param: int index                            
-     * @param: const std::pair<QVariant
-     * @param: QVariant> & minmax
-     * @return: BKVectorEditor*
-     * @remark:                                     index传入负数代表所有向量都应用这个范围
+     * @remark: If Index is negative, all members will be constrained to this range
      */
     BKVectorEditor* setRange(int index, const std::pair<QVariant, QVariant>& minmax);
     /**
-     * @brief: 
-     * @param: int count
-     * @return: BKVectorEditor*
-     * @remark:                                     在生成卡片之前调用有效，否则可能会造成控件挤压
+     * @remark: This function is valid before it's card is generated, otherwise it may cause the control to squeeze                                    
      */
     BKVectorEditor* setItemInLine(int count);
 

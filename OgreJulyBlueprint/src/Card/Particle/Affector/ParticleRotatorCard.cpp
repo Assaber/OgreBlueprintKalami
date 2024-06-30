@@ -6,11 +6,11 @@
 ParticleRotatorCard::ParticleRotatorCard()
 	: mAffector({ static_cast<particle::ParticleAffector::Type>(ParticleRotatorCard::Type), &mData })
 {
-    setTitle("旋转影响器");
+    setTitle("Rotator");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, GET_QT_METATYPE_ID(particle::ParticleAffector))
         ->append(outputLabel, false);
@@ -20,7 +20,7 @@ ParticleRotatorCard::ParticleRotatorCard()
 	_pack({
 		outputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("旋转起始速度(°/s)")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Speed begin(°/s)")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(360)
                 ->setCurrentValue(mData.speedStart)
@@ -31,7 +31,7 @@ ParticleRotatorCard::ParticleRotatorCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("旋转终止速度(°/s)")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Speed end(°/s)")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(360)
                 ->setCurrentValue(mData.speedEnd)
@@ -42,7 +42,7 @@ ParticleRotatorCard::ParticleRotatorCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("旋转起始角(°)")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Rotate begin(°)")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(360)
                 ->setCurrentValue(mData.rotStart)
@@ -53,7 +53,7 @@ ParticleRotatorCard::ParticleRotatorCard()
                 })
         ),
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("旋转起终止角(°)")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Rotate end(°)")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKSliderBar>()->setMinimum(0)->setMaximum(360)
                 ->setCurrentValue(mData.rotEnd)

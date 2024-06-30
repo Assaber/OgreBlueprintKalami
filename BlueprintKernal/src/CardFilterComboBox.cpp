@@ -128,7 +128,7 @@ public:
             }
             else {
                 textRect = option.rect.adjusted(16 + height, 0, 0, 0);
-                if (index.row() == mHoverRow) {     // 鼠标悬浮
+                if (index.row() == mHoverRow) { 
                     painter->fillRect(textRect, QColor(255, 128, 0, 126));
                 }
             }
@@ -138,7 +138,8 @@ public:
 
         bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index) override
         {
-            if (event->type() == QEvent::MouseMove) {
+            if (event->type() == QEvent::MouseMove) 
+            {
                 mHoverRow = index.row();
                 if (mLastHowerRow != mHoverRow)
                 {
@@ -154,7 +155,7 @@ public:
                 bool isGroup = index.data(Model::IsGroupRole).toBool();
                 QString name = index.data().toString();
 
-                if (isGroup)                        // 组过滤反向
+                if (isGroup)                        // Collapse or expand
                 {
                     auto itor = tv->mHideGroups.find(name);
                     if (itor == tv->mHideGroups.end()) {
@@ -165,7 +166,7 @@ public:
                     }
                     tv->refreshVisibleDict();
                 }
-                else if (tv->mItemClickedCallback) { // 选择一个对象
+                else if (tv->mItemClickedCallback) { // Pick one of the lucky ones
                     tv->mItemClickedCallback(index);
                 }
 
@@ -251,7 +252,7 @@ public:
             {
                 mVisibleItems.push_back(parentItor);
 
-                if (mHideGroups.find(parentItor->name) == mHideGroups.end()) {          // 可见组才需要展开
+                if (mHideGroups.find(parentItor->name) == mHideGroups.end()) {          // Only visible groups need to be expanded
                     for (const auto& item : cacheList) {
                         mVisibleItems.push_back(item);
                     }
@@ -268,11 +269,12 @@ public:
             {
                 if (mstrFilter.isEmpty())
                 {
-                    if (itor->isGroup)          //这种判定方式需要严格遵守组1-成员-成员-...-成员-组2-成员...
+                    if (itor->isGroup)          //This method of judgment needs to be strictly adhered: Group1 - Member - Member - ... - Member - Group2 - Member...
                     {
                         skip = false;
-                        if (mHideGroups.find(itor->name) != mHideGroups.end()) {
-                            mVisibleItems.push_back(itor);      // 组名还是要保留的
+                        if (mHideGroups.find(itor->name) != mHideGroups.end()) 
+                        {
+                            mVisibleItems.push_back(itor);      // The group name needs to be retained
                             skip = true;
                             break;
                         }
@@ -305,11 +307,9 @@ public:
             ++itor;
         }
 
-        // 成组的清场
         push_data_in_group_mode();
 
         mpModel->endResetModel();
-
     }
 
     void setFilter(const QString& filter)

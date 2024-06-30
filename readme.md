@@ -1,36 +1,86 @@
-## 说明
-&emsp;&emsp;OgreBlueprintKalami尝试使用Qt的QGraphics系列为Ogre-next开发出一套节点编辑器，方便其他道友可以利用这个小工具进行材质、粒子编辑。分支目前分为两个：***master***和***8-6***，其中***master***预计只在7月份进行合并提交，代表本工程的最新可使用代码；***8-6***指平时开发专用分支（抢先版）。
+## Explanation
+&emsp;&emsp;***OgreBlueprintKalami*** try to implement a node editor using QGraphics(a Qt module), aim to help guys to use this tool for material and particle editing. There are currently two branches:***master*** and ***8-6***，The ***master*** is expected to make merge submissions only in July; ***8-6*** is a branch that is usually used for development, it may be unstable.
 
-### 才艺展示
+PS: ***Kalami*** is a dialect that sounds like 'Color me', roughly meaning small, inconsequential.
 
-//todo...
+### Talent show
 
+&emsp;&emsp;In this project, each node is treated as a ***Card***, and each card is made up of multiple cells. ***Cell*** can be thought of as a row, and it is filled with ***Unit***, yes, a unit can be thought of as the smallest object of control that can be seen, it is the base class for inner controls. Now, we have the following controls.
 
-### 组成
+1. Checkbox
 
-//todo...
+![](./readme-res/checkbox.png)
 
+2. ColorSelector(Ex)
 
-### 下载以及更新
+![](./readme-res/color_selector.png)
 
-整个工程已经将**ogre-next**和**ogre-next-deps**添加为子模块，下载本工程后可通过下面的指令进行依赖的递归更新
+3. ComboBox
+
+![](./readme-res/combobox.png)
+
+4. Label
+
+![](./readme-res/label.png)
+
+5. LineEdit
+
+![](./readme-res/lineedit.png)
+
+6. Pixmap
+
+![](./readme-res/pixmap.png)
+
+7. PushButton
+
+![](./readme-res/pushbutton.png)
+
+8. SliderBar
+
+![](./readme-res/sliderbar.png)
+
+9. VectorEditor
+
+![](./readme-res/vector_editor.png)
+
+10. Canvas(Only pen)
+
+![Chicks eat Mitu--<Tang bo hu dian Qiu xiang>](./readme-res/canvas.png)
+
+&emsp;&emsp;The controls shown above are encapsulated in the ***BlueprintKernel***, in order to be reusaable and simple separation of Qt and ogre, in this way, the style of the controls doesn't need to be too much of a concern when using Kalami, the interfaces of the controls are also relatively clean. We can combine these controls as we want, and choose whether to add an anchor to connect other cards, ***Anchor*** is the endpoint of the cell, different cards can be connected by the same type of anchor. 
+
+![](./readme-res/simple_conn.png)
+
+So... 
+
+Unit project
+![Unlit](./readme-res/unlit_sample.png)
+
+Particle project
+![Unlit](./readme-res/particle_sample.png)
+
+Realtime texture update(use QPainter)
+![Unlit](./readme-res/realtime_update_texture.gif)
+
+### Ready and build
+
+&emsp;&emsp;The whole project has added ***ogre-next*** and ***ogre-next-deps*** as submodules, and updated the external CmakeLists. Recursive updates can be made using the following command:
 
 ``` bash 
 git submodule update --progress --init --recursive -- "ogre-next-deps"
+git submodule update --progress --init --recursive -- "ogre-next"
 ```
 
-### 编译
+About other dependences, it only need Qt above 5.12(I'm using this version, maybe a slightly lower version is fine, and I don't feel like I'm using any special methods). ohhh, C++ needs to support c++14. In addition, guys need to pay attention to the followings before compiling:
 
-1. 注意在编译**OgreSceneFormat**时，需要添加一个CmakeLists的条目（ogre-next/Components/SceneFormat/CMakeLists.txt）
+1. Note that when compiling ***OgreSceneFormat***, you need to add an entry for CmakeLists(ogre-next/Components/SceneFormat/CMakeLists.txt)
 
 ``` shell
 [line 25] include_directories(${CMAKE_SOURCE_DIR}/ogre-next/Components/Hlms/Common/include)
 ```
-2. msvc编译的时候**OgreIrradianceField.cpp**的第119行会因为注释是指数而报错，简单粗暴的方法是删掉
+2. When using Windows + msvc to compile, line 119 of **OgreIrradianceField.cpp** will report an error because the remark has exponential(maybe...), and the simple and crude way is to delete it
 
-3. 在Linux下进行编译，目前已验证使用Vulkan是可以的，但是工程仍需要一些改动
-
-- ogre-next/RenderSystems/Vulkan/src/Windowing/X11/OgreVulkanXcbWindow.cpp
+3.  When using Linux(Ununtu 22.04) to compile, I used VMware and Vulkan for validation and it needs to be changed a little at ogre-next/RenderSystems/Vulkan/src/Windowing/X11/OgreVulkanXcbWindow.cpp
 
 ``` c++
 void VulkanXcbWindow::createWindow( const String &windowName, uint32 width, uint32 height, const NameValuePairList *miscParams )
@@ -56,65 +106,129 @@ void VulkanXcbWindow::createWindow( const String &windowName, uint32 width, uint
 
         xcb_create_window( ...
 ```
-即添加额外的参数解析***externalWindowHandle***，但是目前这样修正在程序退出时会报错（但不影响大逻辑），故暂时没有向总仓库申请pull request。
+That is, add additional parameter parsing ***externalWindowHandle***, but at present, such a correction will report an error when the program exits (but does not affect the general logic), so there is no pull request to tribe(ogre's tribe)
 
-### 备注
-1. 如果**INCLUDE_INNER_PARTICLE_CARD**的开关进行了改变，记得清除CMakeCache.txt蛤~
+### Usage
+&emsp;&emsp;When I first thought about what the interface should look like, I preferred to be able to call it continuously, and it would be better to omit some intermediate variable declarations, as a result, most of the control's settings function returns its own pointer. Guys can write boldly like ***PrintCard.cpp***
 
-2. 如果*ogre-next-deps*有部分单元没有下载成功，但又希望提交工程到git，可以删除报错提示目录中的.git文件（是子模块中对应的文件，不是总的）
+``` c++
+_pack({
+    BKCreator::create(BKAnchor::AnchorType::Input)
+        ->append( BKCreator::create<BKLineEdit>()
+            ->setText("Uhhhhhh")
+            ->setDataChangeCallback([](BKUnit* unit, const QVariant& data) ->bool {
+                    if (!data.isValid()) {
+                        dynamic_cast<BKLineEdit*>(unit)->setText("");
+                    }
+                    
+                    return true;
+                })
+        )
+    });
+```
 
-### 关键结点记录
+Or write conservatively, like***ReadFileCard***(Damn, it's really hard to find)
+``` c++
+_pack({
+    BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output);
+    outputCell->setDataType(BKAnchor::Output, BKAnchor::String);
+    mpOutputAnchor = outputCell->getAnchor(BKAnchor::AnchorType::Output);
+    mpOutputAnchor->redirectToCard();
+    BKLabel* outputLabel = BKCreator::create<BKLabel>();
+    outputLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    outputLabel->setText("Output");
+    outputLabel->setMinWidth(160);
+    outputCell->append(outputLabel, false);
+
+    BKCell* watcherCell = BKCreator::create(BKAnchor::AnchorType::None);
+    BKLabel* watcherLabel = BKCreator::create<BKLabel>();
+    watcherLabel->setText("Auto listening");
+    watcherCell->append(watcherLabel, false);
+    BKCheckBox* watcherCheckBox = BKCreator::create<BKCheckBox>();
+    watcherCheckBox->setChecked(false);
+    watcherCheckBox->setDataChangeCallback(std::bind(&ReadFileCard::updateWatcherStatus, this, std::placeholders::_1, std::placeholders::_2));
+    watcherCell->append(watcherCheckBox);
+
+    ...
+
+    _pack({
+        outputCell,
+        watcherCell,
+        ...
+        });
+```
+
+If the guys can understand anchor, unit, cell and card, I think creating own cards is not a hard thing. The controls in ***TestCard*** are still relatively comprehensive.
+
+### Have to declare
+
+1. Mistakes can occur in this project, such as Pbs materials, I can seem to feel it QAQ
+
+2. There are some features that are not yet perfect, such as Simple Material. The initial expectation was that the shader would be dynamically updated and continued to be displayed even if there was an error, but for now it will quit due to an exception. I've turned to tribe for help, but I haven't figured out how to make it happen yet[How to know in advance whether a vertex program can be compiled or not](https://forums.ogre3d.org/viewtopic.php?t=97251)
+
+3. Forgive me for my ugly project and English skills, I know neither of them is very good
+
+4. If guys find a mistake in the project, please let me know. Although my ability is limited, I will try my best to understand and solve it.
+
+5. I hope you all have fun
+
+### Remark
+1. If the switch of **INCLUDE_INNER_PARTICLE_CARD** has been changed, remember to clear CMakeCache.txt
+
+### Key nodes
 <table width="95%" cellpadding="2" cellspacing="1">
     <thead>
         <tr>
             <th></th>
-            <th>时间</th>
-            <th>事件</th>
-            <th>备注</th>
+            <th>Time</th>
+            <th>Event</th>
+            <th>Remark</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>1</td>
             <td>2024-03-12</td>
-            <td>首次进行git提交</td>
-            <td><p>1. 已初步完成基础的卡片创建、删除<br>2. 已初步完成连接线的增删<br>3. 已具备Label控件</p></td>
+            <td>Make first git commit</td>
+            <td><p>1. The card creation and card deletion have been preliminarily completed<br>2. The addition and deletion of connecting lines has been preliminarily completed<br>3. The Label is available</p></td>
         </tr>
         <tr>
             <td>2</td>
             <td>2024-03-17</td>
-            <td>丰富支持的控件</td>
-            <td><p>1. 支持下拉框（ComboBox）<br>2. 支持按钮（Button）<br><font color="#FF8000"><del>PS:尝试使用QGraphicsProxyWidget梭哈，但是好像有点卡..</del><br>有点误会，release模式下挺顺的orz<br>然后就能画的就画，不能画的就嘿嘿</font></p></td>
+            <td>Implement controls</td>
+            <td><p>1. The ComboBox is available<br>2. The PushButton is available<br><font color="#FF8000"><del>Tried to use QGraphicsProxyWidget to implement functions, but it seems to be a bit stuck...</del><br>It's a bit of a misunderstanding, It's OK in release mode. orz</font></p></td>
         </tr>
         <tr>
             <td>3</td>
             <td>2024-03-24</td>
-            <td>丰富支持的控件以及完成数据串联</td>
-            <td><p>1. 支持开关（CheckBox）<br>2. 支持线性输入（LineEdit）<br>3. 支持水平弹簧（Spacer）<br>4. 初步完成数据串联<br><font color="#FF8000">*原本打算做Undo/Redo的，渡劫失败了<br>*数据串联的时候再次感叹Qt帅的嘞~<br><del>*确实发现了锚点连接后，后面的unit不会自动更新。但是我不想让前一个unit主动触发了，因为不确定前一个cell中有多少个控制unit（虽然理论上只有一个）...</del></font></p></td>
+            <td>Implement controls and transfer data between different cards</td>
+            <td><p>1. The CheckBox is available<br>2. The LineEdit is available<br>3. The Spacer is available<br>4. Data can be transferred from one card to another<br><font color="#FF8000">*I was going to do Undo/Redo, but it failed<br>*When the data is connected, I sigh again that Qt is handsome~<br><del>*After the anchor is connected, the subsequent units will not be automatically updated. But I don't want the previous unit to be actively triggered, because I'm not sure how many units there are in the previous cell (although theoretically there is only one)...</del></font></p></td>
         </tr>
         <tr>
             <td>4</td>
             <td>2024-04-04</td>
-            <td>请来了另一位主角(ogre)，掌声(ohhhhhh</td>
-            <td><p>1. 引入ogre-next、ogre-next-dep<br>2. 上次说的连线后自动触发一次更新改过来了</p></td>
+            <td>There is another protagonist invited(ogre), applaud(ohhhhhh</td>
+            <td><p>1. Import ogre-next、ogre-next-dep<br>2. An update is automatically triggered after the conection finished is corrected</p></td>
         </tr>
         <tr>
             <td>5</td>
             <td>2024-04-14</td>
-            <td>升级了控件功能，初步对PBS卡片做了拆分</td>
-            <td><p>1. 输入锚点支持被多个输出锚点连接，但是只限输出锚点是绑定卡片的<br>2. 开始霍霍PBS卡片，暂且先跟组织的参数列表所支持的部分保持一致吧<br>3. 自定义数据类型可以注册并识别啦，颜色可以随机（每天换一种配色会不会开心点<br>PS: 至此控件部分还差以下内容<br>&emsp;1. 卡片支持缩进<br>&emsp;2. 向量输入的方式（Vec3f）<br></p></td>
+            <td>The control function has been upgraded, and the PBS card has been initially split</td>
+            <td><p>1. Input anchors can be connected by multiple output anchors, but only if the output anchor is bound to a card<br>2. Implement PBS cards little by little<br>3. Custom data types can be registered and recognized, and the colors can be randomized(Wouldn't it be nice to change the color every day?<br>PS: At this point, the control section is still short of the following<br>&emsp;1. Cards support shrinking<br>&emsp;2. A control that can support input vectors（Vec3f）</p></td>
         </tr>
         <tr>
             <td>6</td>
             <td>2024-05-12</td>
-            <td>提交可扩展的单元</td>
-            <td><p>1. 这次控件部分算是真告一段落（虽然还没有卡片折叠），新增的可扩展单元可以通过+/-按钮动态改变卡片单元内的成员个数<br>PS: 其实这次关键结点记录在五一就应该推上来的，五一的时候准备起手Material相关的，然后看到了自带的脚本解析模块，稍微有点道心崩碎...一直在纠结是否通过调用脚本解析的方式会更好，这样也能保持导入和导出的效果是一样的。可是最终还是选择了直接修改类成员变量或通过函数修改的方式，感觉这样在调整滑动数值的时候可以更顺一点（当然不排除以后会真香）。<br>下一步将着手Material部分，可扩展单元主要是为了实现内置脚本变量的绑定，现在控件算是交稿啦，自然要继续前进<br></p></td>
+            <td>Submit an extensible cell</td>
+            <td><p>1. This time the control part is really over (although there is no card shrinking yet), and the new expandable cell can dynamically change the number of members in the cell via the +/- button<br>PS: In fact, this time the key node record should be pushed up on May Day.On May Day, I'm ready to start Material-related.And then I saw the script parsing module,I really want to lie on the ground right now...I've been struggling with whether it would be better to use the way of calling scripts to parse, so that the import and export effects are the same. However, in the end, I chose to modify the class member variables directly or through interface.<br>The next step will be to work on the Material part, the extensible cell is mainly to implement the dynamic expand, and now that the control is pushed, it is natural to move on</p></td>
         </tr>
         <tr>
             <td>7</td>
             <td>2024-6-27</td>
-            <td>准备首次push</td>
-            <td><p>1. Material没做成：首先是只实现了一个小规模的Material卡片系列，其次是并不能做到输入一半shader后保证程序可以正常运行，跟预期还是差一点的...<br>2. 粒子效果相关的卡片做的差不多啦，已提交√<br>3. 补充了画布控件和自定义材质绘制，差不多我的TinySeed就是基于这个和Qt的万物皆可Painter的信念来实现的（这是我最后的波纹了,JOJO）<br>4. 准备规整一下项目代码，puuuuuuuuuuush!<br>对了对了，卡片的回调被我改的稀碎，我很抱歉orz<br></p></td>
+            <td>Prepare for the first push</td>
+            <td><p>1. Material didn't work: First of all, only a small series of Material cards were implemented, and secondly, it was not possible to enter half of the shader to ensure that the program could run normally, which was still a little worse than expected...<br>2. The cards related to particle effects are almost done, and they have been submitted√<br>3. Complementing canvas controls and custom material painting, my TinySeed is pretty much based on this and 'everything can be Painter in Qt'(This is my last ripple, JOJO)<br>4. Prepare to organize the project code, puuuuuuuuuuush!<br>By the way, the callback of the card was changed by me, and I'm so sorry... orz</p></td>
         </tr>
     </tbody>
 </table>
+
+Thanks to Bing for the translation

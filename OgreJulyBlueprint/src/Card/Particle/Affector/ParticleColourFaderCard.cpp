@@ -7,11 +7,11 @@
 ParticleColourFaderCard::ParticleColourFaderCard()
     : mAffector({ static_cast<particle::ParticleAffector::Type>(ParticleColourFaderCard::Type), &mData })
 {
-    setTitle("颜色渐变");
+    setTitle("Colour fader");
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, GET_QT_METATYPE_ID(particle::ParticleAffector))
         ->append(outputLabel, false);
@@ -21,7 +21,7 @@ ParticleColourFaderCard::ParticleColourFaderCard()
     _pack({
         outputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("颜色")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Color")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
             BKCreator::create<BKColorSelectorEx>(BKColorSelectorEx::Type::Vector4)
                 ->setColor(mData.color)

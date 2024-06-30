@@ -44,9 +44,6 @@ public:
 		float repeatDelayMax = 0;
 	};
 
-
-	
-
 public:
 	ParticleEmitterCard();
 	virtual QVariant getCurrentCardValue() override;

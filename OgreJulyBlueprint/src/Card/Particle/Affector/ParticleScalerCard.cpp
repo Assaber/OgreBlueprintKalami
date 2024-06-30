@@ -6,12 +6,12 @@
 ParticleScalerCard::ParticleScalerCard()
     : mAffector({ static_cast<particle::ParticleAffector::Type>(ParticleScalerCard::Type), &mData })
 {
-    setTitle("缩放影响器");
+    setTitle("Scaler");
 
 
     BKLabel* outputLabel = BKCreator::create<BKLabel>()
         ->setAlignment(Qt::AlignVCenter | Qt::AlignRight)
-        ->setText("输出");
+        ->setText("Output");
     BKCell* outputCell = BKCreator::create(BKAnchor::AnchorType::Output)
         ->setDataType(BKAnchor::Output, GET_QT_METATYPE_ID(particle::ParticleAffector))
         ->append(outputLabel, false);
@@ -21,9 +21,9 @@ ParticleScalerCard::ParticleScalerCard()
     _pack({
         outputCell,
 
-        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("每秒在xy方向的缩放")),
+        BKCreator::create(BKAnchor::AnchorType::None)->append(BKCreator::create<BKLabel>("Scale rate")),
         BKCreator::create(BKAnchor::AnchorType::None)->append(
-            BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(100.0f)          // 这里的范围应该是什么...
+            BKCreator::create<BKSliderBar>(BKSliderBar::DataType::Double)->setMinimum(0)->setMaximum(100.0f)          // What should be the scope here...
                 ->setCurrentValue(mData.scale)
                 ->setDataChangeCallback([this](BKUnit* unit, const QVariant& data) -> bool {
                     mData.scale = data.toDouble();

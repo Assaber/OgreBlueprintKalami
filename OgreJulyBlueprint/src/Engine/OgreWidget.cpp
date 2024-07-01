@@ -10,6 +10,7 @@
 #include "OgreHlmsPbs.h"
 #include "OgreHlmsUnlit.h"
 #include "OgreItem.h"
+#include "AppConfig.h"
 
 #include <vector>
 #include <map>
@@ -118,26 +119,18 @@ void OgreWidget::loadPlugin()
 
 bool OgreWidget::selectRenderSystem()
 {
-    // todo...
-    // Add a window to select the rendering system
-
-    static constexpr char* rsList[] = {
-        "OpenGL 3+ Rendering Subsystem",
-        "Direct3D11 Rendering Subsystem",
-        "Vulkan Rendering Subsystem",
-        "NULL Rendering Subsystem",
-    };
-    const char* rs = rsList[0];
+    RenderSystem rs = AppConfig::getSingleton()->getRenderSystem();
+    Ogre::String rsName = AppConfig::getRenderSystemName(rs).toStdString();
 
     Ogre::RenderSystemList rList = mpRoot->getAvailableRenderers();
     Ogre::RenderSystemList::iterator itor = rList.begin();
     while (itor != rList.end()) {
         Ogre::RenderSystem* rSys = *(itor);
         Ogre::String name = rSys->getName();
-        if (rSys->getName().find(rs) != std::string::npos)
+        if (rSys->getName().find(rsName) != std::string::npos)
         {
             mpRoot->setRenderSystem(rSys);
-            mpLogHandle->logMessage("The render system is loaded: " + std::string(rs));
+            mpLogHandle->logMessage("The render system is loaded: " + rsName);
             break;
         }
 
@@ -146,7 +139,7 @@ bool OgreWidget::selectRenderSystem()
 
     if (itor == rList.end())
     {
-        mpLogHandle->logMessage("The render system load failed to load: " + std::string(rs), Ogre::LogMessageLevel::LML_CRITICAL);
+        mpLogHandle->logMessage("The render system load failed to load: " + rsName, Ogre::LogMessageLevel::LML_CRITICAL);
         return false;
     }
 
@@ -200,35 +193,41 @@ void OgreWidget::loadResource()
     auto rm = Ogre::ResourceGroupManager::getSingletonPtr();
     auto archiveManager = Ogre::ArchiveManager::getSingletonPtr();
 
-    static const std::map<Ogre::String, std::vector<const char*>> resource = {
+    Ogre::String mediaRoot = AppConfig::getSingleton()->getMediaLocation().toStdString();
+
+    const std::map<Ogre::String, std::vector<Ogre::String>> resource = {
         {
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, {              // Need a selector
-                "../../media/Common",
-                "../../media/Common/Any",
-                "../../media/Common/GLSL",
-                "../../media/Common/HLSL",
-                "../../media/Common/Metal",
-                "../../media/Hlms/Common/Any",
-                "../../media/Hlms/Common/GLSL",
-                "../../media/Hlms/Common/HLSL",
-                "../../media/Hlms/Common/Metal",
-                "../../media/models",
-                "../../media/material",
-                "../../media/texture",
+                mediaRoot + "media/Common",
+                mediaRoot + "media/Common/Any",
+                mediaRoot + "media/Common/GLSL",
+                mediaRoot + "media/Common/HLSL",
+                mediaRoot + "media/Common/Metal",
+                mediaRoot + "media/Hlms/Common/Any",
+                mediaRoot + "media/Hlms/Common/GLSL",
+                mediaRoot + "media/Hlms/Common/HLSL",
+                mediaRoot + "media/Hlms/Common/Metal",
+                mediaRoot + "media/models",
+                mediaRoot + "media/material",
+                mediaRoot + "media/texture",
             }
         }
     };
 
     for (const auto& group : resource)
-        for (const auto& item : group.second)
+    {
+        for (const auto& item : group.second) {
             rm->addResourceLocation(item, "FileSystem", group.first);
+        }
+    }
+
 
     // HLMS
     {
         Ogre::String hlms;
         Ogre::StringVector hlmsItems;
 
-        auto regist_hlms = [&](const char* prefix) -> std::tuple<Ogre::Archive*, Ogre::ArchiveVec> {
+        auto regist_hlms = [&](const Ogre::String& prefix) -> std::tuple<Ogre::Archive*, Ogre::ArchiveVec> {
             Ogre::Archive* ret = archiveManager->load(prefix + hlms, "FileSystem", true);
             Ogre::ArchiveVec retVec;
             for (const auto& item : hlmsItems)
@@ -241,16 +240,16 @@ void OgreWidget::loadResource()
 
 
         Ogre::HlmsUnlit::getDefaultPaths(hlms, hlmsItems);
-        auto unlitResult = regist_hlms("../../media/");
+        auto unlitResult = regist_hlms(mediaRoot + "media/");
         auto hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(std::get<0>(unlitResult), &std::get<1>(unlitResult));
         mpRoot->getHlmsManager()->registerHlms(hlmsUnlit);
 
         Ogre::HlmsPbs::getDefaultPaths(hlms, hlmsItems);
-        auto pbsResult = regist_hlms("../../media/");
+        auto pbsResult = regist_hlms(mediaRoot + "media/");
         auto hlmsPbs = OGRE_NEW Ogre::HlmsPbs(std::get<0>(pbsResult), &std::get<1>(pbsResult));
         mpRoot->getHlmsManager()->registerHlms(hlmsPbs);
 
-        if (mpRoot->getRenderSystem()->getName().find("Direct3D11") != std::string::npos)
+        if (AppConfig::getSingleton()->getRenderSystem() == RenderSystem::Direct3D)
         {
             // Set lower limits 512kb instead of the default 4MB per Hlms in D3D 11.0
             // and below to avoid saturating AMD's discard limit (8MB) or

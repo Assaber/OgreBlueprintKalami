@@ -15,7 +15,7 @@ get_filename_component(Qt5Core_DIR ${Qt5Core_LOCATION} DIRECTORY)
 get_filename_component(Qt5_INSTALL_DIR ${Qt5Core_DIR} DIRECTORY)
 message(STATUS "Qt5 is installed in: ${Qt5_INSTALL_DIR}")
 
-#qt5_add_resources(QRC_FILES a.qrc)
+qt5_add_resources(QRC_FILES rec/resource.qrc)
 set(FLAGS)
 if(MSVC)
     set(FLAGS WIN32)
@@ -44,7 +44,7 @@ if(INCLUDE_INNER_PARTICLE_CARD)
 endif()
 
 add_executable(${PROJECT_NAME} ${FLAGS})
-add_sources(${PROJECT_NAME} )
+add_sources_ex(${PROJECT_NAME} ${QRC_FILES})
 
 add_dependencies(${PROJECT_NAME} BlueprintKernal OgreMain OgreHlmsUnlit OgreHlmsPbs)
 

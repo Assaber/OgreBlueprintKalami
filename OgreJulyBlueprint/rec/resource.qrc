@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>img/ogrelogo-small.jpg</file>
+    </qresource>
+</RCC>

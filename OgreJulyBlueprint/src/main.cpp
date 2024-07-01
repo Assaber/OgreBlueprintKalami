@@ -1,5 +1,7 @@
 ﻿#include "Application.h"
 #include "OgreBlueprint.h"
+#include "GlobalSettingsWidget.h"
+#include "AppConfig.h"
 
 #include "BKCreator.hpp"
 #include "TestCard.h"
@@ -44,6 +46,13 @@ int main(int argc, char** argv)
     Application a(argc, argv);
 
     qsrand(QDateTime::currentSecsSinceEpoch());
+
+    if (!AppConfig::getSingleton()->loadConfig())
+    {
+        GlobalSettingsWidget w;
+        if (w.exec() == QDialog::Rejected)
+            return 0;
+    }
 
     // Register
     BKAnchor::registDataType(QMetaTypeId<PbsCommonTextureCard::Info>::qt_metatype_id());
